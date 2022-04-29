@@ -19,6 +19,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
+import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 
 @RunWith(AndroidJUnit4.class)
@@ -46,6 +47,19 @@ public class ZooDatabaseTest {
         dao.addNodes(Arrays.asList(info1, info2));
         List<NodeInfo> list = dao.getAllNodes();
         assertEquals(2, list.size());
+        assertEquals(info1, list.get(0));
+        assertEquals(info2, list.get(1));
+    }
+
+    @Test
+    public void testEdges() {
+        EdgeInfo info1 = new EdgeInfo("id-1", "Gilman Dr");
+        EdgeInfo info2 = new EdgeInfo("id-2", "Nobel Dr");
+
+        dao.addEdges(Arrays.asList(info1, info2));
+        List<EdgeInfo> list = dao.getAllEdges();
+        assertEquals(2, list.size());
+
         assertEquals(info1, list.get(0));
         assertEquals(info2, list.get(1));
     }
