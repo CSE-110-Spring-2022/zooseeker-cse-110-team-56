@@ -2,8 +2,11 @@ package edu.ucsd.cse110.team56.zooseeker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+
 
 import com.google.gson.Gson;
 
@@ -29,5 +32,12 @@ public class MainActivity extends AppCompatActivity {
         List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
 
         Log.d("Nodes", nodes.toString());
+
     }
+
+    public void onPlanBtnClicked(View view) {
+        Intent intent = new Intent(this, PlanListActivity.class);
+        startActivity(intent);
+    }
+
 }
