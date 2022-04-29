@@ -11,8 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
+import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.entity.Graph;
+import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,15 +25,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            InputStream input = this.getAssets().open("map/sample_graph.JSON");
-            Reader reader = new InputStreamReader(input);
-            Gson gson = new Gson();
+        List<NodeInfo> nodes = ZooDatabase.getSingleton(this).zooDao().getAllNodes();
+        List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
 
-            Graph graph = gson.fromJson(reader, Graph.class);
-            Log.d("Graph", graph.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("Nodes", nodes.toString());
     }
 }
