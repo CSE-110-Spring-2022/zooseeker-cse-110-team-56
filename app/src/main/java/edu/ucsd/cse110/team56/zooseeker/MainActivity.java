@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
 
         Log.d("Nodes", nodes.toString());
+
     }
 
     public void onPlanBtnClicked(View view) {

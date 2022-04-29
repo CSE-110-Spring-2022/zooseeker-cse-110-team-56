@@ -1,0 +1,3 @@
+[submodule "app/src/main/assets/map"]
+	path = app/src/main/assets/map
+	url = git@github.com:CSE-110-Spring-2022/ZooSeeker-Assets.git
