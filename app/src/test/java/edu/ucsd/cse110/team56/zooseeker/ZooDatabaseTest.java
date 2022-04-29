@@ -62,5 +62,6 @@ public class ZooDatabaseTest {
 
         assertEquals(info1, list.get(0));
         assertEquals(info2, list.get(1));
+        
     }
 }
