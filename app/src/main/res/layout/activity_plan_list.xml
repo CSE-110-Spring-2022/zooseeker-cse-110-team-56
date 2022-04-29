@@ -8,13 +8,13 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
-        android:layout_width="409dp"
+        android:layout_width="412dp"
         android:layout_height="48dp"
         android:layout_marginBottom="675dp"
         android:background="@color/teal_700"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
         android:onClick="onBackToMainClicked"
+        android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Plan List"
+            android:text="Plan Route"
             android:textColor="@color/white"
             android:textSize="25dp" />
     </androidx.appcompat.widget.Toolbar>
