@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package com.example.finalproject;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("edu.ucsd.cse110.team56.zooseeker", appContext.getPackageName());
+        assertEquals("com.example.finalproject", appContext.getPackageName());
     }
 }

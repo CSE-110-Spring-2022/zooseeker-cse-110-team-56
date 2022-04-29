@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package com.example.finalproject;
 
 import org.junit.Test;
 
