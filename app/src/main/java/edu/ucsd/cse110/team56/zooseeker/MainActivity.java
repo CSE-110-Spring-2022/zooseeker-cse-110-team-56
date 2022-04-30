@@ -1,27 +1,28 @@
 package edu.ucsd.cse110.team56.zooseeker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.Graph;
 import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
+
+    // for the search bar
+    ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +34,59 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("Nodes", nodes.toString());
 
+
+        /*
+            Search Bar search items trial
+         */
+        ListView listView = findViewById(R.id.added_list);
+        List<String> mylist = new ArrayList<>();
+        mylist.add("Eraser");
+        mylist.add("Pencils");
+        mylist.add("Pen");
+        mylist.add("Books");
+        mylist.add("Rulers");
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mylist);
+        listView.setAdapter(arrayAdapter);
+
     }
 
+    /*
+        For the search bar draw down menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.search_bar_drawdown, menu);
+        MenuItem menuItem = menu.findItem(R.id.search_btn);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint("Search Here!");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                arrayAdapter.getFilter().filter(s);
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    /*
+        Jump to the PLAN view when the PLAN button is clicked
+     */
     public void onPlanBtnClicked(View view) {
         Intent intent = new Intent(this, PlanListActivity.class);
         startActivity(intent);
     }
+
+
+
 
 }
