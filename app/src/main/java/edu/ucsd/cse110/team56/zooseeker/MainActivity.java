@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         /*
             Search Bar search items trial
          */
-        ListView listView = findViewById(R.id.added_list);
+        ListView listView = findViewById(R.id.data_list);
         List<String> mylist = new ArrayList<>();
         mylist.add("Eraser");
         mylist.add("Pencils");
@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         mylist.add("Rulers");
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mylist);
         listView.setAdapter(arrayAdapter);
+
+        ListView nameList = (ListView) findViewById(R.id.data_list);
+        nameList.setVisibility(View.INVISIBLE);
 
     }
 
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.search_bar_drawdown, menu);
         MenuItem menuItem = menu.findItem(R.id.search_btn);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Search Here!");
+        searchView.setQueryHint("Search an animal here...");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -69,8 +72,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                ListView nameList = findViewById(R.id.data_list);
+                nameList.setVisibility(View.VISIBLE);
                 arrayAdapter.getFilter().filter(s);
                 return true;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                ListView nameList = findViewById(R.id.data_list);
+                nameList.setVisibility(View.INVISIBLE);
+                return false;
             }
         });
 
