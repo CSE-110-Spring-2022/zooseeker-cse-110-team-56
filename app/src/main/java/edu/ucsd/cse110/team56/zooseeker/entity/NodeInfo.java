@@ -27,7 +27,6 @@ public class NodeInfo {
     public NodeInfo() {
 
     }
-
     public NodeInfo(@NonNull String id, String name, String kind, List<String> tags) {
         this.id = id;
         this.name = name;

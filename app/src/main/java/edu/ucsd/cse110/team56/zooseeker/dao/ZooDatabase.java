@@ -1,22 +1,17 @@
 package edu.ucsd.cse110.team56.zooseeker.dao;
 
 import android.content.Context;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import edu.ucsd.cse110.team56.zooseeker.Converters;
 import edu.ucsd.cse110.team56.zooseeker.Utility;
 import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.Graph;
 import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 
 @Database(entities = {EdgeInfo.class, NodeInfo.class}, version = 1)
@@ -30,6 +25,7 @@ public abstract class ZooDatabase extends RoomDatabase {
         if (singleton == null) {
             singleton = ZooDatabase.makeDatabase(context);
         }
+
         return singleton;
     }
 

@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+
 import java.util.List;
 import java.util.Objects;
 

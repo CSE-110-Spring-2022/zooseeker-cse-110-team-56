@@ -14,11 +14,17 @@ public interface ZooDao {
     @Query("SELECT * FROM `NodeInfo` ORDER BY `id`")
     List<NodeInfo> getAllNodes();
 
+    @Query("SELECT * FROM `NodeInfo` WHERE `id` = :id")
+    NodeInfo getNode(String id);
+
     @Insert
     void addNodes(List<NodeInfo> nodes);
 
     @Query("SELECT * FROM `EdgeInfo` ORDER BY `id`")
     List<EdgeInfo> getAllEdges();
+
+    @Query("SELECT * FROM `EdgeInfo` WHERE `id` = :id")
+    EdgeInfo getEdge(String id);
 
     @Insert
     void addEdges(List<EdgeInfo> edges);
