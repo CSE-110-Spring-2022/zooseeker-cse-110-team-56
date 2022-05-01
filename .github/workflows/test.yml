@@ -12,7 +12,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
-          submodules: 'true'
 
       # Execute unit tests
       - name: Unit Test
