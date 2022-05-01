@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                showSearchListView();
+                hideSearchListView();
                 return false;
             }
         });
