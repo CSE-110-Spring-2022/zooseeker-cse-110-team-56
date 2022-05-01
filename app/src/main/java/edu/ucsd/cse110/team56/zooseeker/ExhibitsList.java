@@ -12,9 +12,15 @@ public class ExhibitsList {
     }
 
     /**
+     * @apiNote the method checks for whether the item already exists
+     * in the list; duplicates will not be added
      * @param itemName the name of the item to add
      */
     public void addItem(String itemName) {
+        // guard statement
+        if (hasItem(itemName)) { return; }
+
+        // add item
         list.add(itemName);
     }
 
@@ -23,5 +29,13 @@ public class ExhibitsList {
      */
     public ArrayList<String> getList() {
         return list;
+    }
+
+    /**
+     * @param itemName the name of the item to check for
+     * @return whether the item with the input name is present in the list
+     */
+    private boolean hasItem(String itemName) {
+        return list.contains(itemName);
     }
 }

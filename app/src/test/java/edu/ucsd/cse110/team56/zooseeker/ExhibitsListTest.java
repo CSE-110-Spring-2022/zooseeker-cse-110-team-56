@@ -32,4 +32,17 @@ public class ExhibitsListTest {
         testList.addItem("itemC");
         assertEquals("itemB", testList.getList().get(1));
     }
+
+    @Test
+    public void addDuplicateItemsTest() {
+        ExhibitsList testList = new ExhibitsList();
+        testList.addItem("itemA");
+        testList.addItem("itemB");
+        testList.addItem("itemB");
+        testList.addItem("itemC");
+        testList.addItem("itemD");
+        testList.addItem("itemD");
+        testList.addItem("itemD");
+        assertEquals(4, testList.getList().size());
+    }
 }
