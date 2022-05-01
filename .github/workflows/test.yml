@@ -9,6 +9,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa # optional
+          known-hosts: ''
 
       - uses: actions/checkout@v1
         with:
