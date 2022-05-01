@@ -22,4 +22,5 @@ public interface ZooDao {
 
     @Insert
     void addEdges(List<EdgeInfo> edges);
+
 }

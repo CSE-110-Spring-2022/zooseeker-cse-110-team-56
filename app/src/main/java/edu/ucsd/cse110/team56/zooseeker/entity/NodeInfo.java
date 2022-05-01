@@ -19,13 +19,16 @@ import java.util.Objects;
 public class NodeInfo {
     @PrimaryKey @NonNull
     public String id;
-
     public String name;
     public String kind;
     public List<String> tags;
 
     public NodeInfo() {
 
+    }
+
+    public String getName() {
+        return name;
     }
 
     public NodeInfo(@NonNull String id, String name, String kind, List<String> tags) {

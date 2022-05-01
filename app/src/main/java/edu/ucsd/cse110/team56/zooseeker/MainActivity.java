@@ -2,9 +2,11 @@ package edu.ucsd.cse110.team56.zooseeker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import java.util.stream.Collectors;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.health.SystemHealthManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,8 +23,11 @@ import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
 
-    // for the search bar
+    // Search Bar Adaptor
     ArrayAdapter<String> arrayAdapter;
+
+    // Search ListView
+    ListView searchAnimalView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,30 +36,36 @@ public class MainActivity extends AppCompatActivity {
 
         List<NodeInfo> nodes = ZooDatabase.getSingleton(this).zooDao().getAllNodes();
         List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
-
         Log.d("Nodes", nodes.toString());
 
 
-        /*
-            Search Bar search items trial
-         */
-        ListView listView = findViewById(R.id.data_list);
-        List<String> mylist = new ArrayList<>();
-        mylist.add("Eraser");
-        mylist.add("Pencils");
-        mylist.add("Pen");
-        mylist.add("Books");
-        mylist.add("Rulers");
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mylist);
-        listView.setAdapter(arrayAdapter);
+        hideSearchListView();
 
-        ListView nameList = (ListView) findViewById(R.id.data_list);
-        nameList.setVisibility(View.INVISIBLE);
+        //Populate All Names List View
+        List<String> allNames = nodes.stream().map(NodeInfo::getName).collect(Collectors.toList());
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_checked, allNames);
+        searchAnimalView.setAdapter(arrayAdapter);
 
     }
 
     /*
-        For the search bar draw down menu
+        Hide the All Animals Search List View
+     */
+    public void hideSearchListView (){
+        searchAnimalView = findViewById(R.id.data_list);
+        searchAnimalView.setVisibility(View.INVISIBLE);
+    }
+
+    /*
+        Show the All Animals Search List View
+     */
+    public void showSearchListView (){
+        searchAnimalView = findViewById(R.id.data_list);
+        searchAnimalView.setVisibility(View.VISIBLE);
+    }
+
+    /*
+        Search Bar Drawdown Search Function
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,8 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                ListView nameList = findViewById(R.id.data_list);
-                nameList.setVisibility(View.VISIBLE);
+                showSearchListView();
                 arrayAdapter.getFilter().filter(s);
                 return true;
             }
@@ -82,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                ListView nameList = findViewById(R.id.data_list);
-                nameList.setVisibility(View.INVISIBLE);
+                showSearchListView();
                 return false;
             }
         });
