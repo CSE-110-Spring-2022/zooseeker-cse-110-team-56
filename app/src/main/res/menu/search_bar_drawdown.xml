@@ -13,6 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:showAsAction="always"
+        android:choiceMode="multipleChoice"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
 </menu>
