@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
@@ -46,19 +47,20 @@ public class MainActivity extends AppCompatActivity {
     private List<String> addedNames;
     // Added Animals
     protected List<NodeInfo> addedAnimals;
+    private static final String ADDED_LIST = "added_list";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Log.i(TAG, "onCreate");
         List<NodeInfo> nodes = ZooDatabase.getSingleton(this).zooDao().getAllNodes();
         List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
         Log.d("Nodes", nodes.toString());
 
         hideSearchListView();
-
+        
         // Initialize Added
         addedAnimals = new ArrayList<>();
         updateAddedList(nodes);
@@ -227,11 +229,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     /*
         Jump to the PLAN view when the PLAN button is clicked
      */
     public void onPlanBtnClicked(View view) {
         Intent intent = new Intent(this, PlanListActivity.class);
+        addedAdapter.notifyDataSetChanged();
         startActivity(intent);
     }
 

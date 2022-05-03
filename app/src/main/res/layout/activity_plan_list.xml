@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D3F8C6FD"
     tools:context=".PlanListActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -11,7 +12,7 @@
         android:layout_width="412dp"
         android:layout_height="48dp"
         android:layout_marginBottom="675dp"
-        android:background="@color/teal_700"
+        android:background="@color/purple_200"
         android:minHeight="?attr/actionBarSize"
         android:onClick="onBackToMainClicked"
         android:theme="?attr/actionBarTheme"
@@ -31,5 +32,19 @@
             android:textColor="@color/white"
             android:textSize="25dp" />
     </androidx.appcompat.widget.Toolbar>
+
+    <ListView
+        android:layout_width="388dp"
+        android:layout_height="650dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBar"
+        app:layout_constraintVertical_bias="0.2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
