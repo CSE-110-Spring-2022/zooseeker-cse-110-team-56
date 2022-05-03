@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
         addedAnimals = new ArrayList<>();
         updateAddedList(nodes);
         addedNames = addedAnimals.stream().map(NodeInfo::getName).collect(Collectors.toList());
-        addedNames.add("Christina");
-        addedNames.add("Miranda");
+        //addedNames.add("Christina");
+        //addedNames.add("Miranda");
 
         // Initialize Views
         searchAnimalView = findViewById(R.id.data_list);
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         //checkedAnimal = new boolean[allNames.size()];
         setAddedAnimalsChecked(nodes);
-
+/*
         searchAnimalView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,8 +96,43 @@ public class MainActivity extends AppCompatActivity {
                 addedAdapter.notifyDataSetChanged();
             }
         });
+*/
+        searchAnimalView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(TAG, "onItemClick: " + position);
+                // get the name of the animal
+                String selected = (String) searchAnimalView.getItemAtPosition(position);
+                // set the NodeInfo.added = true
+                nodes.get(allNames.indexOf(selected)).setAdded(((CheckedTextView) view).isChecked());
+                updateAddedList(nodes);
+                //addedAdapter.notifyDataSetChanged();
+                /* try to run on the UI thread, didn't work
+                final ArrayAdapter adapter = addedAdapter;
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                */
 
+                //trying to update the adapter to the newest list, worked!!
+                new AdapterHelper().update(addedAdapter, new ArrayList<Object>(addedNames));
+                addedAdapter.notifyDataSetChanged();
+            }
 
+        });
+
+    }
+
+    public class AdapterHelper {
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public void update(ArrayAdapter arrayAdapter, ArrayList<Object> listOfObject){
+            arrayAdapter.clear();
+            for (Object object : listOfObject){
+                arrayAdapter.add(object);
+            }
+        }
     }
 
     private void setAddedAnimalsChecked(List<NodeInfo> nodes) {
@@ -119,9 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         addedNames = addedAnimals.stream().map(NodeInfo::getName).collect(Collectors.toList());
-        for (String i : addedNames) {
-            System.out.println(i);
-        }
+
     }
 
     /*
