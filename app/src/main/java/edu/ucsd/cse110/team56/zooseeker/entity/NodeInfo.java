@@ -21,6 +21,16 @@ public class NodeInfo {
     public String id;
     public String name;
     public String kind;
+    public boolean added;
+
+    public boolean isAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
+
     public List<String> tags;
 
     public NodeInfo() {
@@ -36,6 +46,7 @@ public class NodeInfo {
         this.name = name;
         this.kind = kind;
         this.tags = tags;
+        this.added = false;
     }
 
     @Override
