@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     protected List<NodeInfo> addedAnimals;
     private static final String ADDED_LIST = "added_list";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -228,8 +227,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-
-
     /*
         Jump to the PLAN view when the PLAN button is clicked
      */
@@ -238,5 +235,5 @@ public class MainActivity extends AppCompatActivity {
         addedAdapter.notifyDataSetChanged();
         startActivity(intent);
     }
-
+  
 }
