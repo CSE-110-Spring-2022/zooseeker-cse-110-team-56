@@ -8,10 +8,14 @@ import android.view.View;
 
 public class PlanListActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_list);
+
+
+
     }
 
     public void onBackToMainClicked(View view) {
