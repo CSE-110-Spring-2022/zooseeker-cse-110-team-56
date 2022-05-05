@@ -52,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        Intent intent = new Intent(this, DirectionActivity.class);
+//        startActivity(intent);
+
+
+
         setContentView(R.layout.activity_main);
         Log.i(TAG, "onCreate");
         List<NodeInfo> nodes = ZooDatabase.getSingleton(this).zooDao().getAllNodes();
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Nodes", nodes.toString());
 
         hideSearchListView();
-        
+
         // Initialize Added
         addedAnimals = new ArrayList<>();
         updateAddedList(nodes);
