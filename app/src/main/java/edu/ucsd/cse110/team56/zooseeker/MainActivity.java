@@ -43,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        Intent intent = new Intent(this, DirectionActivity.class);
+//        startActivity(intent);
+
+
+
         setContentView(R.layout.activity_main);
         allNodes = getAllNodes();
 
