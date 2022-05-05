@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                     ListManager.removeItem(selectedItem);
                 }
 
-                // update UI
                 updateAddedAdapter();
                 updateSearchedCheckBoxes(allNodes);
             }
