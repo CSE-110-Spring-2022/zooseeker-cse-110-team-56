@@ -6,10 +6,13 @@ import static java.lang.String.valueOf;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+<<<<<<< HEAD
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+=======
+>>>>>>> aa12311 (commit -m "added animal count display")
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView addedCountView;
 
     private List<NodeInfo> allNodes;
-
-    private ExecutorService backgroundThreadExecutor = Executors.newSingleThreadExecutor();
-    private Future<Void> future;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
