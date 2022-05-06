@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Retrieve data from database --------
 
     private List<NodeInfo> getAllNodes() {
-        return ZooDatabase.getSingleton(this).zooDao().getAllNodes();
+        return ZooDatabase.getSingleton(this).zooDao().getAllNodes().stream().filter(n -> !n.id.equals("entrance_exit_gate")).collect(Collectors.toList());
     }
 
     private List<EdgeInfo> getAllEdges() {
