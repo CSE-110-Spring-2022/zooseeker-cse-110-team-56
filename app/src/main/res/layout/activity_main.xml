@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#81ECD8EF"
     android:foregroundTint="#F6F1F1"
-    android:gravity="center|center_vertical"
     tools:context=".MainActivity">
 
     <ListView
@@ -27,19 +26,18 @@
 
     <ListView
         android:id="@+id/added_list"
-        android:layout_width="380dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="20dp"
+        android:scrollbars="vertical"
         android:color="#9C6EDD"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.176" />
+        app:layout_constraintTop_toBottomOf="@id/added_count" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/planBtn"
@@ -62,32 +60,34 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+
     <TextView
-        android:id="@+id/added_count_msg"
-        android:layout_width="350dp"
+        android:id="@+id/added_count"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="620dp"
-        android:text="Added Animals: "
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:text="@string/added_count_msg"
         android:textAlignment="center"
         android:textColor="#9C6EDD"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
-        android:id="@+id/added_count"
-        android:layout_width="56dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="620dp"
-        android:text="0"
+        android:id="@+id/no_result_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_result_msg"
         android:textColor="#9C6EDD"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.847"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

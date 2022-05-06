@@ -2,6 +2,7 @@ package edu.ucsd.cse110.team56.zooseeker.dao;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -27,6 +28,14 @@ public abstract class ZooDatabase extends RoomDatabase {
         }
 
         return singleton;
+    }
+
+    @VisibleForTesting
+    public synchronized static void refreshDb(Context context) {
+        if (singleton != null) {
+            singleton.close();
+        }
+        singleton = ZooDatabase.makeDatabase(context);
     }
 
     private static ZooDatabase makeDatabase(Context context) {
