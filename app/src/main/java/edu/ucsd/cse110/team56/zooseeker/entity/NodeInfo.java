@@ -49,6 +49,9 @@ public class NodeInfo {
         this.added = false;
     }
 
+    /**
+     * two NodeInfo objects are equal if their `id`, `name`, `kind`, and `tags` are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

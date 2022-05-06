@@ -24,6 +24,9 @@ public class EdgeInfo {
         this.street = street;
     }
 
+    /**
+     * two EdgeInfo objects are equal if their `id` and `street` are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -2,25 +2,23 @@ package edu.ucsd.cse110.team56.zooseeker;
 
 import static android.content.ContentValues.TAG;
 
+import static java.lang.String.valueOf;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import java.util.stream.Collectors;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.health.SystemHealthManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +26,7 @@ import java.util.List;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,14 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private ListView searchAnimalView;
     // Added ListView
     private ListView addAnimalView;
+    // Added Number TextView
+    private TextView addedCountView;
 
-    // All Animal Names
-    private List<String> allNames;
-    // Added Animal Names
-    private List<String> addedNames;
-    // Added Animals
-    protected List<NodeInfo> addedAnimals;
-    private static final String ADDED_LIST = "added_list";
+    private List<NodeInfo> allNodes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,148 +53,146 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_main);
-        Log.i(TAG, "onCreate");
-        List<NodeInfo> nodes = ZooDatabase.getSingleton(this).zooDao().getAllNodes();
-        List<EdgeInfo> edges = ZooDatabase.getSingleton(this).zooDao().getAllEdges();
-        Log.d("Nodes", nodes.toString());
+        allNodes = getAllNodes();
 
         hideSearchListView();
-
-        // Initialize Added
-        addedAnimals = new ArrayList<>();
-        updateAddedList(nodes);
-        addedNames = addedAnimals.stream().map(NodeInfo::getName).collect(Collectors.toList());
-        //addedNames.add("Christina");
-        //addedNames.add("Miranda");
 
         // Initialize Views
         searchAnimalView = findViewById(R.id.data_list);
         addAnimalView = findViewById(R.id.added_list);
+        addedCountView = findViewById(R.id.added_count);
+
+
 
         // Populate All Names List View
-        allNames = nodes.stream().map(NodeInfo::getName).collect(Collectors.toList());
+        List<String> allNames = ListManager.getNames(allNodes);
         searchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, allNames);
         searchAnimalView.setAdapter(searchAdapter);
 
         // Populate Added Names List View
+        List<String> addedNames = ListManager.getAddedListNames(allNodes);
         addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addAnimalView.setAdapter(addedAdapter);
 
         // Enable CheckMark
         searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        //checkedAnimal = new boolean[allNames.size()];
-        setAddedAnimalsChecked(nodes);
-/*
-        searchAnimalView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG, "onItemClick: " +position);
-                // get the name of the animal
-                String selected = (String) searchAnimalView.getItemAtPosition(position);
-                // set the NodeInfo.added = true
-                nodes.get(allNames.indexOf(selected)).setAdded(((CheckedTextView) view).isChecked());
-                updateAddedList(nodes);
-                addedAdapter.notifyDataSetChanged();
-            }
-        });
-*/
+        updateSearchedCheckBoxes(allNodes);
+
         searchAnimalView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG, "onItemClick: " + position);
                 // get the name of the animal
-                String selected = (String) searchAnimalView.getItemAtPosition(position);
-                // set the NodeInfo.added = true
-                nodes.get(allNames.indexOf(selected)).setAdded(((CheckedTextView) view).isChecked());
-                updateAddedList(nodes);
-                //addedAdapter.notifyDataSetChanged();
-                /* try to run on the UI thread, didn't work
-                final ArrayAdapter adapter = addedAdapter;
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-                */
+                String selectedItemName = (String) searchAnimalView.getItemAtPosition(position);
 
-                //trying to update the adapter to the newest list, worked!!
-                new AdapterHelper().update(addedAdapter, new ArrayList<Object>(addedNames));
-                addedAdapter.notifyDataSetChanged();
+                // add or remove the selected item based on `isChecked()` state
+                NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
+                if (((CheckedTextView) view).isChecked()) {
+                    ListManager.addItem(selectedItem);
+                } else {
+                    ListManager.removeItem(selectedItem);
+                }
+
+                // update UI
+                updateAddedAdapter();
+                updateSearchedCheckBoxes(allNodes);
             }
-
         });
-
     }
 
     public class AdapterHelper {
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        public void update(ArrayAdapter arrayAdapter, ArrayList<Object> listOfObject){
+        public void update(ArrayAdapter arrayAdapter, ArrayList<Object> listOfObjects){
             arrayAdapter.clear();
-            for (Object object : listOfObject){
+            for (Object object : listOfObjects){
                 arrayAdapter.add(object);
             }
         }
     }
 
-    private void setAddedAnimalsChecked(List<NodeInfo> nodes) {
-        for (int i = 0; i < nodes.size(); i++) {
-            System.out.println(nodes.get(i).isAdded());
-            searchAnimalView.setItemChecked(i, nodes.get(i).isAdded());
-        }
+    // -------- Retrieve data from database --------
+
+    private List<NodeInfo> getAllNodes() {
+        return ZooDatabase.getSingleton(this).zooDao().getAllNodes();
     }
 
-    /*
-        Update the list of Added Animals
-     */
-    protected void updateAddedList(List<NodeInfo> nodes) {
-        for (NodeInfo node : nodes) {
-            if (node.isAdded() && !addedAnimals.contains(node)) { //add new animals
-                addedAnimals.add(node);
-            } else if (!node.isAdded() && addedAnimals.contains(node)){ //remove added animals
-                addedAnimals.remove(node);
-            }
-        }
-        addedNames = addedAnimals.stream().map(NodeInfo::getName).collect(Collectors.toList());
-
+    private List<EdgeInfo> getAllEdges() {
+        return ZooDatabase.getSingleton(this).zooDao().getAllEdges();
     }
 
-    /*
-        Return the List of Added Animals
-     */
-    protected List<NodeInfo> getAddedAnimals() {
-        return addedAnimals;
-    }
+    // -------- Show & hide list views --------
 
-    /*
-        Hide the All Animals Search List View
-     */
     public void hideSearchListView (){
         searchAnimalView = findViewById(R.id.data_list);
         searchAnimalView.setVisibility(View.INVISIBLE);
     }
 
-    /*
-    Hide the Added Animals Search List View
- */
     public void hideAddedListView (){
         addAnimalView = findViewById(R.id.added_list);
         addAnimalView.setVisibility(View.INVISIBLE);
     }
 
-    /*
-        Show the All Animals Search List View
-     */
     public void showListView (ListView view){
         view.setVisibility(View.VISIBLE);
     }
 
+    // -------- Update list views --------
+
+    /**
+     * Updates the "added" list by updating & notifying its adapter
+     */
+    private void updateAddedAdapter() {
+        new AdapterHelper().update(
+                addedAdapter,
+                new ArrayList<Object>(ListManager.getAddedListNames(allNodes))
+        );
+        addedAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Updates the "search suggestions" list using the `isAdded` attribute of
+     * all items currently shown in the list
+     * @param nodes the list of nodes that contains the added nodes for which
+     *              you want to mark checkboxes as "checked"
+     */
+    private void updateSearchedCheckBoxes(List<NodeInfo> nodes) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // loops through the current list of search suggestions
+                for (int i = 0; i < searchAnimalView.getCount(); i++) {
+                    String currentItemName = (String) searchAnimalView.getItemAtPosition(i);
+
+                    // the index of the current item within the `allNodes` list
+                    int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
+
+                    // retrieve the node
+                    NodeInfo currentItem = nodes.get(currentItemIndex);
+
+                    searchAnimalView.setItemChecked(i, currentItem.isAdded());
+                }
+            }
+        });
+    }
+
     /*
-        Search Bar Drawdown Search Function
+        Return the Number of Added Animals
+     */
+    public int addedAnimalCount() {
+        return (int) allNodes.stream()
+                .filter(node -> node.isAdded())
+                .count();
+    }
+
+    /// -------- Search handler --------
+
+    /*
+        Search Bar dropdown Search Function
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.search_bar_drawdown, menu);
+        getMenuInflater().inflate(R.menu.search_bar_dropdown, menu);
         MenuItem menuItem = menu.findItem(R.id.search_btn);
         SearchView searchView = (SearchView) menuItem.getActionView();
         searchView.setQueryHint("Search an animal here...");
@@ -215,16 +208,29 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String s) {
                 hideAddedListView();
                 showListView(searchAnimalView);
-                searchAdapter.getFilter().filter(s);
+                searchAdapter.getFilter().filter(s, new Filter.FilterListener() {
+                    // `Filter.filter()` is asynchronous and has an optional listener;
+                    // run update code using the listener to ensure that the UI updates
+                    // only **after** changes are made, and not **before**
+                    @Override
+                    public void onFilterComplete(int i) {
+                        updateSearchedCheckBoxes(allNodes); // Update after filtering
+                    }
+                });
                 return true;
             }
         });
 
+        /*
+            Disable the all Names view
+         */
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 hideSearchListView();
                 showListView(addAnimalView);
+                // Update the Added Animal Count
+                addedCountView.setText(valueOf(addedAnimalCount()));
                 return false;
             }
         });
@@ -232,13 +238,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // -------- Plan button handler --------
+
     /*
         Jump to the PLAN view when the PLAN button is clicked
-     */
+    */
     public void onPlanBtnClicked(View view) {
         Intent intent = new Intent(this, PlanListActivity.class);
         addedAdapter.notifyDataSetChanged();
         startActivity(intent);
     }
-  
+
 }
