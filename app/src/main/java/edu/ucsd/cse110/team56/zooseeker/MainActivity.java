@@ -243,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
                         noResultDisplay();
                     }
                 });
-
                 if(s.isEmpty()){
                     hideSearchListView();
                 }
