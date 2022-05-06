@@ -6,6 +6,10 @@ import static java.lang.String.valueOf;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     private List<NodeInfo> allNodes;
 
+    private ExecutorService backgroundThreadExecutor = Executors.newSingleThreadExecutor();
+    private Future<Void> future;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
         searchAnimalView = findViewById(R.id.data_list);
         addAnimalView = findViewById(R.id.added_list);
         addedCountView = findViewById(R.id.added_count);
-
-
 
         // Populate All Names List View
         List<String> allNames = ListManager.getNames(allNodes);
