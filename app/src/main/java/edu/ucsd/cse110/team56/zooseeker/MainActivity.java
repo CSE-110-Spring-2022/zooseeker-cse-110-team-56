@@ -77,10 +77,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onItemClick: " + position);
                 // get the name of the animal
                 String selectedItemName = (String) searchAnimalView.getItemAtPosition(position);
-                // set the NodeInfo.added = true
+
+                // add or remove the selected item based on `isChecked()` state
+                NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
                 if (((CheckedTextView) view).isChecked()) {
-                    ListManager.addItem(allNodes.get(allNames.indexOf(selectedItemName)));
+                    ListManager.addItem(selectedItem);
+                } else {
+                    ListManager.removeItem(selectedItem);
                 }
+
+                // update UI
                 updateAddedAdapter();
                 updateSearchedCheckBoxes(allNodes);
             }
