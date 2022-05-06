@@ -18,6 +18,11 @@ public class PlanListActivity extends AppCompatActivity {
 
     }
 
+    public void onDirectionBtnClicked(View view) {
+        Intent intent = new Intent(this, DirectionActivity.class);
+        startActivity(intent);
+    }
+
     public void onBackToMainClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
