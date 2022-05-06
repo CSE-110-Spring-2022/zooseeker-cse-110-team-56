@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView addAnimalView;
     // Added Number TextView
     private TextView addedCountView;
+    private final String added_count_msg = "Added Animals: ";
+    // Error Msg Text Views
+    private TextView noResultView;
 
     private List<NodeInfo> allNodes;
 
@@ -48,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        Intent intent = new Intent(this, DirectionActivity.class);
 //        startActivity(intent);
-
-
 
         setContentView(R.layout.activity_main);
         allNodes = getAllNodes();
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         searchAnimalView = findViewById(R.id.data_list);
         addAnimalView = findViewById(R.id.added_list);
         addedCountView = findViewById(R.id.added_count);
+        noResultView = findViewById(R.id.no_result_view);
+
+        hideTextView(noResultView);
 
         // Populate All Names List View
         List<String> allNames = ListManager.getNames(allNodes);
@@ -132,6 +136,14 @@ public class MainActivity extends AppCompatActivity {
         view.setVisibility(View.VISIBLE);
     }
 
+    public void showTextView (TextView view) {
+        view.setVisibility(View.VISIBLE);
+    }
+
+    public void hideTextView (TextView view) {
+        view.setVisibility(View.INVISIBLE);
+    }
+
     // -------- Update list views --------
 
     /**
@@ -166,6 +178,20 @@ public class MainActivity extends AppCompatActivity {
                     NodeInfo currentItem = nodes.get(currentItemIndex);
 
                     searchAnimalView.setItemChecked(i, currentItem.isAdded());
+
+                }
+            }
+        });
+    }
+
+    private void noResultDisplay() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (searchAnimalView.getCount() == 0){
+                    showTextView(noResultView);
+                } else {
+                    hideTextView(noResultView);
                 }
             }
         });
@@ -203,7 +229,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 hideAddedListView();
+                hideAddedListView();
                 showListView(searchAnimalView);
+                hideTextView(addedCountView);
+
                 searchAdapter.getFilter().filter(s, new Filter.FilterListener() {
                     // `Filter.filter()` is asynchronous and has an optional listener;
                     // run update code using the listener to ensure that the UI updates
@@ -211,8 +240,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFilterComplete(int i) {
                         updateSearchedCheckBoxes(allNodes); // Update after filtering
+                        noResultDisplay();
                     }
                 });
+
                 return true;
             }
         });
@@ -225,8 +256,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onClose() {
                 hideSearchListView();
                 showListView(addAnimalView);
+                showTextView(addedCountView);
+                hideTextView(noResultView);
                 // Update the Added Animal Count
-                addedCountView.setText(valueOf(addedAnimalCount()));
+                String display_count = added_count_msg + addedAnimalCount();
+                addedCountView.setText(display_count);
                 return false;
             }
         });
