@@ -2,8 +2,14 @@ package edu.ucsd.cse110.team56.zooseeker;
 
 import static android.content.ContentValues.TAG;
 
+import static java.lang.String.valueOf;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import android.content.Intent;
@@ -17,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.Filter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +44,13 @@ public class MainActivity extends AppCompatActivity {
     private ListView searchAnimalView;
     // Added ListView
     private ListView addAnimalView;
+    // Added Number TextView
+    private TextView addedCountView;
 
     private List<NodeInfo> allNodes;
+
+    private ExecutorService backgroundThreadExecutor = Executors.newSingleThreadExecutor();
+    private Future<Void> future;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Views
         searchAnimalView = findViewById(R.id.data_list);
         addAnimalView = findViewById(R.id.added_list);
+        addedCountView = findViewById(R.id.added_count);
+
 
         // Populate All Names List View
         List<String> allNames = ListManager.getNames(allNodes);
@@ -91,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                 updateSearchedCheckBoxes(allNodes);
             }
         });
-
     }
 
     public class AdapterHelper {
@@ -169,6 +182,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+        Return the Number of Added Animals
+     */
+    public int addedAnimalCount() {
+        return (int) allNodes.stream()
+                .filter(node -> node.isAdded())
+                .count();
+    }
+
     /// -------- Search handler --------
 
     /*
@@ -206,11 +228,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*
+            Disable the all Names view
+         */
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 hideSearchListView();
                 showListView(addAnimalView);
+                // Update the Added Animal Count
+                addedCountView.setText(valueOf(addedAnimalCount()));
                 return false;
             }
         });
