@@ -4,12 +4,15 @@ import android.content.Context;
 import android.util.Log;
 
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.ucsd.cse110.team56.zooseeker.Utility;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
@@ -50,22 +53,38 @@ public class Graph {
 
     /**
      * Create paths to visit all specified nodes in the graph
+     *
+     * @param context Android Context
+     * @param toVisit exhibits to visit (doesn't include the gate)
+     * @param start the start and the end point, probably the gate
      */
-    public ArrayList<GraphPath<String, GraphEdge>> findPaths(Context context, List<String> toVisit) {
-        ArrayList<String> nodes = new ArrayList<>(toVisit);
-
+    public ArrayList<GraphPath<String, GraphEdge>> findPaths(Context context, List<String> toVisit, String start) {
         org.jgrapht.Graph<String, GraphEdge> graph = this.generateGraph(context);
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
         ArrayList<GraphPath<String, GraphEdge>> paths = new ArrayList<>();
 
-        while(nodes.size() > 1) {
-            GraphPath<String, GraphEdge> results = searcher.getPath(nodes.get(0), nodes.get(1));
-            nodes.remove(0);
-            paths.add(results);
+        Set<String> locSet = new HashSet<>(toVisit);
+
+        String current = start;
+        while(locSet.size() > 0) {
+            ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
+            GraphPath<String, GraphEdge> shortest = results.getPath(locSet.iterator().next());
+            for(String loc: locSet) {
+                GraphPath<String, GraphEdge> path = results.getPath(loc);
+                if (path.getLength() < shortest.getLength()) {
+                    shortest = path;
+                }
+            }
+            paths.add(shortest);
+            locSet.remove(shortest.getEndVertex());
+            current = shortest.getEndVertex();
         }
 
-        Log.d("Paths", paths.toString());
+        ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
+        GraphPath<String, GraphEdge> path = results.getPath(start);
+        paths.add(path);
 
+        Log.d("Paths", paths.toString());
         return paths;
     }
 

@@ -47,8 +47,8 @@ public class DirectionActivity extends AppCompatActivity {
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        List<String> toVisit = Arrays.asList("entrance_exit_gate", "lions", "gators", "entrance_exit_gate");
-        this.directions = Graph.load(this).findPaths(this, toVisit);
+        List<String> toVisit = Arrays.asList("elephant_odyssey", "gators", "lions");
+        this.directions = Graph.load(this).findPaths(this, toVisit, "entrance_exit_gate");
 
         findViewById(R.id.next_btn).setOnClickListener((view -> {
             next();

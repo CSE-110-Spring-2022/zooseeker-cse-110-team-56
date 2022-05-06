@@ -40,14 +40,15 @@ public class GraphTest {
     @Test
     public void testFindPaths() {
         Context context = ApplicationProvider.getApplicationContext();
-        List<String> toVisit = List.of("entrance_exit_gate", "lions", "gators", "entrance_exit_gate");
-        ArrayList<GraphPath<String, GraphEdge>> paths = Graph.load(context).findPaths(context, toVisit);
+        List<String> toVisit = List.of("elephant_odyssey", "gators", "lions");
+        List<String> expectedOrder = List.of("entrance_exit_gate", "gators", "lions", "elephant_odyssey", "entrance_exit_gate");
+        ArrayList<GraphPath<String, GraphEdge>> paths = Graph.load(context).findPaths(context, toVisit, "entrance_exit_gate");
 
-        assertEquals(toVisit.size() - 1, paths.size());
-        for(int i = 0; i < paths.size(); ++i) {
+        assertEquals(expectedOrder.size() - 1, paths.size());
+        for(int i = 0; i < expectedOrder.size() - 1; ++i) {
             GraphPath<String, GraphEdge> path = paths.get(i);
-            assertEquals(toVisit.get(i), path.getStartVertex());
-            assertEquals(toVisit.get(i + 1), path.getEndVertex());
+            assertEquals(expectedOrder.get(i), path.getStartVertex());
+            assertEquals(expectedOrder.get(i + 1), path.getEndVertex());
         }
     }
 }
