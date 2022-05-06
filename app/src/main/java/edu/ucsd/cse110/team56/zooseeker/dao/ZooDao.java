@@ -3,6 +3,7 @@ package edu.ucsd.cse110.team56.zooseeker.dao;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ public interface ZooDao {
 
     @Insert
     void addNodes(List<NodeInfo> nodes);
+
+    @Update
+    void updateNode(NodeInfo nodes);
 
     @Query("SELECT * FROM `EdgeInfo` ORDER BY `id`")
     List<EdgeInfo> getAllEdges();

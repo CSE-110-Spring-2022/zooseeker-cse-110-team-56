@@ -89,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
                 // add or remove the selected item based on `isChecked()` state
                 NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
                 if (((CheckedTextView) view).isChecked()) {
-                    ListManager.addItem(selectedItem);
+                    ListManager.addItem(searchAnimalView.getContext(), selectedItem);
                 } else {
-                    ListManager.removeItem(selectedItem);
+                    ListManager.removeItem(searchAnimalView.getContext(), selectedItem);
                 }
 
                 updateAddedAdapter();
@@ -243,6 +243,10 @@ public class MainActivity extends AppCompatActivity {
                         noResultDisplay();
                     }
                 });
+
+                if(s.isEmpty()){
+                    hideSearchListView();
+                }
 
                 return true;
             }

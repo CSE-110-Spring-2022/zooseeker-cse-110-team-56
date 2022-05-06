@@ -4,11 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-<<<<<<< HEAD
     android:background="#81ECD8EF"
-=======
-    android:background="#66F8C6FD"
->>>>>>> 1d59be8 (Changed background color)
     android:foregroundTint="#F6F1F1"
     android:gravity="center|center_vertical"
     tools:context=".MainActivity">
@@ -73,9 +69,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="596dp"
         android:text="@string/added_count_msg"
+        android:textAlignment="center"
         android:textColor="#9C6EDD"
         android:textSize="20sp"
-        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.391"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -37,6 +37,8 @@ public class NodeInfo {
 
     }
 
+    public String getId(){ return id;}
+
     public String getName() {
         return name;
     }

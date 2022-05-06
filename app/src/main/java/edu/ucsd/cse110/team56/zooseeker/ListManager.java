@@ -19,15 +19,17 @@ public class ListManager {
     /**
      * sets `isAdded` to true
      */
-    public static void addItem(NodeInfo item) {
+    public static void addItem(Context context, NodeInfo item) {
         item.setAdded(true);
+        ZooDatabase.getSingleton(context).zooDao().updateNode(item);
     }
 
     /**
      * sets `isAdded` to false
      */
-    public static void removeItem(NodeInfo item) {
+    public static void removeItem(Context context, NodeInfo item) {
         item.setAdded(false);
+        ZooDatabase.getSingleton(context).zooDao().updateNode(item);
     }
 
     /**
@@ -46,6 +48,12 @@ public class ListManager {
      */
     public static List<String> getAddedListNames(List<NodeInfo> allList) {
         return getNames(getAddedList(allList));
+    }
+
+    public static List<String> getListId(List<NodeInfo> list){
+        return list.stream()
+                .map(NodeInfo::getId)
+                .collect(Collectors.toList());
     }
 
     /**
