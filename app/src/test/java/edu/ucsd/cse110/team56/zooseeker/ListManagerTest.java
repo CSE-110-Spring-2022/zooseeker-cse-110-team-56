@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.team56.zooseeker;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -11,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 
@@ -21,6 +24,11 @@ import edu.ucsd.cse110.team56.zooseeker.path.Graph;
  */
 @RunWith(AndroidJUnit4.class)
 public class ListManagerTest {
+    @Before
+    public void refreshDb() {
+        ZooDatabase.refreshDb(ApplicationProvider.getApplicationContext());
+    }
+
     @Test
     public void addItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", "kind", new ArrayList<>());
