@@ -33,7 +33,7 @@ public class GraphTest {
         Context context = ApplicationProvider.getApplicationContext();
         org.jgrapht.Graph<String, GraphEdge> graph = Graph.load(context).toJGraph();
 
-        assertEquals(7, graph.edgeSet().size());
+        assertEquals(7 * 2, graph.edgeSet().size());
         assertEquals(7, graph.vertexSet().size());
     }
 
