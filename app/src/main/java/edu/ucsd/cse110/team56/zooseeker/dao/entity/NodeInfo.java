@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class NodeInfo {
@@ -55,5 +56,10 @@ public class NodeInfo {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, kind, tags);
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + tags.stream().collect(Collectors.joining(" "));
     }
 }

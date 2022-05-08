@@ -21,8 +21,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -32,7 +34,7 @@ import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 public class MainActivity extends AppCompatActivity {
 
     // Search Bar Adaptor
-    private ArrayAdapter<String> searchAdapter;
+    private ArrayAdapter<NodeInfo> searchAdapter;
     // AddedList Adaptor
     private ArrayAdapter<String> addedAdapter;
 
@@ -66,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
         noResultView = findViewById(R.id.no_result_view);
 
         hideTextView(noResultView);
+        List<String> allNames = ListManager.getNames(allNodes);
 
         // Populate All Names List View
-        List<String> allNames = ListManager.getNames(allNodes);
-        searchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, allNames);
+        searchAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
         searchAnimalView.setAdapter(searchAdapter);
 
         // Populate Added Names List View
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG, "onItemClick: " + position);
                 // get the name of the animal
-                String selectedItemName = (String) searchAnimalView.getItemAtPosition(position);
+                String selectedItemName = ((NodeInfo) searchAnimalView.getItemAtPosition(position)).name;
 
                 // add or remove the selected item based on `isChecked()` state
                 NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // loops through the current list of search suggestions
                 for (int i = 0; i < searchAnimalView.getCount(); i++) {
-                    String currentItemName = (String) searchAnimalView.getItemAtPosition(i);
+                    String currentItemName = ((NodeInfo) searchAnimalView.getItemAtPosition(i)).name;
 
                     // the index of the current item within the `allNodes` list
                     int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
@@ -179,8 +181,10 @@ public class MainActivity extends AppCompatActivity {
                     // retrieve the node
                     NodeInfo currentItem = nodes.get(currentItemIndex);
 
-                    searchAnimalView.setItemChecked(i, currentItem.isAdded());
-
+                    if (searchAnimalView.isItemChecked(i) != currentItem.isAdded()) {
+                        searchAnimalView.setItemChecked(i, currentItem.isAdded());
+                        searchAnimalView.jumpDrawablesToCurrentState();
+                    }
                 }
             }
         });
