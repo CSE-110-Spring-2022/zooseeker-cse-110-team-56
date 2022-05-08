@@ -220,6 +220,17 @@ public class MainActivity extends AppCompatActivity {
         addedCountView.setText(display_count);
     }
 
+    @Override
+    public void onBackPressed() {
+        SearchView searchView = findViewById(R.id.search_btn);
+        if (!searchView.isIconified()) {
+            searchView.onActionViewCollapsed();
+            searchView.setIconified(true);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /*
         Search Bar dropdown Search Function
      */
