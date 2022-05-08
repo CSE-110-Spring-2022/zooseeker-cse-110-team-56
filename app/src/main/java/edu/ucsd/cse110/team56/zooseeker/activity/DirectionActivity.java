@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,7 +57,8 @@ public class DirectionActivity extends AppCompatActivity {
         next();
     }
 
-    private void next() {
+    @VisibleForTesting
+    public void next() {
         current++;
         adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());

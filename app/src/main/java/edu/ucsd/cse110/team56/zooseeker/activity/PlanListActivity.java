@@ -27,13 +27,9 @@ import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 
 public class PlanListActivity extends AppCompatActivity {
     private ArrayAdapter<String> addedAdapter;
-    public DirectionListAdapter adapter = new DirectionListAdapter();
     private ArrayList<GraphPath<String, GraphEdge>> directions;
-    private int current = -1;
-    private TextView destination;
     private ListView des = null;
     private List<NodeInfo> addedNode;
-    private RecyclerView recyclerView;
     public List<String> desl = new ArrayList<>();
     public List<String> addedId;
 

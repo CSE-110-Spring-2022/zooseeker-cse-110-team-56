@@ -273,9 +273,9 @@ public class MainActivity extends AppCompatActivity {
                     // only **after** changes are made, and not **before**
                     @Override
                     public void onFilterComplete(int i) {
-                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+//                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_NONE);
                         updateSearchedCheckBoxes(allNodes); // Update after filtering
-                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
+//                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
                         if(!s.isEmpty()){
                             showListView(searchAnimalView);
                         }
