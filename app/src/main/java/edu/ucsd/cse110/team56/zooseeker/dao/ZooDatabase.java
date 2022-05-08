@@ -10,7 +10,7 @@ import androidx.room.TypeConverters;
 
 import java.util.List;
 
-import edu.ucsd.cse110.team56.zooseeker.misc.Utility;
+import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
@@ -47,9 +47,9 @@ public abstract class ZooDatabase extends RoomDatabase {
                 .allowMainThreadQueries()
                 .build();
 
-        List<NodeInfo> nodes = Utility.parseJson(context, "map/assets/sample_node_info.json", NodeInfo.class);
+        List<NodeInfo> nodes = JsonReader.parseJsonList(context, "map/assets/sample_node_info.json", NodeInfo.class);
         db.zooDao().addNodes(nodes);
-        List<EdgeInfo> edges = Utility.parseJson(context, "map/assets/sample_edge_info.json", EdgeInfo.class);
+        List<EdgeInfo> edges = JsonReader.parseJsonList(context, "map/assets/sample_edge_info.json", EdgeInfo.class);
         db.zooDao().addEdges(edges);
 
         return db;

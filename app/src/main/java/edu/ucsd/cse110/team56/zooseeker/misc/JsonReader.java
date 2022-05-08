@@ -15,8 +15,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class Utility {
-    public static <T> List<T> parseJson(Context context, String file, Class<T> clazz) {
+public class JsonReader {
+    /**
+     * Parse JSON *LIST* from a file
+     * @param context Application context
+     * @param file path to the file
+     * @param clazz destination type
+     * @param <T> type
+     * @return a list of objects T
+     */
+    public static <T> List<T> parseJsonList(Context context, String file, Class<T> clazz) {
         try {
             InputStream input = context.getAssets().open(file);
             Reader reader = new InputStreamReader(input);
@@ -33,7 +41,15 @@ public class Utility {
         }
     }
 
-    public static <T> Optional<T> parseSingleJson(Context context, String file, Class<T> clazz) {
+    /**
+     * Parse JSON *OBJECT* from a file
+     * @param context Application context
+     * @param file path to the file
+     * @param clazz destination type
+     * @param <T> type
+     * @return object T
+     */
+    public static <T> Optional<T> parseJson(Context context, String file, Class<T> clazz) {
         try {
             InputStream input = context.getAssets().open(file);
             Reader reader = new InputStreamReader(input);

@@ -29,7 +29,7 @@ public class GraphTest {
     }
 
     @Test
-    public void testGenerateGraph() {
+    public void testToJGraph() {
         Context context = ApplicationProvider.getApplicationContext();
         org.jgrapht.Graph<String, GraphEdge> graph = Graph.load(context).toJGraph();
 
@@ -38,7 +38,7 @@ public class GraphTest {
     }
 
     @Test
-    public void testFindPaths() {
+    public void testGeneratePaths() {
         Context context = ApplicationProvider.getApplicationContext();
         List<String> toVisit = List.of("elephant_odyssey", "gators", "lions");
         List<String> expectedOrder = List.of("entrance_exit_gate", "gators", "lions", "elephant_odyssey", "entrance_exit_gate");

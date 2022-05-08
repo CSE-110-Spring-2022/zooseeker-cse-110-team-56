@@ -3,8 +3,6 @@ package edu.ucsd.cse110.team56.zooseeker.path;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -15,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.ucsd.cse110.team56.zooseeker.misc.Utility;
+import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 
 public class Graph {
     public class Node {
@@ -90,11 +88,11 @@ public class Graph {
 
     /**
      * Load the graph into memory
-     * @param context
-     * @return
+     * @param context application context
+     * @return Graph instance
      */
     public static Graph load(Context context) {
-        Graph rawGraph = Utility.parseSingleJson(context, "map/assets/sample_zoo_graph.json", Graph.class).get();
+        Graph rawGraph = JsonReader.parseJson(context, "map/assets/sample_zoo_graph.json", Graph.class).get();
         return rawGraph;
     }
 }
