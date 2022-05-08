@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#32F8C6FD"
-    tools:context=".DirectionActivity">
+    tools:context=".activity.DirectionActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/next_btn"

@@ -7,8 +7,8 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 @Dao
 public interface ZooDao {

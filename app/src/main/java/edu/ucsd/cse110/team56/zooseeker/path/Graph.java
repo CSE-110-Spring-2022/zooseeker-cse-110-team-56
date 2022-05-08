@@ -6,7 +6,6 @@ import android.util.Log;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
@@ -14,11 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.ucsd.cse110.team56.zooseeker.Utility;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.misc.Utility;
 
 public class Graph {
     public class Node {

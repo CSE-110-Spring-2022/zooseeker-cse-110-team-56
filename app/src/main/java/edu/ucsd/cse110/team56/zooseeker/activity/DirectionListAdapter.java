@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,14 +8,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.jgrapht.GraphPath;
-
 import java.util.Collections;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 
 public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {

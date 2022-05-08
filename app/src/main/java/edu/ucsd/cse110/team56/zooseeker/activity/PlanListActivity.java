@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static java.lang.String.valueOf;
 
@@ -17,8 +17,10 @@ import org.jgrapht.GraphPath;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
+import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 

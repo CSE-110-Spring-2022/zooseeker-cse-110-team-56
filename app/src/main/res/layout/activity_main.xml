@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#81ECD8EF"
     android:foregroundTint="#F6F1F1"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <ListView
         android:id="@+id/data_list"

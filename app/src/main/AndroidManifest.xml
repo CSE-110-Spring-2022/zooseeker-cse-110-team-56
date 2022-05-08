@@ -10,13 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZooSeeker">
         <activity
-            android:name=".DirectionActivity"
+            android:name=".activity.DirectionActivity"
             android:exported="false" />
         <activity
-            android:name=".PlanListActivity"
+            android:name=".activity.PlanListActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

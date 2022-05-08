@@ -1,17 +1,9 @@
-package edu.ucsd.cse110.team56.zooseeker.entity;
-
-import android.util.Log;
+package edu.ucsd.cse110.team56.zooseeker.dao.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.List;
 import java.util.Objects;
 

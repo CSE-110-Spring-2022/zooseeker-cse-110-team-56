@@ -1,16 +1,12 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.activity.manager;
 
 import android.content.Context;
-import android.widget.CheckedTextView;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 /**
  * A container of static methods for managing the state of `NodeInfo` lists
