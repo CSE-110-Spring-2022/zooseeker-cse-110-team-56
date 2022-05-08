@@ -4,8 +4,11 @@ import static android.content.ContentValues.TAG;
 
 import static java.lang.String.valueOf;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -308,9 +311,21 @@ public class MainActivity extends AppCompatActivity {
         Jump to the PLAN view when the PLAN button is clicked
     */
     public void onPlanBtnClicked(View view) {
-        Intent intent = new Intent(this, PlanListActivity.class);
-        addedAdapter.notifyDataSetChanged();
-        startActivity(intent);
+        if (ListManager.getAddedListNames(allNodes).size() == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("No exhibits selected. Please select at least one.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            Intent intent = new Intent(this, PlanListActivity.class);
+            addedAdapter.notifyDataSetChanged();
+            startActivity(intent);
+        }
     }
 
 }
