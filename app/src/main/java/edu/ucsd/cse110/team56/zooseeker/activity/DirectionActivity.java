@@ -56,14 +56,14 @@ public class DirectionActivity extends AppCompatActivity {
 
         next();
     }
-
+    //next button for direction
     @VisibleForTesting
     public void next() {
         current++;
         adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
         this.destination.setText("Next: " + info.name);
-
+        //hide last button for the last one
         if (current == this.directions.size() - 1) {
             FloatingActionButton button = findViewById(R.id.next_btn);
             button.setVisibility(View.GONE);
