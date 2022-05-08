@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Retrieve data from database --------
 
     private List<NodeInfo> getAllNodes() {
-        return ZooDatabase.getSingleton(this).zooDao().getAllNodes().stream().filter(n -> !n.id.equals("entrance_exit_gate")).collect(Collectors.toList());
+        return ZooDatabase.getSingleton(this).zooDao().getAllNodes().stream().filter(n -> n.kind.equals("exhibit")).collect(Collectors.toList());
     }
 
     private List<EdgeInfo> getAllEdges() {
