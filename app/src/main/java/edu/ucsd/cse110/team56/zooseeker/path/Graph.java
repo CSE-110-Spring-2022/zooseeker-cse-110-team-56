@@ -6,6 +6,7 @@ import android.util.Log;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
@@ -35,15 +36,19 @@ public class Graph {
      * @return a jgrapht.Graph instance of the same graph
      */
     public org.jgrapht.Graph<String, GraphEdge> toJGraph() {
-        SimpleWeightedGraph<String, GraphEdge> graph = new SimpleWeightedGraph<String, GraphEdge>(GraphEdge.class);
+        SimpleDirectedWeightedGraph<String, GraphEdge> graph = new SimpleDirectedWeightedGraph<String, GraphEdge>(GraphEdge.class);
         for(Graph.Node node: nodes){
             graph.addVertex(node.id);
         }
 
         for(Graph.Edge edge: edges){
-            GraphEdge e = graph.addEdge(edge.source, edge.target);
-            e.setId(edge.id);
-            graph.setEdgeWeight(e, edge.weight);
+            GraphEdge eForward = graph.addEdge(edge.source, edge.target);
+            eForward.setId(edge.id);
+            graph.setEdgeWeight(eForward, edge.weight);
+
+            GraphEdge eBackward = graph.addEdge(edge.target, edge.source);
+            eBackward.setId(edge.id);
+            graph.setEdgeWeight(eBackward, edge.weight);
         }
 
         return graph;
@@ -63,7 +68,7 @@ public class Graph {
 
         Set<String> locSet = new HashSet<>(toVisit);
 
-        String current = start;
+        String current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
         while(locSet.size() > 0) {
             ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
             GraphPath<String, GraphEdge> shortest = results.getPath(locSet.iterator().next());

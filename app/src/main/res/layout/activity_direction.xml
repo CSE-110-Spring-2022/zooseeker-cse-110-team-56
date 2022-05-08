@@ -29,7 +29,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
             android:textColor="#FFBB86FC"
-            android:textSize="30sp"
+            android:textSize="20sp"
         />
 
         <androidx.recyclerview.widget.RecyclerView

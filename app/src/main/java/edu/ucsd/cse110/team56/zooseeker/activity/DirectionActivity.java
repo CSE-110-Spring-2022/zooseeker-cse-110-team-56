@@ -16,6 +16,7 @@ import org.jgrapht.GraphPath;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -57,9 +58,9 @@ public class DirectionActivity extends AppCompatActivity {
 
     private void next() {
         current++;
-        adapter.setPaths(this.directions.get(current).getEdgeList());
+        adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
-        this.destination.setText(info.name);
+        this.destination.setText("Next: " + info.name);
 
         if (current == this.directions.size() - 1) {
             FloatingActionButton button = findViewById(R.id.next_btn);
