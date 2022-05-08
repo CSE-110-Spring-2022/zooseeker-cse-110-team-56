@@ -21,6 +21,11 @@ public abstract class ZooDatabase extends RoomDatabase {
 
     public abstract ZooDao zooDao();
 
+    /**
+     * Get an instance of the database
+     * @param context application context
+     * @return database instance
+     */
     public synchronized static ZooDatabase getSingleton(Context context) {
         if (singleton == null) {
             singleton = ZooDatabase.makeDatabase(context);

@@ -43,7 +43,7 @@ public class PlanListActivity extends AppCompatActivity {
         addedNode = ListManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         addedId = ListManager.getListId(addedNode);
         //List<String> toVisit = Arrays.asList("entrance_exit_gate", "lions", "gators", "entrance_exit_gate");
-        this.directions = Graph.load(this).findPaths(this, addedId, "entrance_exit_gate");
+        this.directions = Graph.load(this).generatePaths(addedId, "entrance_exit_gate");
         for (GraphPath<String, GraphEdge> path : this.directions) {
             desl.add(ZooDatabase.getSingleton(this).zooDao().getNode(path.getEndVertex()).getName());
         }

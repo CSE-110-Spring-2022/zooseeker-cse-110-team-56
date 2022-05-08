@@ -25,9 +25,7 @@ public class NodeInfo {
 
     public List<String> tags;
 
-    public NodeInfo() {
-
-    }
+    public NodeInfo() { }
 
     public String getId(){ return id;}
 

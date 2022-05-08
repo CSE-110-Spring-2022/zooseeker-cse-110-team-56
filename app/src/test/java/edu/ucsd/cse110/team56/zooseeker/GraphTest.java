@@ -31,7 +31,7 @@ public class GraphTest {
     @Test
     public void testGenerateGraph() {
         Context context = ApplicationProvider.getApplicationContext();
-        org.jgrapht.Graph<String, GraphEdge> graph = Graph.load(context).generateGraph(context);
+        org.jgrapht.Graph<String, GraphEdge> graph = Graph.load(context).toJGraph();
 
         assertEquals(7, graph.edgeSet().size());
         assertEquals(7, graph.vertexSet().size());
@@ -42,7 +42,7 @@ public class GraphTest {
         Context context = ApplicationProvider.getApplicationContext();
         List<String> toVisit = List.of("elephant_odyssey", "gators", "lions");
         List<String> expectedOrder = List.of("entrance_exit_gate", "gators", "lions", "elephant_odyssey", "entrance_exit_gate");
-        ArrayList<GraphPath<String, GraphEdge>> paths = Graph.load(context).findPaths(context, toVisit, "entrance_exit_gate");
+        ArrayList<GraphPath<String, GraphEdge>> paths = Graph.load(context).generatePaths(toVisit, "entrance_exit_gate");
 
         assertEquals(expectedOrder.size() - 1, paths.size());
         for(int i = 0; i < expectedOrder.size() - 1; ++i) {

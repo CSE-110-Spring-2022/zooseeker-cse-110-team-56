@@ -46,7 +46,7 @@ public class DirectionActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         List<NodeInfo> addedNode = ListManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).findPaths(this, ListManager.getListId(addedNode), "entrance_exit_gate");
+        this.directions = Graph.load(this).generatePaths(ListManager.getListId(addedNode), "entrance_exit_gate");
 
         findViewById(R.id.next_btn).setOnClickListener((view -> {
             next();

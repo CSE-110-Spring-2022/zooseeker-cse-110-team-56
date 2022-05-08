@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // adapted from: https://stackoverflow.com/questions/44986626/android-room-database-how-to-handle-arraylist-in-an-entity
+// convert list into a json array
 public class Converters {
     @TypeConverter
     public static List<String> fromString(String value) {

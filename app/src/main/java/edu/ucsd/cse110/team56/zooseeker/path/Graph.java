@@ -3,6 +3,8 @@ package edu.ucsd.cse110.team56.zooseeker.path;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -30,7 +32,11 @@ public class Graph {
     public List<Node> nodes;
     public List<Edge> edges;
 
-    public org.jgrapht.Graph<String, GraphEdge> generateGraph(Context context) {
+    /**
+     * Convert the graph into a JGraph.
+     * @return a jgrapht.Graph instance of the same graph
+     */
+    public org.jgrapht.Graph<String, GraphEdge> toJGraph() {
         SimpleWeightedGraph<String, GraphEdge> graph = new SimpleWeightedGraph<String, GraphEdge>(GraphEdge.class);
         for(Graph.Node node: nodes){
             graph.addVertex(node.id);
@@ -49,12 +55,11 @@ public class Graph {
     /**
      * Create paths to visit all specified nodes in the graph
      *
-     * @param context Android Context
      * @param toVisit exhibits to visit (doesn't include the gate)
      * @param start the start and the end point, probably the gate
      */
-    public ArrayList<GraphPath<String, GraphEdge>> findPaths(Context context, List<String> toVisit, String start) {
-        org.jgrapht.Graph<String, GraphEdge> graph = this.generateGraph(context);
+    public ArrayList<GraphPath<String, GraphEdge>> generatePaths(List<String> toVisit, String start) {
+        org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
         ArrayList<GraphPath<String, GraphEdge>> paths = new ArrayList<>();
 
@@ -83,6 +88,11 @@ public class Graph {
         return paths;
     }
 
+    /**
+     * Load the graph into memory
+     * @param context
+     * @return
+     */
     public static Graph load(Context context) {
         Graph rawGraph = Utility.parseSingleJson(context, "map/assets/sample_zoo_graph.json", Graph.class).get();
         return rawGraph;
