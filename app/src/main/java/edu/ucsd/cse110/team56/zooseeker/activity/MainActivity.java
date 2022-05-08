@@ -210,6 +210,16 @@ public class MainActivity extends AppCompatActivity {
 
     /// -------- Search handler --------
 
+    public void closeSearch() {
+        hideSearchListView();
+        showListView(addAnimalView);
+        showTextView(addedCountView);
+        hideTextView(noResultView);
+        // Update the Added Animal Count
+        String display_count = added_count_msg + addedAnimalCount();
+        addedCountView.setText(display_count);
+    }
+
     /*
         Search Bar dropdown Search Function
      */
@@ -231,8 +241,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 hideAddedListView();
-                hideAddedListView();
-                showListView(searchAnimalView);
+                hideSearchListView();
+//                hideAddedListView();
+//                showListView(searchAnimalView);
                 hideTextView(addedCountView);
 
                 searchAdapter.getFilter().filter(s, new Filter.FilterListener() {
@@ -242,12 +253,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFilterComplete(int i) {
                         updateSearchedCheckBoxes(allNodes); // Update after filtering
+                        if(!s.isEmpty()){
+                            showListView(searchAnimalView);
+                        }
                         noResultDisplay();
                     }
                 });
-                if(s.isEmpty()){
-                    hideSearchListView();
-                }
+
 
                 return true;
             }
@@ -259,13 +271,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                hideSearchListView();
-                showListView(addAnimalView);
-                showTextView(addedCountView);
-                hideTextView(noResultView);
-                // Update the Added Animal Count
-                String display_count = added_count_msg + addedAnimalCount();
-                addedCountView.setText(display_count);
+                closeSearch();
                 return false;
             }
         });
