@@ -9,12 +9,11 @@
 
     <ListView
         android:id="@+id/destination"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Destination"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:textColor="#FFBB86FC"
         android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,10 +24,10 @@
         android:layout_height="118dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
-        android:layout_marginBottom="4dp"
         android:backgroundTint="#9C6EDD"
-        android:contentDescription="PLAN"
         android:onClick="onDirectionBtnClicked"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
         android:text="@string/direction"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -36,40 +35,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/direction"
-        android:layout_width="414dp"
-        android:layout_height="517dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/destination"
-        app:layout_constraintVertical_bias="0.048" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/planBtn"
-        android:layout_width="118dp"
-        android:layout_height="118dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="#9C6EDD"
-        android:contentDescription="PLAN"
-        android:onClick="onDirectionBtnClicked"
-        android:text="@string/direction"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

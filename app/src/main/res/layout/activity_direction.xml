@@ -16,29 +16,30 @@
         android:src="@android:drawable/ic_media_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/destination_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Destination"
-        android:textColor="#FFBB86FC"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/destination_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="#FFBB86FC"
+            android:textSize="30sp"
+        />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/directions"
-        android:layout_width="409dp"
-        android:layout_height="665dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/destination_text"
-        app:layout_constraintVertical_bias="0.0">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/directions"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="fill_parent">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
