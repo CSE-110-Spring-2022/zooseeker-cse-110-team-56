@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.team56.zooseeker;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,9 +12,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
-import edu.ucsd.cse110.team56.zooseeker.path.Graph;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

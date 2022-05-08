@@ -13,14 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 @RunWith(AndroidJUnit4.class)
 public class ZooDatabaseTest {
@@ -49,6 +48,12 @@ public class ZooDatabaseTest {
         assertEquals(2, list.size());
         assertEquals(info1, list.get(0));
         assertEquals(info2, list.get(1));
+
+        assertEquals(info2, dao.getNode("zoo-id-2"));
+
+        info1.name = "new name";
+        dao.updateNode(info1);
+        assertEquals(info1, dao.getNode("zoo-id-1"));
     }
 
     @Test
@@ -63,5 +68,6 @@ public class ZooDatabaseTest {
         assertEquals(info1, list.get(0));
         assertEquals(info2, list.get(1));
 
+        assertEquals(info2, dao.getEdge("id-2"));
     }
 }

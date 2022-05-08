@@ -1,5 +1,6 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.activity;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -15,13 +15,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.jgrapht.GraphPath;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
+import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 
@@ -48,7 +48,7 @@ public class DirectionActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         List<NodeInfo> addedNode = ListManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).findPaths(this, ListManager.getListId(addedNode), "entrance_exit_gate");
+        this.directions = Graph.load(this).generatePaths(ListManager.getListId(addedNode), "entrance_exit_gate");
 
         findViewById(R.id.next_btn).setOnClickListener((view -> {
             next();
@@ -56,13 +56,14 @@ public class DirectionActivity extends AppCompatActivity {
 
         next();
     }
-
-    private void next() {
+    //next button for direction
+    @VisibleForTesting
+    public void next() {
         current++;
-        adapter.setPaths(this.directions.get(current).getEdgeList());
+        adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
-        this.destination.setText(info.name);
-
+        this.destination.setText("Next: " + info.name);
+        //hide last button for the last one
         if (current == this.directions.size() - 1) {
             FloatingActionButton button = findViewById(R.id.next_btn);
             button.setVisibility(View.GONE);

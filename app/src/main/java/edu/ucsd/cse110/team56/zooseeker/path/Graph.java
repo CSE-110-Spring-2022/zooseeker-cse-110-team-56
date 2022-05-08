@@ -6,7 +6,7 @@ import android.util.Log;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
@@ -14,11 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.ucsd.cse110.team56.zooseeker.Utility;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.entity.EdgeInfo;
-import edu.ucsd.cse110.team56.zooseeker.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 
 public class Graph {
     public class Node {
@@ -35,16 +31,24 @@ public class Graph {
     public List<Node> nodes;
     public List<Edge> edges;
 
-    public org.jgrapht.Graph<String, GraphEdge> generateGraph(Context context) {
-        SimpleWeightedGraph<String, GraphEdge> graph = new SimpleWeightedGraph<String, GraphEdge>(GraphEdge.class);
+    /**
+     * Convert the graph into a JGraph.
+     * @return a jgrapht.Graph instance of the same graph
+     */
+    public org.jgrapht.Graph<String, GraphEdge> toJGraph() {
+        SimpleDirectedWeightedGraph<String, GraphEdge> graph = new SimpleDirectedWeightedGraph<String, GraphEdge>(GraphEdge.class);
         for(Graph.Node node: nodes){
             graph.addVertex(node.id);
         }
 
         for(Graph.Edge edge: edges){
-            GraphEdge e = graph.addEdge(edge.source, edge.target);
-            e.setId(edge.id);
-            graph.setEdgeWeight(e, edge.weight);
+            GraphEdge eForward = graph.addEdge(edge.source, edge.target);
+            eForward.setId(edge.id);
+            graph.setEdgeWeight(eForward, edge.weight);
+
+            GraphEdge eBackward = graph.addEdge(edge.target, edge.source);
+            eBackward.setId(edge.id);
+            graph.setEdgeWeight(eBackward, edge.weight);
         }
 
         return graph;
@@ -54,18 +58,17 @@ public class Graph {
     /**
      * Create paths to visit all specified nodes in the graph
      *
-     * @param context Android Context
      * @param toVisit exhibits to visit (doesn't include the gate)
      * @param start the start and the end point, probably the gate
      */
-    public ArrayList<GraphPath<String, GraphEdge>> findPaths(Context context, List<String> toVisit, String start) {
-        org.jgrapht.Graph<String, GraphEdge> graph = this.generateGraph(context);
+    public ArrayList<GraphPath<String, GraphEdge>> generatePaths(List<String> toVisit, String start) {
+        org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
         ArrayList<GraphPath<String, GraphEdge>> paths = new ArrayList<>();
 
         Set<String> locSet = new HashSet<>(toVisit);
 
-        String current = start;
+        String current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
         while(locSet.size() > 0) {
             ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
             GraphPath<String, GraphEdge> shortest = results.getPath(locSet.iterator().next());
@@ -88,8 +91,13 @@ public class Graph {
         return paths;
     }
 
+    /**
+     * Load the graph into memory
+     * @param context application context
+     * @return Graph instance
+     */
     public static Graph load(Context context) {
-        Graph rawGraph = Utility.parseSingleJson(context, "map/assets/sample_zoo_graph.json", Graph.class).get();
+        Graph rawGraph = JsonReader.parseJson(context, "map/assets/sample_zoo_graph.json", Graph.class).get();
         return rawGraph;
     }
 }

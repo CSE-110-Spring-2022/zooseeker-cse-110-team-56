@@ -1,19 +1,12 @@
-package edu.ucsd.cse110.team56.zooseeker.entity;
-
-import android.util.Log;
+package edu.ucsd.cse110.team56.zooseeker.dao.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class NodeInfo {
@@ -33,9 +26,7 @@ public class NodeInfo {
 
     public List<String> tags;
 
-    public NodeInfo() {
-
-    }
+    public NodeInfo() { }
 
     public String getId(){ return id;}
 
@@ -65,5 +56,10 @@ public class NodeInfo {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, kind, tags);
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + tags.stream().collect(Collectors.joining(" "));
     }
 }
