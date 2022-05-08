@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
      *              you want to mark checkboxes as "checked"
      */
     private void updateSearchedCheckBoxes(List<NodeInfo> nodes) {
+        Semaphore mutex = new Semaphore(0);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -183,11 +184,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (searchAnimalView.isItemChecked(i) != currentItem.isAdded()) {
                         searchAnimalView.setItemChecked(i, currentItem.isAdded());
-                        searchAnimalView.jumpDrawablesToCurrentState();
                     }
                 }
+                mutex.release();
             }
         });
+        try {
+            mutex.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void noResultDisplay() {
@@ -267,7 +273,9 @@ public class MainActivity extends AppCompatActivity {
                     // only **after** changes are made, and not **before**
                     @Override
                     public void onFilterComplete(int i) {
+                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_NONE);
                         updateSearchedCheckBoxes(allNodes); // Update after filtering
+                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
                         if(!s.isEmpty()){
                             showListView(searchAnimalView);
                         }
