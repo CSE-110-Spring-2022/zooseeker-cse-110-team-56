@@ -26,8 +26,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.DatabaseGetterManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
-import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> addedAdapter;
 
     // Search ListView
-    private ListView searchAnimalView;
+    private ListView searchListView;
     // Added ListView
-    private ListView addAnimalView;
+    private ListView addedAnimalsListView;
     // Added Number TextView
     private TextView addedCountView;
     private final String added_count_msg = "Added Animals: ";
@@ -56,67 +55,45 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         allNodes = DatabaseGetterManager.getAllNodes(this);
 
-        hideSearchListView();
-
         // Initialize Views
-        searchAnimalView = findViewById(R.id.data_list);
-        addAnimalView = findViewById(R.id.added_list);
+        searchListView = findViewById(R.id.data_list);
+        addedAnimalsListView = findViewById(R.id.added_list);
         addedCountView = findViewById(R.id.added_count);
         noResultView = findViewById(R.id.no_result_view);
 
-        hideView(noResultView);
+        UIOperations.hideViews(List.of(searchListView, noResultView));
         List<String> allNames = ListManager.getNames(allNodes);
 
         // Populate All Names List View
         searchAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
-        searchAnimalView.setAdapter(searchAdapter);
+        searchListView.setAdapter(searchAdapter);
 
         // Populate Added Names List View
         List<String> addedNames = ListManager.getAddedListNames(allNodes);
         addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
-        addAnimalView.setAdapter(addedAdapter);
+        addedAnimalsListView.setAdapter(addedAdapter);
 
         // Enable CheckMark
-        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         updateSearchedCheckBoxes(allNodes);
 
-        searchAnimalView.setOnItemClickListener((parent, view, position, id) -> {
+        searchListView.setOnItemClickListener((parent, view, position, id) -> {
             Log.i(TAG, "onItemClick: " + position);
             // get the name of the animal
-            String selectedItemName = ((NodeInfo) searchAnimalView.getItemAtPosition(position)).name;
+            String selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
             // add or remove the selected item based on `isChecked()` state
             NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
             if (((CheckedTextView) view).isChecked()) {
-                ListManager.addItem(searchAnimalView.getContext(), selectedItem);
+                ListManager.addItem(searchListView.getContext(), selectedItem);
             } else {
-                ListManager.removeItem(searchAnimalView.getContext(), selectedItem);
+                ListManager.removeItem(searchListView.getContext(), selectedItem);
             }
 
             // update UI elements
             ArrayAdapterHelper.updateAdapter(addedAdapter, ListManager.getAddedListNames(allNodes));
             updateSearchedCheckBoxes(allNodes);
         });
-    }
-
-    // -------- Show & hide list views --------
-
-    // remove?
-    public void hideSearchListView (){
-        searchAnimalView = findViewById(R.id.data_list);
-        hideView(searchAnimalView);
-    }
-
-    // remove?
-    public void hideAddedListView (){
-        addAnimalView = findViewById(R.id.added_list);
-        hideView(addAnimalView);
-    }
-
-    public void hideView(View view) { view.setVisibility(View.INVISIBLE); }
-
-    public void showView(View view){
-        view.setVisibility(View.VISIBLE);
     }
 
     // -------- Update list views --------
@@ -131,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
         Semaphore mutex = new Semaphore(0);
         runOnUiThread(() -> {
             // loops through the current list of search suggestions
-            for (int i = 0; i < searchAnimalView.getCount(); i++) {
-                String currentItemName = ((NodeInfo) searchAnimalView.getItemAtPosition(i)).name;
+            for (int i = 0; i < searchListView.getCount(); i++) {
+                String currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
 
                 // the index of the current item within the `allNodes` list
                 int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
@@ -140,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 // retrieve the node
                 NodeInfo currentItem = nodes.get(currentItemIndex);
 
-                if (searchAnimalView.isItemChecked(i) != currentItem.isAdded()) {
-                    searchAnimalView.setItemChecked(i, currentItem.isAdded());
+                if (searchListView.isItemChecked(i) != currentItem.isAdded()) {
+                    searchListView.setItemChecked(i, currentItem.isAdded());
                 }
             }
             mutex.release();
@@ -155,10 +132,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void noResultDisplay() {
         runOnUiThread(() -> {
-            if (searchAnimalView.getCount() == 0){
-                showView(noResultView);
+            if (searchListView.getCount() == 0){
+                UIOperations.showView(noResultView);
             } else {
-                hideView(noResultView);
+                UIOperations.hideView(noResultView);
             }
         });
     }
@@ -175,10 +152,8 @@ public class MainActivity extends AppCompatActivity {
     /// -------- Search handler --------
 
     public void closeSearch() {
-        hideSearchListView();
-        showView(addAnimalView);
-        showView(addedCountView);
-        hideView(noResultView);
+        UIOperations.hideViews(List.of(searchListView, noResultView));
+        UIOperations.showViews(List.of(addedAnimalsListView, addedCountView));
         // Update the Added Animal Count
         String display_count = added_count_msg + addedAnimalCount();
         addedCountView.setText(display_count);
@@ -209,17 +184,15 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                hideAddedListView();
+                UIOperations.hideView(addedAnimalsListView);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                hideAddedListView();
-                hideSearchListView();
-//                hideAddedListView();
-//                showView(searchAnimalView);
-                hideView(addedCountView);
+                UIOperations.hideViews(List.of(
+                        addedAnimalsListView, searchListView, addedCountView
+                ));
 
                 // `Filter.filter()` is asynchronous and has an optional listener;
                 // run update code using the listener to ensure that the UI updates
@@ -229,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     updateSearchedCheckBoxes(allNodes); // Update after filtering
 //                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
                     if(!s.isEmpty()){
-                        showView(searchAnimalView);
+                        UIOperations.showView(searchListView);
                     }
                     noResultDisplay();
                 });
