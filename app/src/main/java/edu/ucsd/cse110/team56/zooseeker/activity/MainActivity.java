@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     // Search ListView
     private ListView searchListView;
     // Added ListView
-    private ListView addedAnimalsListView;
+    private ListView addedExhibitsListView;
     // Added Number TextView
     private TextView addedCountView;
     // Error Msg Text Views
@@ -48,49 +49,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        // Retrieve local data
         allNodes = DatabaseGetterManager.getAllNodes(this);
 
-        // Initialize Views
+        // Initialize views
         searchListView = findViewById(R.id.data_list);
-        addedAnimalsListView = findViewById(R.id.added_list);
+        addedExhibitsListView = findViewById(R.id.added_list);
         addedCountView = findViewById(R.id.added_count);
         noResultView = findViewById(R.id.no_result_view);
 
+        // Initialize visibility state
         UIOperations.hideViews(List.of(searchListView, noResultView));
-        List<String> allNames = ListManager.getNames(allNodes);
 
-        // Populate All Names List View
+        // Populate search suggestions list view
         searchFilterAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
         searchListView.setAdapter(searchFilterAdapter);
 
-        // Populate Added Names List View
+        // Populate added exhibits list view
         List<String> addedNames = ListManager.getAddedListNames(allNodes);
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
-        addedAnimalsListView.setAdapter(addedListAdapter);
+        addedExhibitsListView.setAdapter(addedListAdapter);
 
-        // Enable CheckMark
+        // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         updateSearchedCheckBoxes(allNodes);
-
-        searchListView.setOnItemClickListener((parent, view, position, id) -> {
-            Log.i(TAG, "onItemClick: " + position);
-            // get the name of the animal
-            String selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
-
-            // add or remove the selected item based on `isChecked()` state
-            NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
-            if (((CheckedTextView) view).isChecked()) {
-                ListManager.addItem(searchListView.getContext(), selectedItem);
-            } else {
-                ListManager.removeItem(searchListView.getContext(), selectedItem);
-            }
-
-            // update UI elements
-            ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
-            updateSearchedCheckBoxes(allNodes);
-        });
+        searchListView.setOnItemClickListener(this::handleCheckboxClick);
     }
 
     // -------- Update list views --------
@@ -137,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void closeSearch() {
         UIOperations.hideViews(List.of(searchListView, noResultView));
-        UIOperations.showViews(List.of(addedAnimalsListView, addedCountView));
+        UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
         // Update the Added Animal Count
         String display_count = getString(R.string.added_count_msg_prefix)
                 + ListManager.getAddedCount(allNodes);
@@ -155,6 +140,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void handleCheckboxClick(AdapterView parent, View view, int position, long id) {
+        Log.i(TAG, "onItemClick: " + position);
+        // get the name of the animal
+        String selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
+
+        // add or remove the selected item based on `isChecked()` state
+        var allNames = ListManager.getNames(allNodes);
+        NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
+        if (((CheckedTextView) view).isChecked()) {
+            ListManager.addItem(searchListView.getContext(), selectedItem);
+        } else {
+            ListManager.removeItem(searchListView.getContext(), selectedItem);
+        }
+
+        // update UI elements
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
+        updateSearchedCheckBoxes(allNodes);
+    }
+
     /*
         Search Bar dropdown Search Function
      */
@@ -169,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                UIOperations.hideView(addedAnimalsListView);
+                UIOperations.hideView(addedExhibitsListView);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 UIOperations.hideViews(List.of(
-                        addedAnimalsListView, searchListView, addedCountView
+                        addedExhibitsListView, searchListView, addedCountView
                 ));
 
                 // `Filter.filter()` is asynchronous and has an optional listener;
