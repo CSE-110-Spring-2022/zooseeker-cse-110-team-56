@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +30,8 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.DatabaseGetterManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
+import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
+import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.SearchSuggestionsList;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,14 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<NodeInfo> searchFilterAdapter;
     private ArrayAdapter<String> addedListAdapter;
 
-    // Search ListView
-    private ListView searchListView;
-    // Added ListView
-    private ListView addedExhibitsListView;
-    // Added Number TextView
-    private TextView addedCountView;
-    // Error Msg Text Views
-    private TextView noResultView;
+    private ListView searchListView, addedExhibitsListView;
+    private TextView addedCountView, noResultView;
 
     private List<NodeInfo> allNodes;
 
@@ -74,52 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        updateSearchedCheckBoxes(allNodes);
+        SearchSuggestionsList.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
-    }
-
-    // -------- Update list views --------
-
-    /**
-     * Updates the "search suggestions" list using the `isAdded` attribute of
-     * all items currently shown in the list
-     * @param nodes the list of nodes that contains the added nodes for which
-     *              you want to mark checkboxes as "checked"
-     */
-    private void updateSearchedCheckBoxes(List<NodeInfo> nodes) {
-        Semaphore mutex = new Semaphore(0);
-        runOnUiThread(() -> {
-            updateSearchedCheckBoxesInternal(nodes);
-            mutex.release();
-        });
-        try {
-            mutex.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateSearchedCheckBoxesInternal(List<NodeInfo> nodes) {
-        // loops through the current list of search suggestions
-        for (int i = 0; i < searchListView.getCount(); i++) {
-            String currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
-
-            // the index of the current item within the `allNodes` list
-            int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
-
-            // retrieve the node
-            NodeInfo currentItem = nodes.get(currentItemIndex);
-
-            if (searchListView.isItemChecked(i) != currentItem.isAdded()) {
-                searchListView.setItemChecked(i, currentItem.isAdded());
-            }
-        }
-    }
-
-    private void noResultDisplay() {
-        runOnUiThread(() -> noResultView.setVisibility(
-                searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
-        ));
     }
 
     /// -------- Search handlers --------
@@ -167,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         // update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
-        updateSearchedCheckBoxes(allNodes);
+        SearchSuggestionsList.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
     private boolean closeSearchHandler() {
@@ -183,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private SearchView.OnQueryTextListener makeQueryTextListener() {
+        Activity activity = this;
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -196,17 +151,20 @@ public class MainActivity extends AppCompatActivity {
                         addedExhibitsListView, searchListView, addedCountView
                 ));
 
-                // `Filter.filter()` is asynchronous and has an optional listener;
-                // run update code using the listener to ensure that the UI updates
-                // only **after** changes are made, and not **before**
                 searchFilterAdapter.getFilter().filter(s, i -> {
-//                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_NONE);
-                    updateSearchedCheckBoxes(allNodes); // Update after filtering
-//                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
+                    // `Filter.filter()` is asynchronous and has an optional listener;
+                    // run update code using the listener to ensure that the UI updates
+                    // only **after** changes are made, and not **before**
+                    SearchSuggestionsList.updateSearchedCheckBoxes(activity, allNodes, searchListView); // Update after filtering
+
                     if(!s.isEmpty()){
                         UIOperations.showView(searchListView);
                     }
-                    noResultDisplay();
+
+                    // update the visibility of `noResultView`
+                    runOnUiThread(() -> noResultView.setVisibility(
+                            searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
+                    ));
                 });
 
                 return true;
@@ -216,33 +174,11 @@ public class MainActivity extends AppCompatActivity {
 
     // -------- Plan button handler --------
 
-    /*
-        Jump to the PLAN view when the PLAN button is clicked
-    */
     public void onPlanBtnClicked(View view) {
         if (ListManager.getAddedListNames(allNodes).size() == 0) {
-            displayNoExhibitsSelectedAlert();
+            PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
-            startPlanListActivity();
+            PlanButton.startPlanListActivity(this, addedListAdapter);
         }
     }
-
-    private void displayNoExhibitsSelectedAlert() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.no_exhibits_selected_msg))
-                .setPositiveButton(
-                        getString(R.string.ok),
-                        (DialogInterface dialog, int id) -> dialog.cancel()
-                );
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void startPlanListActivity() {
-        Intent intent = new Intent(this, PlanListActivity.class);
-        addedListAdapter.notifyDataSetChanged();
-        startActivity(intent);
-    }
-
 }
