@@ -133,22 +133,14 @@ public class MainActivity extends AppCompatActivity {
         ));
     }
 
-    /*
-        Return the Number of Added Animals
-     */
-    public int addedAnimalCount() {
-        return (int) allNodes.stream()
-                .filter(NodeInfo::isAdded)
-                .count();
-    }
-
     /// -------- Search handler --------
 
     public void closeSearch() {
         UIOperations.hideViews(List.of(searchListView, noResultView));
         UIOperations.showViews(List.of(addedAnimalsListView, addedCountView));
         // Update the Added Animal Count
-        String display_count = getString(R.string.added_count_msg_prefix) + addedAnimalCount();
+        String display_count = getString(R.string.added_count_msg_prefix)
+                + ListManager.getAddedCount(allNodes);
         addedCountView.setText(display_count);
     }
 
