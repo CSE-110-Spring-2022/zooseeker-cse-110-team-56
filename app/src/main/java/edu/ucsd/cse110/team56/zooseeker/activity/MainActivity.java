@@ -31,10 +31,8 @@ import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Search Bar Adaptor
-    private ArrayAdapter<NodeInfo> searchAdapter;
-    // AddedList Adaptor
-    private ArrayAdapter<String> addedAdapter;
+    private ArrayAdapter<NodeInfo> searchFilterAdapter;
+    private ArrayAdapter<String> addedListAdapter;
 
     // Search ListView
     private ListView searchListView;
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView addedAnimalsListView;
     // Added Number TextView
     private TextView addedCountView;
-    private final String added_count_msg = "Added Animals: ";
     // Error Msg Text Views
     private TextView noResultView;
 
@@ -65,13 +62,13 @@ public class MainActivity extends AppCompatActivity {
         List<String> allNames = ListManager.getNames(allNodes);
 
         // Populate All Names List View
-        searchAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
-        searchListView.setAdapter(searchAdapter);
+        searchFilterAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
+        searchListView.setAdapter(searchFilterAdapter);
 
         // Populate Added Names List View
         List<String> addedNames = ListManager.getAddedListNames(allNodes);
-        addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
-        addedAnimalsListView.setAdapter(addedAdapter);
+        addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
+        addedAnimalsListView.setAdapter(addedListAdapter);
 
         // Enable CheckMark
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -91,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // update UI elements
-            ArrayAdapterHelper.updateAdapter(addedAdapter, ListManager.getAddedListNames(allNodes));
+            ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
             updateSearchedCheckBoxes(allNodes);
         });
     }
@@ -131,13 +128,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void noResultDisplay() {
-        runOnUiThread(() -> {
-            if (searchListView.getCount() == 0){
-                UIOperations.showView(noResultView);
-            } else {
-                UIOperations.hideView(noResultView);
-            }
-        });
+        runOnUiThread(() -> noResultView.setVisibility(
+                searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
+        ));
     }
 
     /*
@@ -155,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.hideViews(List.of(searchListView, noResultView));
         UIOperations.showViews(List.of(addedAnimalsListView, addedCountView));
         // Update the Added Animal Count
-        String display_count = added_count_msg + addedAnimalCount();
+        String display_count = getString(R.string.added_count_msg_prefix) + addedAnimalCount();
         addedCountView.setText(display_count);
     }
 
@@ -179,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.search_bar_dropdown, menu);
         MenuItem menuItem = menu.findItem(R.id.search_btn);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Search an animal here...");
+        searchView.setQueryHint(getString(R.string.search_animal_hint));
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -197,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 // `Filter.filter()` is asynchronous and has an optional listener;
                 // run update code using the listener to ensure that the UI updates
                 // only **after** changes are made, and not **before**
-                searchAdapter.getFilter().filter(s, i -> {
+                searchFilterAdapter.getFilter().filter(s, i -> {
 //                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_NONE);
                     updateSearchedCheckBoxes(allNodes); // Update after filtering
 //                        searchAnimalView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE); // workaround to disable check animation
@@ -230,13 +223,16 @@ public class MainActivity extends AppCompatActivity {
     public void onPlanBtnClicked(View view) {
         if (ListManager.getAddedListNames(allNodes).size() == 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("No exhibits selected. Please select at least one.")
-                    .setPositiveButton("OK", (DialogInterface dialog, int id) -> dialog.cancel());
+            builder.setMessage(getString(R.string.no_exhibits_selected_msg))
+                    .setPositiveButton(
+                            getString(R.string.ok),
+                            (DialogInterface dialog, int id) -> dialog.cancel()
+                    );
             AlertDialog dialog = builder.create();
             dialog.show();
         } else {
             Intent intent = new Intent(this, PlanListActivity.class);
-            addedAdapter.notifyDataSetChanged();
+            addedListAdapter.notifyDataSetChanged();
             startActivity(intent);
         }
     }
