@@ -89,20 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateSearchedCheckBoxes(List<NodeInfo> nodes) {
         Semaphore mutex = new Semaphore(0);
         runOnUiThread(() -> {
-            // loops through the current list of search suggestions
-            for (int i = 0; i < searchListView.getCount(); i++) {
-                String currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
-
-                // the index of the current item within the `allNodes` list
-                int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
-
-                // retrieve the node
-                NodeInfo currentItem = nodes.get(currentItemIndex);
-
-                if (searchListView.isItemChecked(i) != currentItem.isAdded()) {
-                    searchListView.setItemChecked(i, currentItem.isAdded());
-                }
-            }
+            updateSearchedCheckBoxesInternal(nodes);
             mutex.release();
         });
         try {
@@ -112,22 +99,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateSearchedCheckBoxesInternal(List<NodeInfo> nodes) {
+        // loops through the current list of search suggestions
+        for (int i = 0; i < searchListView.getCount(); i++) {
+            String currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
+
+            // the index of the current item within the `allNodes` list
+            int currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
+
+            // retrieve the node
+            NodeInfo currentItem = nodes.get(currentItemIndex);
+
+            if (searchListView.isItemChecked(i) != currentItem.isAdded()) {
+                searchListView.setItemChecked(i, currentItem.isAdded());
+            }
+        }
+    }
+
     private void noResultDisplay() {
         runOnUiThread(() -> noResultView.setVisibility(
                 searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
         ));
     }
 
-    /// -------- Search handler --------
-
-    public void closeSearch() {
-        UIOperations.hideViews(List.of(searchListView, noResultView));
-        UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
-        // Update the Added Animal Count
-        String display_count = getString(R.string.added_count_msg_prefix)
-                + ListManager.getAddedCount(allNodes);
-        addedCountView.setText(display_count);
-    }
+    /// -------- Search handlers --------
 
     @Override
     public void onBackPressed() {
@@ -138,6 +133,22 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // UI setup
+        getMenuInflater().inflate(R.menu.search_bar_dropdown, menu);
+        MenuItem menuItem = menu.findItem(R.id.search_btn);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_animal_hint));
+
+        // set listeners
+        searchView.setOnQueryTextListener(makeQueryTextListener());
+        searchView.setOnCloseListener(this::closeSearchHandler);
+
+        // return
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void handleCheckboxClick(AdapterView parent, View view, int position, long id) {
@@ -159,18 +170,20 @@ public class MainActivity extends AppCompatActivity {
         updateSearchedCheckBoxes(allNodes);
     }
 
-    /*
-        Search Bar dropdown Search Function
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    private boolean closeSearchHandler() {
+        UIOperations.hideViews(List.of(searchListView, noResultView));
+        UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
-        getMenuInflater().inflate(R.menu.search_bar_dropdown, menu);
-        MenuItem menuItem = menu.findItem(R.id.search_btn);
-        SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint(getString(R.string.search_animal_hint));
+        // Update added exhibits count
+        String displayCount = getString(R.string.added_count_msg_prefix)
+                + ListManager.getAddedCount(allNodes);
+        addedCountView.setText(displayCount);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        return false;
+    }
+
+    private SearchView.OnQueryTextListener makeQueryTextListener() {
+        return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 UIOperations.hideView(addedExhibitsListView);
@@ -198,17 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             }
-        });
-
-        /*
-            Disable the all Names view
-         */
-        searchView.setOnCloseListener(() -> {
-            closeSearch();
-            return false;
-        });
-
-        return super.onCreateOptionsMenu(menu);
+        };
     }
 
     // -------- Plan button handler --------
@@ -218,19 +221,28 @@ public class MainActivity extends AppCompatActivity {
     */
     public void onPlanBtnClicked(View view) {
         if (ListManager.getAddedListNames(allNodes).size() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.no_exhibits_selected_msg))
-                    .setPositiveButton(
-                            getString(R.string.ok),
-                            (DialogInterface dialog, int id) -> dialog.cancel()
-                    );
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            displayNoExhibitsSelectedAlert();
         } else {
-            Intent intent = new Intent(this, PlanListActivity.class);
-            addedListAdapter.notifyDataSetChanged();
-            startActivity(intent);
+            startPlanListActivity();
         }
+    }
+
+    private void displayNoExhibitsSelectedAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.no_exhibits_selected_msg))
+                .setPositiveButton(
+                        getString(R.string.ok),
+                        (DialogInterface dialog, int id) -> dialog.cancel()
+                );
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void startPlanListActivity() {
+        Intent intent = new Intent(this, PlanListActivity.class);
+        addedListAdapter.notifyDataSetChanged();
+        startActivity(intent);
     }
 
 }
