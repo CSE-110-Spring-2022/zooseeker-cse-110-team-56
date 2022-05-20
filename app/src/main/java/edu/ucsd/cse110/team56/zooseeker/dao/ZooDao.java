@@ -20,6 +20,21 @@ public interface ZooDao {
     List<NodeInfo> getAllNodes();
 
     /**
+     * Get all nodes with a specific kind
+     * @param kind kind of the node
+     * @return a list of nodes
+     */
+    @Query("SELECT * FROM `NodeInfo` WHERE kind = :kind ORDER BY `id`")
+    List<NodeInfo> getNodesWithKind(NodeInfo.Kind kind);
+
+    /**
+     * Get all nodes added to the list by user
+     * @return a list of nodes
+     */
+    @Query("SELECT * FROM `NodeInfo` WHERE added = 1 ORDER BY `id`")
+    List<NodeInfo> getNodesAdded();
+
+    /**
      * Get a single node inside the zoo using its ID
      * @param id id of the node
      * @return node
