@@ -29,6 +29,16 @@ public class ListManager {
     }
 
     /**
+     * @param allList the list containing all items to count
+     * @return the number of items in `allList` where `isAdded` is true
+     */
+    public static int getAddedCount(List<NodeInfo> allList) {
+        return (int) allList.stream()
+                .filter(NodeInfo::isAdded)
+                .count();
+    }
+
+    /**
      * @param allList the list containing all items to filter from
      * @return a list of items where `isAdded` is true
      */
