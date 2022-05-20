@@ -2,18 +2,13 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
@@ -31,7 +25,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
-import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.SearchSuggestionsList;
+import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
@@ -66,24 +60,23 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        List<String> addedNames = ListManager.getAddedListNames(allNodes);
+        final var addedNames = ListManager.getAddedListNames(allNodes);
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
         // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        SearchSuggestionsList.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
     }
 
-    /// -------- Search handlers --------
-
     @Override
     public void onBackPressed() {
-        SearchView searchView = findViewById(R.id.search_btn);
-        if (!searchView.isIconified()) {
-            searchView.onActionViewCollapsed();
-            searchView.setIconified(true);
+        SearchView searchButton = findViewById(R.id.search_btn);
+        if (!searchButton.isIconified()) {
+            // if search field is visible
+            searchButton.onActionViewCollapsed();
+            searchButton.setIconified(true);
         } else {
             super.onBackPressed();
         }
@@ -92,27 +85,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // UI setup
-        getMenuInflater().inflate(R.menu.search_bar_dropdown, menu);
-        MenuItem menuItem = menu.findItem(R.id.search_btn);
-        SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint(getString(R.string.search_animal_hint));
+        getMenuInflater().inflate(R.menu.search_bar_dropdown, menu); // inflate search menu
+        final var searchButton = menu.findItem(R.id.search_btn); // get search button
+        final var searchField = (SearchView) searchButton.getActionView(); // get search field
+        searchField.setQueryHint(getString(R.string.search_animal_hint)); // set hint
 
         // set listeners
-        searchView.setOnQueryTextListener(makeQueryTextListener());
-        searchView.setOnCloseListener(this::closeSearchHandler);
+        searchField.setOnQueryTextListener(makeQueryTextListener());
+        searchField.setOnCloseListener(this::closeSearchHandler);
 
         // return
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void handleCheckboxClick(AdapterView parent, View view, int position, long id) {
+    /// -------- Search handlers --------
+
+    private void handleCheckboxClick(AdapterView<?> parent, View view, int position, long id) {
         Log.i(TAG, "onItemClick: " + position);
         // get the name of the animal
-        String selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
+        final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        var allNames = ListManager.getNames(allNodes);
-        NodeInfo selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
+        final var allNames = ListManager.getNames(allNodes);
+        final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
             ListManager.addItem(searchListView.getContext(), selectedItem);
         } else {
@@ -121,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         // update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
-        SearchSuggestionsList.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
     private boolean closeSearchHandler() {
@@ -155,9 +150,10 @@ public class MainActivity extends AppCompatActivity {
                     // `Filter.filter()` is asynchronous and has an optional listener;
                     // run update code using the listener to ensure that the UI updates
                     // only **after** changes are made, and not **before**
-                    SearchSuggestionsList.updateSearchedCheckBoxes(activity, allNodes, searchListView); // Update after filtering
 
-                    if(!s.isEmpty()){
+                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
+
+                    if (!s.isEmpty()) {
                         UIOperations.showView(searchListView);
                     }
 

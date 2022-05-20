@@ -11,10 +11,10 @@ public class UIOperations {
     public static void hideView(View view) { view.setVisibility(View.INVISIBLE); }
 
     public static void showViews(List<View> views) {
-        views.stream().forEach(UIOperations::showView);
+        views.forEach(UIOperations::showView);
     }
 
     public static void hideViews(List<View> views) {
-        views.stream().forEach(UIOperations::hideView);
+        views.forEach(UIOperations::hideView);
     }
 }

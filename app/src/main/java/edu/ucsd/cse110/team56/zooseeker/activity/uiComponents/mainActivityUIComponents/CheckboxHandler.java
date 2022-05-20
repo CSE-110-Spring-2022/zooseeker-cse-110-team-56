@@ -1,8 +1,6 @@
 package edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents;
 
 import android.app.Activity;
-import android.content.Context;
-import android.view.View;
 import android.widget.ListView;
 
 import java.util.List;
@@ -11,7 +9,7 @@ import java.util.concurrent.Semaphore;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
-public class SearchSuggestionsList {
+public class CheckboxHandler {
     /**
      * Updates the "search suggestions" list using the `isAdded` attribute of
      * all items currently shown in the list
