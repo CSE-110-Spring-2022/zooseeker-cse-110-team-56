@@ -6,7 +6,7 @@ import android.widget.ListView;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class CheckboxHandler {
@@ -35,7 +35,7 @@ public class CheckboxHandler {
             final var currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
 
             // the index of the current item within the `allNodes` list
-            final var currentItemIndex = ListManager.getNames(nodes).indexOf(currentItemName);
+            final var currentItemIndex = ExhibitsManager.getNames(nodes).indexOf(currentItemName);
 
             // retrieve the node
             final var currentItem = nodes.get(currentItemIndex);
