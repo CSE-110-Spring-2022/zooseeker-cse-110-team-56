@@ -47,7 +47,7 @@ public abstract class ZooDatabase extends RoomDatabase {
                 .allowMainThreadQueries()
                 .build();
 
-        List<NodeInfo> nodes = JsonReader.parseJsonList(context, "map/assets/sample_node_info.json", NodeInfo.class);
+        List<NodeInfo> nodes = JsonReader.parseJsonList(context, "map/assets/sample_vertex_info.json", NodeInfo.class);
         db.zooDao().addNodes(nodes);
         List<EdgeInfo> edges = JsonReader.parseJsonList(context, "map/assets/sample_edge_info.json", EdgeInfo.class);
         db.zooDao().addEdges(edges);
