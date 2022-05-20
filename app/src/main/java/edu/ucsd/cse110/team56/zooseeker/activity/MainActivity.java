@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
         // Update added exhibits count
-        String displayCount = getString(R.string.added_count_msg_prefix)
+        final var displayCount = getString(R.string.added_count_msg_prefix)
                 + ListManager.getAddedCount(allNodes);
         addedCountView.setText(displayCount);
 

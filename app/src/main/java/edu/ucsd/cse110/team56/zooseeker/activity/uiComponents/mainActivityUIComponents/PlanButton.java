@@ -12,19 +12,19 @@ import edu.ucsd.cse110.team56.zooseeker.activity.PlanListActivity;
 
 public class PlanButton {
     public static void displayNoExhibitsSelectedAlert(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        final var builder = new AlertDialog.Builder(context);
         builder.setMessage(context.getString(R.string.no_exhibits_selected_msg))
                 .setPositiveButton(
                         context.getString(R.string.ok),
                         (DialogInterface dialog, int id) -> dialog.cancel()
                 );
 
-        AlertDialog dialog = builder.create();
+        final var dialog = builder.create();
         dialog.show();
     }
 
     public static void startPlanListActivity(Context context, ArrayAdapter<?> addedListAdapter) {
-        Intent intent = new Intent(context, PlanListActivity.class);
+        final var intent = new Intent(context, PlanListActivity.class);
         addedListAdapter.notifyDataSetChanged();
         context.startActivity(intent);
     }
