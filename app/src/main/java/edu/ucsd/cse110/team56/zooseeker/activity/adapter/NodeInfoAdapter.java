@@ -16,10 +16,10 @@ import java.util.List;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
-    List<NodeInfo> objects;
+    List<NodeInfo> list;
     public NodeInfoAdapter(@NonNull Context context, int resource, @NonNull List<NodeInfo> objects) {
         super(context, resource, objects);
-        this.objects = objects;
+        this.list = new ArrayList<>(objects);
     }
 
     @NonNull
@@ -38,9 +38,11 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
                 FilterResults results = new FilterResults();
                 String prefix = constraint.toString().toLowerCase();
 
+                List<NodeInfo> nodes = new ArrayList<>(list);
+
                 if (prefix.length() == 0)
                 {
-                    ArrayList<NodeInfo> list = new ArrayList<>(objects);
+                    ArrayList<NodeInfo> list = new ArrayList<>(NodeInfoAdapter.this.list);
                     results.values = list;
                     results.count = list.size();
                 }
@@ -48,7 +50,7 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
                 {
                     final ArrayList<NodeInfo> list = new ArrayList<>();
 
-                    for(NodeInfo node: objects) {
+                    for(NodeInfo node: NodeInfoAdapter.this.list) {
                         if (node.name.toLowerCase().contains(prefix)) {
                             list.add(node);
                         } else {
