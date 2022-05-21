@@ -6,6 +6,10 @@
     <string name="direction">DIRECTION</string>
     <string name="plan">PLAN</string>
     <string name="ok">OK</string>
+    <string name="replan_btn">REPLAN</string>
+    <string name="skip">SKIP NEXT</string>
+    <string name="next">NEXT</string>
+    <string name="pre">PREVIOUS</string>
     <string name="no_exhibits_selected_msg">"No exhibits selected. Please select at least one."</string>
     <string name="search_animal_hint">"Search for an animal here..."</string>
 </resources>
