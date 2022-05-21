@@ -1,11 +1,13 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -50,23 +52,93 @@ public class DirectionActivity extends AppCompatActivity {
         List<NodeInfo> addedNode = ListManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         this.directions = Graph.load(this).generatePaths(ListManager.getListId(addedNode), "entrance_exit_gate");
 
+        // hide pre_btn for the first one
+        FloatingActionButton button = findViewById(R.id.pre_btn);
+        button.setVisibility(View.GONE);
+
+        // Previoius
+        findViewById(R.id.pre_btn).setOnClickListener((view -> {
+            previous();
+        }));
+
+        // Skip Next
+        findViewById(R.id.skip_btn).setOnClickListener((view -> {
+            if (current >= this.directions.size() - 2) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Skip Disabled.\nThere's less than one exhibit left")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                next();
+                next();
+            }
+        }));
+
+        //hide last button for the second last one
+        if (current >= this.directions.size() - 2) {
+            FloatingActionButton b = findViewById(R.id.skip_btn);
+            b.setVisibility(View.GONE);
+        }
+
+        // Next
         findViewById(R.id.next_btn).setOnClickListener((view -> {
             next();
         }));
 
         next();
     }
-    //next button for direction
+
+    //next exhibit direction
     @VisibleForTesting
     public void next() {
         current++;
         adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
         this.destination.setText("Next: " + info.name);
-        //hide last button for the last one
+        // hide skipNextBtn for the last one
+        nextBtnView();
+        // hide pre_btn for the first one
+        if (current > 0) {
+            FloatingActionButton button = findViewById(R.id.pre_btn);
+            button.setVisibility(View.VISIBLE);
+        }
+    }
+
+    //previous exhibit direction
+    public void previous() {
+        System.out.println(current);
+        current--;
+        System.out.println(current);
+        adapter.setPaths(this.directions.get(current).getEdgeList(), this);
+        NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
+        this.destination.setText("Next: " + info.name);
+        // hide pre_btn for the first one
+        preBtnView();
+    }
+
+    public void nextBtnView(){
         if (current == this.directions.size() - 1) {
             FloatingActionButton button = findViewById(R.id.next_btn);
             button.setVisibility(View.GONE);
+        } else {
+            FloatingActionButton button = findViewById(R.id.next_btn);
+            button.setVisibility(View.VISIBLE);
         }
     }
+
+    public void preBtnView(){
+        if (current > 0) {
+            FloatingActionButton button = findViewById(R.id.pre_btn);
+            button.setVisibility(View.VISIBLE);
+        } else {
+            FloatingActionButton button = findViewById(R.id.pre_btn);
+            button.setVisibility(View.GONE);
+        }
+    }
+
 }
