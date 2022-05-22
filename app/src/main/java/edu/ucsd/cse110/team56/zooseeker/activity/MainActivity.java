@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private List<NodeInfo> allNodes;
 
     private Location lastVisitedLocation;
-
-    // Request Location
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+    public final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
                 perms.forEach((perm, isGranted) -> {
                     Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
@@ -61,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUpPermission();
+        // Request User Location Permission
+        if (ensureLocationPermission()) return;
 
         // Retrieve local data
         allNodes = DatabaseGetterManager.getAllNodes(this);
@@ -88,6 +87,27 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
+    }
+
+    private boolean ensureLocationPermission() {
+        /* Permission Setup */
+        {
+            var requiredPermissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+
+            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
+                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
+                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
+
+            if (hasNoLocationPerms) {
+                requestPermissionLauncher.launch(requiredPermissions);
+                return true;
+            }
+
+        }
+        return false;
     }
 
     @Override
@@ -202,29 +222,10 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onGPSBtnClicked(View view) {
-      /*  Intent intent = new Intent(this, LocationActivity.class);
-        startActivity(intent);*/
+        Intent intent = new Intent(this, LocationActivity.class);
+        startActivity(intent);
     }
 
-    // Request Permission
-    protected void setUpPermission() {
-        /* Permission Setup */
-        {
-            var requiredPermissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
 
-            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
-                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
-                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
-
-            if (hasNoLocationPerms) {
-                requestPermissionLauncher.launch(requiredPermissions);
-                return;
-            }
-
-        }
-    }
 
 }
