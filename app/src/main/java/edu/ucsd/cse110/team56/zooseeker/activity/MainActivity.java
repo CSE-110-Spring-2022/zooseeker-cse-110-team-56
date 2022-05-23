@@ -2,10 +2,23 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +29,10 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Arrays;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
@@ -37,10 +54,43 @@ public class MainActivity extends AppCompatActivity {
 
     private List<NodeInfo> allNodes;
 
+    // LatLng Current Location
+    protected LatLng currLocation;
+
+    private Location lastVisitedLocation;
+    public final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
+                perms.forEach((perm, isGranted) -> {
+                    Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
+                });
+            });
+
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Request User Location Permission
+        if (ensureLocationPermission()) return;
+
+        /* Listen for Location Updates */
+        {
+            var provider = LocationManager.GPS_PROVIDER;
+            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            var locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    Log.d("CurrLocation", String.format("Location changed: %s", location));
+                    currLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    System.out.println("Christina is at: ");
+                    System.out.println(currLocation.latitude);
+                    System.out.println(currLocation.longitude);
+                }
+            };
+            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+        }
+
 
         // Retrieve local data
         allNodes = ExhibitsManager.getAllExhibits(this);
@@ -70,6 +120,27 @@ public class MainActivity extends AppCompatActivity {
 
         // Update count from database
         updateCount();
+    }
+
+    private boolean ensureLocationPermission() {
+        /* Permission Setup */
+        {
+            var requiredPermissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+
+            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
+                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
+                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
+
+            if (hasNoLocationPerms) {
+                requestPermissionLauncher.launch(requiredPermissions);
+                return true;
+            }
+
+        }
+        return false;
     }
 
     @Override
@@ -178,4 +249,16 @@ public class MainActivity extends AppCompatActivity {
             PlanButton.startPlanListActivity(this, addedListAdapter);
         }
     }
+
+    // -------- Temp GPS Button Clicked ------------
+    // -------- Plan button handler --------
+
+    public void onGPSBtnClicked(View view) {
+        Intent intent = new Intent(this, LocationActivity.class);
+        startActivity(intent);
+    }
+
+
+
+
 }
