@@ -1,8 +1,14 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,10 +52,36 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         this.map = map;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        this.map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        this.map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng ucsd = new LatLng(32.8801, -117.2340);
+        this.map.addMarker(new MarkerOptions().position(ucsd).title("UCSD Position"));
+        this.map.moveCamera(CameraUpdateFactory
+                .newLatLng(ucsd));
+        map.moveCamera(CameraUpdateFactory.zoomTo(11.5f));
+
+
+        /* Listen for Location Updates */
+        {
+            var provider = LocationManager.GPS_PROVIDER;
+            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            var locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    Log.d("CurrLocation", String.format("Location changed: %s", location));
+
+                    var marker = new MarkerOptions()
+                            .position(new LatLng(
+                                    location.getLatitude(),
+                                    location.getLongitude()
+                            ))
+                            .title("Navigation Step");
+                    map.addMarker(marker);
+                }
+            };
+            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+        }
 
     }
+
+
 
 }

@@ -4,15 +4,20 @@ import static android.content.ContentValues.TAG;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +27,9 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
     private List<NodeInfo> allNodes;
 
+    // LatLng Current Location
+    protected LatLng currLocation;
+
     private Location lastVisitedLocation;
     public final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
@@ -61,6 +72,24 @@ public class MainActivity extends AppCompatActivity {
 
         // Request User Location Permission
         if (ensureLocationPermission()) return;
+
+        /* Listen for Location Updates */
+        {
+            var provider = LocationManager.GPS_PROVIDER;
+            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            var locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    Log.d("CurrLocation", String.format("Location changed: %s", location));
+                    currLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    System.out.println("Christina is at: ");
+                    System.out.println(currLocation.latitude);
+                    System.out.println(currLocation.longitude);
+                }
+            };
+            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+        }
+
 
         // Retrieve local data
         allNodes = DatabaseGetterManager.getAllNodes(this);
@@ -225,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LocationActivity.class);
         startActivity(intent);
     }
+
 
 
 
