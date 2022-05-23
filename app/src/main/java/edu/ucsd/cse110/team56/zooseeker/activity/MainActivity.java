@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             });
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

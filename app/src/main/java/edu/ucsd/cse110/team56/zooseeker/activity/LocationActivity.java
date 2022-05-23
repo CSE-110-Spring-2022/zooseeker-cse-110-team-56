@@ -3,6 +3,7 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -47,6 +48,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
@@ -77,6 +79,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
                     map.addMarker(marker);
                 }
             };
+
             locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
         }
 
