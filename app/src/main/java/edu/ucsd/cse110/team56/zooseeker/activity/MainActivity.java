@@ -12,7 +12,9 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -28,9 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,15 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
     private List<NodeInfo> allNodes;
 
-    // LatLng Current Location
-    protected LatLng currLocation;
-
     private Location lastVisitedLocation;
     public final ActivityResultLauncher<String[]> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
                 perms.forEach((perm, isGranted) -> {
                     Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
                 });
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             });
 
     @SuppressLint("MissingPermission")
@@ -78,17 +77,17 @@ public class MainActivity extends AppCompatActivity {
         {
             var provider = LocationManager.GPS_PROVIDER;
             var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            Log.d("CurrentLocation", "requested");
             var locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-                    Log.d("CurrLocation", String.format("Location changed: %s", location));
-                    currLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                    System.out.println("Christina is at: ");
-                    System.out.println(currLocation.latitude);
-                    System.out.println(currLocation.longitude);
+                    Log.d("CurrentLocation", "changed");
+                    Log.d("CurrentLocation", String.format("Location changed: %s", location));
                 }
             };
             locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+            var location = locationManager.getLastKnownLocation(provider);
+            Log.d("LastLocation", String.format("%s", location));
         }
 
 
@@ -256,6 +255,37 @@ public class MainActivity extends AppCompatActivity {
     public void onGPSBtnClicked(View view) {
         Intent intent = new Intent(this, LocationActivity.class);
         startActivity(intent);
+    }
+
+    // --------- Clear Button Clicked --------
+    public void onClearBtnClicked(View view) {
+
+        if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Clear Button Disabled.\nThere's no exhibits added.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
+        }
+
+        // Update Database
+        for (NodeInfo node : allNodes) {
+            ExhibitsManager.removeItem(this, node);
+        }
+
+        // Update UI elements
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
+        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+
+        // Update added exhibits count
+        final var displayCount = getString(R.string.added_count_msg_prefix)
+                + ExhibitsManager.getAddedCount(allNodes);
+        addedCountView.setText(displayCount);
     }
 
 
