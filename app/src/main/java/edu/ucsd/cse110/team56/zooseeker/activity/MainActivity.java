@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onLocationChanged(@NonNull Location location) {
                     Log.d("CurrLocation", String.format("Location changed: %s", location));
                     currLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                    System.out.println("Christina is at: ");
-                    System.out.println(currLocation.latitude);
-                    System.out.println(currLocation.longitude);
                 }
             };
             locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
