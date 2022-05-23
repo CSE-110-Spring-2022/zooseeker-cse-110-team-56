@@ -35,37 +35,44 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-                String prefix = constraint.toString().toLowerCase();
+                final var results = new FilterResults();
+                final var prefix = constraint.toString().toLowerCase();
 
-                List<NodeInfo> nodes = new ArrayList<>(list);
+                final List<NodeInfo> nodes = new ArrayList<>(list);
 
-                if (prefix.length() == 0)
-                {
-                    ArrayList<NodeInfo> list = new ArrayList<>(NodeInfoAdapter.this.list);
+                // empty case
+
+                if (prefix.length() == 0) {
                     results.values = list;
                     results.count = list.size();
+                    return results;
                 }
-                else
-                {
-                    final ArrayList<NodeInfo> list = new ArrayList<>();
 
-                    for(NodeInfo node: NodeInfoAdapter.this.list) {
-                        if (node.name.toLowerCase().contains(prefix)) {
-                            list.add(node);
-                        } else {
-                            for (String tag: node.tags) {
-                                if (tag.toLowerCase().contains(prefix)) {
-                                    list.add(node);
-                                    break;
-                                }
-                            }
-                        }
+                // default case
+
+                final ArrayList<NodeInfo> resultList = new ArrayList<>();
+
+                for(NodeInfo node : nodes) {
+                    boolean shouldAddCurrentNode = false;
+
+                    // match name to prefix
+                    for (var currToken : node.name.toLowerCase().split(" ")) {
+                        shouldAddCurrentNode |= currToken.startsWith(prefix);
                     }
 
-                    results.values = list;
-                    results.count = list.size();
+                    // match tags to prefix
+                    for (String tag : node.tags) {
+                        shouldAddCurrentNode |= tag.toLowerCase().startsWith(prefix);
+                    }
+
+                    // add to resultList
+                    if (shouldAddCurrentNode) {
+                        resultList.add(node);
+                    }
                 }
+
+                results.values = resultList;
+                results.count = resultList.size();
                 return results;
             }
 
@@ -74,8 +81,8 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
                 List<NodeInfo> nodeList = (ArrayList<NodeInfo>)results.values;
 
                 clear();
-                for (NodeInfo node: nodeList)
-                {
+
+                for (NodeInfo node : nodeList) {
                     add(node);
                 }
             }

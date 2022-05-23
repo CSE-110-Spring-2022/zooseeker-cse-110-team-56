@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
         updateCount();
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
 
         return false;
     }
