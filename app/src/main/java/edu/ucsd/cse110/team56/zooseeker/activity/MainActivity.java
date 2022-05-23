@@ -5,7 +5,6 @@ import static android.content.ContentValues.TAG;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
@@ -14,7 +13,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -31,14 +29,12 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import java.util.Arrays;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.DatabaseGetterManager;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.ListManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -94,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Retrieve local data
-        allNodes = DatabaseGetterManager.getAllNodes(this);
+        allNodes = ExhibitsManager.getAllExhibits(this);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        final var addedNames = ListManager.getAddedListNames(allNodes);
+        final var addedNames = ExhibitsManager.getAddedListNames(allNodes);
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
@@ -118,6 +114,30 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
+
+        // Update count from database
+        updateCount();
+    }
+
+    private boolean ensureLocationPermission() {
+        /* Permission Setup */
+        {
+            var requiredPermissions = new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            };
+
+            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
+                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
+                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
+
+            if (hasNoLocationPerms) {
+                requestPermissionLauncher.launch(requiredPermissions);
+                return true;
+            }
+
+        }
+        return false;
     }
 
     private boolean ensureLocationPermission() {
@@ -177,16 +197,16 @@ public class MainActivity extends AppCompatActivity {
         final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        final var allNames = ListManager.getNames(allNodes);
+        final var allNames = ExhibitsManager.getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
-            ListManager.addItem(searchListView.getContext(), selectedItem);
+            ExhibitsManager.addItem(searchListView.getContext(), selectedItem);
         } else {
-            ListManager.removeItem(searchListView.getContext(), selectedItem);
+            ExhibitsManager.removeItem(searchListView.getContext(), selectedItem);
         }
 
         // update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
@@ -194,12 +214,17 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.hideViews(List.of(searchListView, noResultView));
         UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
-        // Update added exhibits count
-        final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ListManager.getAddedCount(allNodes);
-        addedCountView.setText(displayCount);
+        updateCount();
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
 
         return false;
+    }
+
+    private void updateCount() {
+        // Update added exhibits count
+        final var displayCount = getString(R.string.added_count_msg_prefix)
+                + ExhibitsManager.getAddedCount(allNodes);
+        addedCountView.setText(displayCount);
     }
 
     private SearchView.OnQueryTextListener makeQueryTextListener() {
@@ -218,16 +243,10 @@ public class MainActivity extends AppCompatActivity {
                 ));
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
-                    // `Filter.filter()` is asynchronous and has an optional listener;
-                    // run update code using the listener to ensure that the UI updates
-                    // only **after** changes are made, and not **before**
-
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-
                     if (!s.isEmpty()) {
                         UIOperations.showView(searchListView);
                     }
-
                     // update the visibility of `noResultView`
                     runOnUiThread(() -> noResultView.setVisibility(
                             searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
@@ -242,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onPlanBtnClicked(View view) {
-        if (ListManager.getAddedListNames(allNodes).size() == 0) {
+        if (ExhibitsManager.getAddedListNames(allNodes).size() == 0) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
             PlanButton.startPlanListActivity(this, addedListAdapter);

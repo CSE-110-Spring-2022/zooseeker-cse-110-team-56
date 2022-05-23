@@ -4,17 +4,31 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
 public class NodeInfo {
+    public enum Kind {
+        @SerializedName("gate") GATE,
+        @SerializedName("exhibit") EXHIBIT,
+        @SerializedName("intersection") INTERSECTION
+    }
+
+    public enum Status {
+        @SerializedName("added") ADDED,
+        @SerializedName("visited") VISITED,
+        @SerializedName("skipped") SKIPPED
+    }
+
     @PrimaryKey @NonNull
     public String id;
     public String name;
-    public String kind;
-    public boolean added;
+    public Kind kind;
+    public boolean added = false;
 
     public boolean isAdded() {
         return added;
@@ -34,7 +48,7 @@ public class NodeInfo {
         return name;
     }
 
-    public NodeInfo(@NonNull String id, String name, String kind, List<String> tags) {
+    public NodeInfo(@NonNull String id, String name, Kind kind, List<String> tags) {
         this.id = id;
         this.name = name;
         this.kind = kind;

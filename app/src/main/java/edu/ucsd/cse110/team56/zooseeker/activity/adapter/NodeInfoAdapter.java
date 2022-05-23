@@ -10,13 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckedTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
 public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
+    List<NodeInfo> list;
     public NodeInfoAdapter(@NonNull Context context, int resource, @NonNull List<NodeInfo> objects) {
         super(context, resource, objects);
+        this.list = new ArrayList<>(objects);
     }
 
     @NonNull
@@ -27,4 +30,63 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
         return view;
     }
 
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                final var results = new FilterResults();
+                final var prefix = constraint.toString().toLowerCase();
+
+                final List<NodeInfo> nodes = new ArrayList<>(list);
+
+                // empty case
+
+                if (prefix.length() == 0) {
+                    results.values = list;
+                    results.count = list.size();
+                    return results;
+                }
+
+                // default case
+
+                final ArrayList<NodeInfo> resultList = new ArrayList<>();
+
+                for(NodeInfo node : nodes) {
+                    boolean shouldAddCurrentNode = false;
+
+                    // match name to prefix
+                    for (var currToken : node.name.toLowerCase().split(" ")) {
+                        shouldAddCurrentNode |= currToken.startsWith(prefix);
+                    }
+
+                    // match tags to prefix
+                    for (String tag : node.tags) {
+                        shouldAddCurrentNode |= tag.toLowerCase().startsWith(prefix);
+                    }
+
+                    // add to resultList
+                    if (shouldAddCurrentNode) {
+                        resultList.add(node);
+                    }
+                }
+
+                results.values = resultList;
+                results.count = resultList.size();
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                List<NodeInfo> nodeList = (ArrayList<NodeInfo>)results.values;
+
+                clear();
+
+                for (NodeInfo node : nodeList) {
+                    add(node);
+                }
+            }
+
+        };
+    }
 }
