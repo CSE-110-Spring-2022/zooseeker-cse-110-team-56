@@ -40,8 +40,8 @@ public class ZooDatabaseTest {
 
     @Test
     public void testNodes() {
-        NodeInfo info1 = new NodeInfo("zoo-id-1", "zoo name", "exhibit", Arrays.asList("a", "b"));
-        NodeInfo info2 = new NodeInfo("zoo-id-2", "zoo name2", "intersection", Arrays.asList("c", "d"));
+        NodeInfo info1 = new NodeInfo("zoo-id-1", "zoo name", NodeInfo.Kind.EXHIBIT, Arrays.asList("a", "b"));
+        NodeInfo info2 = new NodeInfo("zoo-id-2", "zoo name2", NodeInfo.Kind.INTERSECTION, Arrays.asList("c", "d"));
 
         dao.addNodes(Arrays.asList(info1, info2));
         List<NodeInfo> list = dao.getAllNodes();

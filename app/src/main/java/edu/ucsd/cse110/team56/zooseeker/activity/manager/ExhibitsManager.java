@@ -11,7 +11,7 @@ import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 /**
  * A container of static methods for managing the state of `NodeInfo` lists
  */
-public class ListManager {
+public class ExhibitsManager {
     /**
      * sets `isAdded` to true
      */
@@ -71,5 +71,11 @@ public class ListManager {
         return list.stream()
                 .map(NodeInfo::getName)
                 .collect(Collectors.toList());
+    }
+
+    public static List<NodeInfo> getAllExhibits(Context context) {
+        return ZooDatabase.getSingleton(context)
+                .zooDao()
+                .getNodesWithKind(NodeInfo.Kind.EXHIBIT);
     }
 }
