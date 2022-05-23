@@ -12,7 +12,9 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -117,27 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Update count from database
         updateCount();
-    }
-
-    private boolean ensureLocationPermission() {
-        /* Permission Setup */
-        {
-            var requiredPermissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
-
-            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
-                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
-                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
-
-            if (hasNoLocationPerms) {
-                requestPermissionLauncher.launch(requiredPermissions);
-                return true;
-            }
-
-        }
-        return false;
     }
 
     private boolean ensureLocationPermission() {
@@ -279,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
 
-        if (ListManager.getAddedListNames(allNodes).isEmpty()) {
+        if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Clear Button Disabled.\nThere's no exhibits added.")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -294,16 +275,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Update Database
         for (NodeInfo node : allNodes) {
-            ListManager.removeItem(this, node);
+            ExhibitsManager.removeItem(this, node);
         }
 
         // Update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
 
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ListManager.getAddedCount(allNodes);
+                + ExhibitsManager.getAddedCount(allNodes);
         addedCountView.setText(displayCount);
     }
 
