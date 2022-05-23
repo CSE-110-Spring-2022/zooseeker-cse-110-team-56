@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
@@ -13,6 +14,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -255,6 +257,37 @@ public class MainActivity extends AppCompatActivity {
     public void onGPSBtnClicked(View view) {
         Intent intent = new Intent(this, LocationActivity.class);
         startActivity(intent);
+    }
+
+    // --------- Clear Button Clicked --------
+    public void onClearBtnClicked(View view) {
+
+        if (ListManager.getAddedListNames(allNodes).isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Clear Button Disabled.\nThere's no exhibits added.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
+        }
+
+        // Update Database
+        for (NodeInfo node : allNodes) {
+            ListManager.removeItem(this, node);
+        }
+
+        // Update UI elements
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ListManager.getAddedListNames(allNodes));
+        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+
+        // Update added exhibits count
+        final var displayCount = getString(R.string.added_count_msg_prefix)
+                + ListManager.getAddedCount(allNodes);
+        addedCountView.setText(displayCount);
     }
 
 
