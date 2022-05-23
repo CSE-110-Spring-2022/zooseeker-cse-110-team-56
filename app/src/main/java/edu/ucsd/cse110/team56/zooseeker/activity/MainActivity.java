@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 perms.forEach((perm, isGranted) -> {
                     Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
                 });
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             });
 
     @SuppressLint("MissingPermission")
