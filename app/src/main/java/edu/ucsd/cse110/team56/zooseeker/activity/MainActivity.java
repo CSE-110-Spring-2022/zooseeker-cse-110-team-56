@@ -31,8 +31,6 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView addedCountView, noResultView;
 
     private List<NodeInfo> allNodes;
-
-    // LatLng Current Location
-    protected LatLng currLocation;
 
     private Location lastVisitedLocation;
     public final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -84,14 +79,17 @@ public class MainActivity extends AppCompatActivity {
         {
             var provider = LocationManager.GPS_PROVIDER;
             var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            Log.d("CurrentLocation", "requested");
             var locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-                    Log.d("CurrLocation", String.format("Location changed: %s", location));
-                    currLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                    Log.d("CurrentLocation", "changed");
+                    Log.d("CurrentLocation", String.format("Location changed: %s", location));
                 }
             };
             locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
+            var location = locationManager.getLastKnownLocation(provider);
+            Log.d("LastLocation", String.format("%s", location));
         }
 
 
