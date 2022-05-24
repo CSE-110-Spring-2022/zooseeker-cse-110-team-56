@@ -15,10 +15,13 @@ public class UIOperations {
     }
     public static void hideView(View view) { view.setVisibility(View.INVISIBLE); }
 
+    public static void setVisibility(View view, boolean isVisible) {
+        view.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
     public static void showViews(List<View> views) {
         views.forEach(UIOperations::showView);
     }
-
     public static void hideViews(List<View> views) {
         views.forEach(UIOperations::hideView);
     }

@@ -56,6 +56,10 @@ public class ExhibitsManager {
         return getNames(getAddedList(allList));
     }
 
+    /**
+     * @param list the list to map to IDs
+     * @return the IDs of all items in the list
+     */
     public static List<String> getListId(List<NodeInfo> list){
         return list.stream()
                 .map(NodeInfo::getId)
@@ -73,6 +77,10 @@ public class ExhibitsManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * retrieves EXHIBIT nodes from the database
+     * @return the list of all nodes that are of kind EXHIBIT
+     */
     public static List<NodeInfo> getAllExhibits(Context context) {
         return ZooDatabase.getSingleton(context)
                 .zooDao()

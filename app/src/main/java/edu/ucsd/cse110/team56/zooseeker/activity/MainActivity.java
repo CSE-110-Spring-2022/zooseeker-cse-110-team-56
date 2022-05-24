@@ -31,6 +31,7 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
@@ -51,15 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private List<NodeInfo> allNodes;
 
     private Location lastVisitedLocation;
-    public final ActivityResultLauncher<String[]> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
-                perms.forEach((perm, isGranted) -> {
-                    Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
-                });
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            });
 
     @SuppressLint("MissingPermission")
     @Override
@@ -68,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Request User Location Permission
-        if (ensureLocationPermission()) return;
+        if (LocationPermissionsManager.needsLocationPermission(this)) {
+            LocationPermissionsManager.requestLocationPermission(this);
+            return;
+        }
 
         /* Listen for Location Updates */
         {
@@ -116,27 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Update count from database
         updateCount();
-    }
-
-    private boolean ensureLocationPermission() {
-        /* Permission Setup */
-        {
-            var requiredPermissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
-
-            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
-                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
-                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
-
-            if (hasNoLocationPerms) {
-                requestPermissionLauncher.launch(requiredPermissions);
-                return true;
-            }
-
-        }
-        return false;
     }
 
     @Override
@@ -222,13 +196,8 @@ public class MainActivity extends AppCompatActivity {
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-                    if (!s.isEmpty()) {
-                        UIOperations.showView(searchListView);
-                    }
-                    // update the visibility of `noResultView`
-                    runOnUiThread(() -> noResultView.setVisibility(
-                            searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
-                    ));
+                    UIOperations.setVisibility(searchListView, !s.isEmpty());
+                    UIOperations.setVisibility(noResultView, s.isEmpty());
                 });
 
                 return true;
@@ -246,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // -------- Temp GPS Button Clicked ------------
+    // -------- Temp GPS Button Clicked --------
     // -------- Plan button handler --------
 
     public void onGPSBtnClicked(View view) {

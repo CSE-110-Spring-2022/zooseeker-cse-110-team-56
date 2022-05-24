@@ -25,9 +25,9 @@ import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 public class PlanListActivity extends AppCompatActivity {
     private ArrayAdapter<String> addedAdapter;
     private ArrayList<GraphPath<String, GraphEdge>> directions;
-    private ListView des = null;
+    private ListView destinationsListView = null;
     private List<NodeInfo> addedNode;
-    public List<String> desl = new ArrayList<>();
+    public List<String> destinations = new ArrayList<>();
     public List<String> addedId;
 
     @Override
@@ -36,16 +36,15 @@ public class PlanListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_plan_list);
         addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         addedId = ExhibitsManager.getListId(addedNode);
-        //List<String> toVisit = Arrays.asList("entrance_exit_gate", "lions", "gators", "entrance_exit_gate");
         this.directions = Graph.load(this).generatePaths(addedId, "entrance_exit_gate");
+
         for (GraphPath<String, GraphEdge> path : this.directions) {
-            desl.add(ZooDatabase.getSingleton(this).zooDao().getNode(path.getEndVertex()).getName());
+            destinations.add(ZooDatabase.getSingleton(this).zooDao().getNode(path.getEndVertex()).getName());
         }
 
-
-        des = findViewById(R.id.destination);
-        addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, desl);
-        des.setAdapter(addedAdapter);
+        destinationsListView = findViewById(R.id.destination);
+        addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, destinations);
+        destinationsListView.setAdapter(addedAdapter);
 
     }
 
