@@ -197,8 +197,8 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onGPSBtnClicked(View view) {
-        Intent intent = new Intent(this, LocationActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, LocationActivity.class);
+//        startActivity(intent);
     }
 
     // --------- Clear Button Clicked --------
