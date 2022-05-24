@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.databinding.ActivityLocationBinding;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -62,29 +63,23 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 
         /* Listen for Location Updates */
-        {
-            var provider = LocationManager.GPS_PROVIDER;
-            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            var locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    Log.d("CurrLocation", String.format("Location changed: %s", location));
 
-                    var marker = new MarkerOptions()
-                            .position(new LatLng(
-                                    location.getLatitude(),
-                                    location.getLongitude()
-                            ))
-                            .title("Navigation Step");
-                    map.addMarker(marker);
-                }
-            };
+        var locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                Log.d("CurrLocation", String.format("Location changed: %s", location));
 
-            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
-        }
+                var marker = new MarkerOptions()
+                        .position(new LatLng(
+                                location.getLatitude(),
+                                location.getLongitude()
+                        ))
+                        .title("Navigation Step");
+                map.addMarker(marker);
+            }
+        };
 
+        LocationUpdatesManager.setupListener(this, locationListener);
     }
-
-
 
 }
