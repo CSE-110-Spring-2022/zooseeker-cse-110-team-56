@@ -60,6 +60,7 @@ public class JsonReader {
             return Optional.of(result);
         } catch (IOException e) {
             Log.d("JsonParser", file, e);
+            System.err.println(e);
             return Optional.empty();
         }
     }

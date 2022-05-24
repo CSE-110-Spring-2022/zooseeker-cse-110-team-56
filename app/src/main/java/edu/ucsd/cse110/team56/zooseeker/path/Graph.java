@@ -98,7 +98,7 @@ public class Graph {
      * @return Graph instance
      */
     public static Graph load(Context context) {
-        Graph rawGraph = JsonReader.parseJson(context, "map/assets/old/sample_zoo_graph.json", Graph.class).get();
+        Graph rawGraph = JsonReader.parseJson(context, "gps/zoo_graph.json", Graph.class).get();
         return rawGraph;
     }
 }

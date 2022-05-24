@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -32,14 +33,14 @@ public class ListManagerTest {
     public void addItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
         ExhibitsManager.addItem(ApplicationProvider.getApplicationContext(), nodeInfo);
-        assert(nodeInfo.getStatus());
+        assert(nodeInfo.getStatus() == NodeInfo.Status.ADDED);
     }
 
     @Test
     public void removeItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
         ExhibitsManager.removeItem(ApplicationProvider.getApplicationContext(),nodeInfo);
-        assert(!nodeInfo.getStatus());
+        assert(nodeInfo.getStatus() == NodeInfo.Status.LOADED);
     }
 
     @Test
