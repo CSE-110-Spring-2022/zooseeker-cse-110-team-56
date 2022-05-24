@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
-
+        // empty case
         if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
             UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;

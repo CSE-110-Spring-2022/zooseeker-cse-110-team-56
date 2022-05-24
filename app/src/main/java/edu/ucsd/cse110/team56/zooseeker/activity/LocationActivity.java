@@ -82,6 +82,4 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
         LocationUpdatesManager.setupListener(this, locationListener);
     }
 
-
-
 }
