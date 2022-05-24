@@ -28,11 +28,11 @@ public interface ZooDao {
     List<NodeInfo> getNodesWithKind(NodeInfo.Kind kind);
 
     /**
-     * Get all nodes added to the list by user
+     * Get all nodes with a specific status
      * @return a list of nodes
      */
-    @Query("SELECT * FROM `NodeInfo` WHERE added = 1 ORDER BY `id`")
-    List<NodeInfo> getNodesAdded();
+    @Query("SELECT * FROM `NodeInfo` WHERE status IN (:status) ORDER BY `id`")
+    List<NodeInfo> getNodesWithStatus(List<NodeInfo.Status> status);
 
     /**
      * Get a single node inside the zoo using its ID

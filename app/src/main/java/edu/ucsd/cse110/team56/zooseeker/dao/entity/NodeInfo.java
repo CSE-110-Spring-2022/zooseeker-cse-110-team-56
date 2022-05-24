@@ -15,27 +15,29 @@ public class NodeInfo {
     public enum Kind {
         @SerializedName("gate") GATE,
         @SerializedName("exhibit") EXHIBIT,
-        @SerializedName("intersection") INTERSECTION
+        @SerializedName("intersection") INTERSECTION,
+        @SerializedName("exhibit_group") EXHIBIT_GROUP
     }
 
     public enum Status {
-        @SerializedName("added") ADDED,
-        @SerializedName("visited") VISITED,
-        @SerializedName("skipped") SKIPPED
+        @SerializedName("loaded") LOADED, // default state when the exhibit is not selected
+        @SerializedName("added") ADDED, // after the user has selected the exhibit
+        @SerializedName("visited") VISITED, // after the user has visited the exhibit
+        @SerializedName("skipped") SKIPPED // after the user has skipped the exhibit
     }
 
     @PrimaryKey @NonNull
     public String id;
     public String name;
     public Kind kind;
-    public boolean added = false;
+    public Status status = Status.LOADED;
 
-    public boolean isAdded() {
-        return added;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAdded(boolean added) {
-        this.added = added;
+    public void setStatus (Status status) {
+        this.status = status;
     }
 
     public List<String> tags;
@@ -53,7 +55,6 @@ public class NodeInfo {
         this.name = name;
         this.kind = kind;
         this.tags = tags;
-        this.added = false;
     }
 
     /**

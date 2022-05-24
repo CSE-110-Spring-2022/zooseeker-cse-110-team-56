@@ -32,14 +32,14 @@ public class ListManagerTest {
     public void addItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
         ExhibitsManager.addItem(ApplicationProvider.getApplicationContext(), nodeInfo);
-        assert(nodeInfo.isAdded());
+        assert(nodeInfo.getStatus());
     }
 
     @Test
     public void removeItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
         ExhibitsManager.removeItem(ApplicationProvider.getApplicationContext(),nodeInfo);
-        assert(!nodeInfo.isAdded());
+        assert(!nodeInfo.getStatus());
     }
 
     @Test

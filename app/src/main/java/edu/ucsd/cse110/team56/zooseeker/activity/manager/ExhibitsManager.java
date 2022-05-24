@@ -16,7 +16,7 @@ public class ExhibitsManager {
      * sets `isAdded` to true
      */
     public static void addItem(Context context, NodeInfo item) {
-        item.setAdded(true);
+        item.setStatus(NodeInfo.Status.ADDED);
         ZooDatabase.getSingleton(context).zooDao().updateNode(item);
     }
 
@@ -24,7 +24,7 @@ public class ExhibitsManager {
      * sets `isAdded` to false
      */
     public static void removeItem(Context context, NodeInfo item) {
-        item.setAdded(false);
+        item.setStatus(NodeInfo.Status.LOADED);
         ZooDatabase.getSingleton(context).zooDao().updateNode(item);
     }
 
@@ -34,7 +34,7 @@ public class ExhibitsManager {
      */
     public static int getAddedCount(List<NodeInfo> allList) {
         return (int) allList.stream()
-                .filter(NodeInfo::isAdded)
+                .filter((nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.LOADED))
                 .count();
     }
 
@@ -44,7 +44,7 @@ public class ExhibitsManager {
      */
     public static List<NodeInfo> getAddedList(List<NodeInfo> allList) {
         return allList.stream()
-                .filter(NodeInfo::isAdded)
+                .filter(nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.LOADED)
                 .collect(Collectors.toList());
     }
 
