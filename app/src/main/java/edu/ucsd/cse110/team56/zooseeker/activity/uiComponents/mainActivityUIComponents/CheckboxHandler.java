@@ -40,8 +40,8 @@ public class CheckboxHandler {
             // retrieve the node
             final var currentItem = nodes.get(currentItemIndex);
 
-            if (searchListView.isItemChecked(i) != currentItem.getStatus()) {
-                searchListView.setItemChecked(i, currentItem.getStatus());
+            if (searchListView.isItemChecked(i) != (currentItem.getStatus() == NodeInfo.Status.ADDED)) {
+                searchListView.setItemChecked(i, (currentItem.getStatus() == NodeInfo.Status.ADDED));
             }
         }
     }

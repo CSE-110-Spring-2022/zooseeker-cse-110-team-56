@@ -36,7 +36,7 @@ public class JsonReader {
             Log.d("JsonParser", results.toString());
             return results;
         } catch (IOException e) {
-            Log.d("JsonParser", file, e);
+            Log.e("JsonParser", file, e);
             return Collections.emptyList();
         }
     }
