@@ -18,11 +18,12 @@ import edu.ucsd.cse110.team56.zooseeker.path.GraphVertex;
 public class ExhibitsManager {
     private static ExhibitsManager singleton = null;
     private Context context;
-    private ZooDao dao;
+    private ZooDao dao() {
+        return ZooDatabase.getSingleton(context).zooDao();
+    }
 
     private ExhibitsManager(Context context) {
         this.context = context;
-        this.dao = ZooDatabase.getSingleton(context).zooDao();
     }
 
     public synchronized static ExhibitsManager getSingleton(Context context) {
@@ -37,7 +38,7 @@ public class ExhibitsManager {
      */
     public void addItem(NodeInfo item) {
         item.setStatus(NodeInfo.Status.ADDED);
-        dao.updateNode(item);
+        dao().updateNode(item);
     }
 
     /**
@@ -45,7 +46,7 @@ public class ExhibitsManager {
      */
     public void removeItem(NodeInfo item) {
         item.setStatus(NodeInfo.Status.LOADED);
-        dao.updateNode(item);
+        dao().updateNode(item);
     }
 
     /**
@@ -77,7 +78,7 @@ public class ExhibitsManager {
     }
 
     public GraphVertex getGraphVertex(NodeInfo node) {
-        NodeInfo parent = dao.getParentNode(node.parentId);
+        NodeInfo parent = dao().getParentNode(node.parentId);
         return parent != null ? new GraphVertex(parent, node) : new GraphVertex(node);
     }
 
