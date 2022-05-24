@@ -61,7 +61,7 @@ public class Graph {
      * @param toVisit exhibits to visit (doesn't include the gate)
      * @param start the start and the end point, probably the gate
      */
-    public ArrayList<GraphPath<String, GraphEdge>> generatePaths(List<String> toVisit, String start) {
+    public ArrayList<GraphPath<String, GraphEdge>> generatePaths(List<String> toVisit, String start, String end) {
         org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
         ArrayList<GraphPath<String, GraphEdge>> paths = new ArrayList<>();
@@ -69,6 +69,7 @@ public class Graph {
         Set<String> locSet = new HashSet<>(toVisit);
 
         String current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
+
         while(locSet.size() > 0) {
             ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
             GraphPath<String, GraphEdge> shortest = results.getPath(locSet.iterator().next());
@@ -84,7 +85,7 @@ public class Graph {
         }
 
         ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
-        GraphPath<String, GraphEdge> path = results.getPath(start);
+        GraphPath<String, GraphEdge> path = results.getPath(end);
         paths.add(path);
 
         Log.d("Paths", paths.toString());

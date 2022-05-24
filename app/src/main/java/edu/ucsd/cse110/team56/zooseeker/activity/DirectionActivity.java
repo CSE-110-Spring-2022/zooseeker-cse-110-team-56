@@ -50,7 +50,7 @@ public class DirectionActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         List<NodeInfo> addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), "entrance_exit_gate");
+        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), "entrance_exit_gate", "entrance_exit_gate");
 
         // hide pre_btn for the first one
         FloatingActionButton button = findViewById(R.id.pre_btn);
@@ -74,7 +74,17 @@ public class DirectionActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             } else {
-                next();
+                //find current node
+                NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex());
+                //remove all node before next exhibit (include next exhibit)
+                current+=2;
+                while(current > -1){
+                    addedNode.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex()));
+                    current--;
+                }
+                // regenerate route for the rest of the exhibits
+                this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), currInfo.id, "entrance_exit_gate");
+                current=-1;
                 next();
             }
         }));
