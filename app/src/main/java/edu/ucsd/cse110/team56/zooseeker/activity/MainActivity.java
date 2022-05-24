@@ -12,12 +12,9 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -261,15 +258,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClearBtnClicked(View view) {
 
         if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Clear Button Disabled.\nThere's no exhibits added.")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
 

@@ -22,6 +22,7 @@ import java.util.List;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
@@ -64,15 +65,7 @@ public class DirectionActivity extends AppCompatActivity {
         // Skip Next
         findViewById(R.id.skip_btn).setOnClickListener((view -> {
             if (current >= this.directions.size() - 2) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Skip Disabled.\nThere's less than one exhibit left")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                UIOperations.showDefaultAlert(this, "Skip Disabled.\nThere's less than one exhibit left");
             } else {
                 next();
                 next();
