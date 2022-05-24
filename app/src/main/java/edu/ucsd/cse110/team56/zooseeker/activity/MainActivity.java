@@ -180,17 +180,15 @@ public class MainActivity extends AppCompatActivity {
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
                     UIOperations.setVisibility(searchListView, !s.isEmpty());
-                    UIOperations.setVisibility(noResultView, s.isEmpty());
+                    //UIOperations.setVisibility(noResultView, s.isEmpty());
                 });
 
                 runOnUiThread(new Runnable() {
                     public void run() {
                         if (!inputIsValid(s)) {
-                            System.out.println("Contains? " + inputIsValid(s));
                             Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
                             errorToast.show();
                         }
-
                     }
                 });
                 return true;
