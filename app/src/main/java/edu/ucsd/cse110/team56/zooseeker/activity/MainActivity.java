@@ -2,25 +2,15 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,13 +21,14 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.List;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
@@ -54,15 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private List<NodeInfo> allNodes;
 
     private Location lastVisitedLocation;
-    public final ActivityResultLauncher<String[]> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
-                perms.forEach((perm, isGranted) -> {
-                    Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted));
-                });
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            });
 
     @SuppressLint("MissingPermission")
     @Override
@@ -71,25 +53,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Request User Location Permission
-        if (ensureLocationPermission()) return;
-
-        /* Listen for Location Updates */
-        {
-            var provider = LocationManager.GPS_PROVIDER;
-            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            Log.d("CurrentLocation", "requested");
-            var locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    Log.d("CurrentLocation", "changed");
-                    Log.d("CurrentLocation", String.format("Location changed: %s", location));
-                }
-            };
-            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
-            var location = locationManager.getLastKnownLocation(provider);
-            Log.d("LastLocation", String.format("%s", location));
+        if (LocationPermissionsManager.needsLocationPermission(this)) {
+            LocationPermissionsManager.requestLocationPermission(this);
+            return;
         }
 
+        // Listen for location updates
+        setupLocationUpdatesListener();
 
         // Retrieve local data
         allNodes = ExhibitsManager.getAllExhibits(this);
@@ -119,27 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Update count from database
         updateCount();
-    }
-
-    private boolean ensureLocationPermission() {
-        /* Permission Setup */
-        {
-            var requiredPermissions = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
-
-            var hasNoLocationPerms = Arrays.stream(requiredPermissions)
-                    .map(perm -> ContextCompat.checkSelfPermission(this, perm))
-                    .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
-
-            if (hasNoLocationPerms) {
-                requestPermissionLauncher.launch(requiredPermissions);
-                return true;
-            }
-
-        }
-        return false;
     }
 
     @Override
@@ -225,13 +174,8 @@ public class MainActivity extends AppCompatActivity {
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-                    if (!s.isEmpty()) {
-                        UIOperations.showView(searchListView);
-                    }
-                    // update the visibility of `noResultView`
-                    runOnUiThread(() -> noResultView.setVisibility(
-                            searchListView.getCount() == 0 ? View.VISIBLE : View.INVISIBLE
-                    ));
+                    UIOperations.setVisibility(searchListView, !s.isEmpty());
+                    UIOperations.setVisibility(noResultView, s.isEmpty());
                 });
 
                 return true;
@@ -249,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // -------- Temp GPS Button Clicked ------------
+    // -------- Temp GPS Button Clicked --------
     // -------- Plan button handler --------
 
     public void onGPSBtnClicked(View view) {
@@ -259,17 +203,9 @@ public class MainActivity extends AppCompatActivity {
 
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
-
+        // empty case
         if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Clear Button Disabled.\nThere's no exhibits added.")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
 
@@ -288,7 +224,18 @@ public class MainActivity extends AppCompatActivity {
         addedCountView.setText(displayCount);
     }
 
+    // -------- Handle location updates --------
 
+    private void setupLocationUpdatesListener() {
+        var locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                Log.d("CurrentLocation", "changed");
+                Log.d("CurrentLocation", String.format("Location changed: %s", location));
+            }
+        };
 
+        LocationUpdatesManager.setupListener(this, true, locationListener);
+    }
 
 }

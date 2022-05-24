@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">ZooSeeker</string>
-    <string name="added_count_msg_prefix">"Added Animals: "</string>
+    <string name="added_count_msg_prefix">Added Animals: </string>
     <string name="added_count_msg">Added Animals: 0</string>
-    <string name="no_result_msg">Sorry, there’s no matching result.\nTry to search something else...</string>
+    <string name="no_result_msg">Sorry, there’s no matching result.\nTry to search something else…</string>
     <string name="direction">DIRECTION</string>
     <string name="plan">PLAN</string>
     <string name="ok">OK</string>
@@ -10,7 +10,10 @@
     <string name="skip">SKIP NEXT</string>
     <string name="next">NEXT</string>
     <string name="pre">PREVIOUS</string>
-    <string name="no_exhibits_selected_msg">"No exhibits selected. Please select at least one."</string>
-    <string name="search_animal_hint">"Search for an animal here..."</string>
+    <string name="no_exhibits_selected_msg">No exhibits selected. Please select at least one.</string>
+    <string name="search_animal_hint">Search for an animal here…</string>
     <string name="title_activity_location">LocationActivity</string>
+    <string name="clear_button_disabled_msg">Clear unnecessary.\nThere are no exhibits added.</string>
+    <string name="skip_disabled_msg">Unable to skip.\nThere\'s less than one exhibit left</string>
+    <string name="next_destination">Next: %s</string>
 </resources>

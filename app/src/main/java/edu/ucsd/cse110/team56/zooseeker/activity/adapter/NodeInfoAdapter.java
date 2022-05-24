@@ -78,7 +78,7 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                List<NodeInfo> nodeList = (ArrayList<NodeInfo>)results.values;
+                List<NodeInfo> nodeList = (ArrayList<NodeInfo>) results.values;
 
                 clear();
 

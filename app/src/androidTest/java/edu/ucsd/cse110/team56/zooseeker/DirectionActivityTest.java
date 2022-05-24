@@ -124,8 +124,8 @@ public class DirectionActivityTest {
         ActivityScenario<DirectionActivity> scenario = ActivityScenario.launch(DirectionActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
         scenario.onActivity(activity -> {
-            activity.next();
-            activity.next();
+            activity.onNext();
+            activity.onNext();
         });
         scenario.moveToState(Lifecycle.State.STARTED);
         scenario.moveToState(Lifecycle.State.RESUMED);
