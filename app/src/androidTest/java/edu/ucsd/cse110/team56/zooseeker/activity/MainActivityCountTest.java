@@ -6,7 +6,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -41,7 +40,7 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivityAddClearAnimalTest {
+public class MainActivityCountTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
@@ -54,7 +53,7 @@ public class MainActivityAddClearAnimalTest {
                     "android.permission.ACCESS_COARSE_LOCATION");
 
     @Test
-    public void mainActivityAddClearAnimalTest() {
+    public void mainActivityCountTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -98,8 +97,32 @@ public class MainActivityAddClearAnimalTest {
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
                                 3)))
-                .atPosition(3);
+                .atPosition(2);
         appCompatCheckedTextView3.perform(click());
+
+        DataInteraction appCompatCheckedTextView4 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(3);
+        appCompatCheckedTextView4.perform(click());
+
+        DataInteraction appCompatCheckedTextView5 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(4);
+        appCompatCheckedTextView5.perform(click());
+
+        DataInteraction appCompatCheckedTextView6 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(2);
+        appCompatCheckedTextView6.perform(click());
 
         ViewInteraction appCompatImageView2 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
@@ -124,73 +147,10 @@ public class MainActivityAddClearAnimalTest {
         appCompatImageView3.perform(click());
 
         ViewInteraction textView = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:3"),
+                allOf(withId(R.id.added_count), withText("Added Animals:4"),
                         withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
                         isDisplayed()));
-        textView.check(matches(withText("Added Animals:3")));
-
-        ViewInteraction textView2 = onView(
-                allOf(withId(android.R.id.text1), withText("Arctic Foxes"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
-                        isDisplayed()));
-        textView2.check(matches(withText("Arctic Foxes")));
-
-        ViewInteraction textView3 = onView(
-                allOf(withId(android.R.id.text1), withText("Alligators"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
-                        isDisplayed()));
-        textView3.check(matches(withText("Alligators")));
-
-        ViewInteraction textView4 = onView(
-                allOf(withId(android.R.id.text1), withText("Gorillas"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
-                        isDisplayed()));
-        textView4.check(matches(withText("Gorillas")));
-
-        ViewInteraction textView5 = onView(
-                allOf(withId(android.R.id.text1), withText("Gorillas"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
-                        isDisplayed()));
-        textView5.check(matches(withText("Gorillas")));
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.clear_btn), withText("Clear Selected"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
-                        isDisplayed()));
-        materialButton.perform(click());
-
-        ViewInteraction materialButton2 = onView(
-                allOf(withId(R.id.clear_btn), withText("Clear Selected"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
-                        isDisplayed()));
-        materialButton2.perform(click());
-
-        ViewInteraction materialButton3 = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                3)));
-        materialButton3.perform(scrollTo(), click());
-
-        ViewInteraction textView6 = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:0"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView6.check(matches(withText("Added Animals:0")));
+        textView.check(matches(withText("Added Animals:4")));
     }
 
     private static Matcher<View> childAtPosition(
