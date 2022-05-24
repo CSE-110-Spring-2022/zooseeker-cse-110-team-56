@@ -34,7 +34,7 @@ public class ExhibitsManager {
      */
     public static int getAddedCount(List<NodeInfo> allList) {
         return (int) allList.stream()
-                .filter((nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.LOADED))
+                .filter((nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.ADDED))
                 .count();
     }
 
@@ -44,7 +44,7 @@ public class ExhibitsManager {
      */
     public static List<NodeInfo> getAddedList(List<NodeInfo> allList) {
         return allList.stream()
-                .filter(nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.LOADED)
+                .filter(nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.ADDED)
                 .collect(Collectors.toList());
     }
 

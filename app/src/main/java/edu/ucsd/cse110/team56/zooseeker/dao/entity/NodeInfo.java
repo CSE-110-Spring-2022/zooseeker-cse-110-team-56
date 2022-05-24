@@ -2,13 +2,18 @@ package edu.ucsd.cse110.team56.zooseeker.dao.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.Relation;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 
 @Entity
 public class NodeInfo {
@@ -31,6 +36,12 @@ public class NodeInfo {
     public String name;
     public Kind kind;
     public Status status = Status.LOADED;
+    @SerializedName("parent_id")
+    public String parentId;
+    @SerializedName("lng")
+    public double longitude;
+    @SerializedName("lat")
+    public double latitude;
 
     public Status getStatus() {
         return status;
