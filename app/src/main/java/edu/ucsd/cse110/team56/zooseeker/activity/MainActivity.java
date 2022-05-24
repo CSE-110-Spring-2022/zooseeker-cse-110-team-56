@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (!inputIsValid(s)) {
                             System.out.println("Contains? " + inputIsValid(s));
-                            Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result./nTry to search something else...", Toast.LENGTH_SHORT);
+                            Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
                             errorToast.show();
                         }
 
