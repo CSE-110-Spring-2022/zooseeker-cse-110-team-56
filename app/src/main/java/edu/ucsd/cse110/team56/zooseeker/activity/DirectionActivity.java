@@ -31,6 +31,7 @@ public class DirectionActivity extends AppCompatActivity {
     private int current = 0;
     private TextView destination;
     private View nextButton, previousButton, skipButton;
+    private List<NodeInfo> addedNodes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,59 +48,8 @@ public class DirectionActivity extends AppCompatActivity {
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        List<NodeInfo> addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), "entrance_exit_gate", "entrance_exit_gate");
-
-
-        // hide pre_btn for the first one
-        FloatingActionButton button = findViewById(R.id.pre_btn);
-        button.setVisibility(View.GONE);
-
-        // Previoius
-        findViewById(R.id.pre_btn).setOnClickListener((view -> {
-            previous();
-        }));
-
-        // Skip Next
-        findViewById(R.id.skip_btn).setOnClickListener((view -> {
-            if (current >= this.directions.size() - 2) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Skip Disabled.\nThere's less than one exhibit left")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
-                //find current node
-                NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex());
-                //remove all node before next exhibit (include next exhibit)
-                current+=2;
-                while(current > -1){
-                    addedNode.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex()));
-                    current--;
-                }
-                // regenerate route for the rest of the exhibits
-                this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), currInfo.id, "entrance_exit_gate");
-                current=-1;
-                next();
-            }
-        }));
-
-        //hide last button for the second last one
-        if (current >= this.directions.size() - 2) {
-            FloatingActionButton b = findViewById(R.id.skip_btn);
-            b.setVisibility(View.GONE);
-        }
-
-        // Next
-        findViewById(R.id.next_btn).setOnClickListener((view -> {
-            next();
-        }));
-
-        next();
+        addedNodes = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), "entrance_exit_gate", "entrance_exit_gate");
 
         // setup buttons
 
@@ -149,7 +99,21 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onSkip() {
         assert skipButtonAssertion();
-        current += 2;
+
+        {
+            //find current node
+            NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex());
+            //remove all node before next exhibit (include next exhibit)
+            current += 2;
+            while(current > -1){
+                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex()));
+                current--;
+            }
+            // regenerate route for the rest of the exhibits
+            this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), currInfo.id, "entrance_exit_gate");
+            current = 0;
+        }
+
         updateUI();
     }
 
