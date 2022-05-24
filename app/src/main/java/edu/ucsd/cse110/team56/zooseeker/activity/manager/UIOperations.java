@@ -19,6 +19,10 @@ public class UIOperations {
         view.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
+    public static void setHidden(View view, boolean isHidden) {
+        view.setVisibility(isHidden ? View.INVISIBLE : View.VISIBLE);
+    }
+
     public static void showViews(List<View> views) {
         views.forEach(UIOperations::showView);
     }

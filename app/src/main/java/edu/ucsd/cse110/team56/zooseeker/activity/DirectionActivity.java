@@ -1,18 +1,14 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jgrapht.GraphPath;
 
@@ -32,8 +28,9 @@ public class DirectionActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
     public DirectionListAdapter adapter = new DirectionListAdapter();
     private ArrayList<GraphPath<String, GraphEdge>> directions;
-    private int current = -1;
+    private int current = 0;
     private TextView destination;
+    private View nextButton, previousButton, skipButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,85 +50,76 @@ public class DirectionActivity extends AppCompatActivity {
         List<NodeInfo> addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), "entrance_exit_gate");
 
-        // hide pre_btn for the first one
-        FloatingActionButton button = findViewById(R.id.pre_btn);
-        button.setVisibility(View.GONE);
+        // setup buttons
 
-        // Previoius
-        findViewById(R.id.pre_btn).setOnClickListener((view -> {
-            previous();
-        }));
+        previousButton = findViewById(R.id.pre_btn);
+        nextButton = findViewById(R.id.next_btn);
+        skipButton = findViewById(R.id.skip_btn);
 
-        // Skip Next
-        findViewById(R.id.skip_btn).setOnClickListener((view -> {
-            if (current >= this.directions.size() - 2) {
-                UIOperations.showDefaultAlert(this, "Skip Disabled.\nThere's less than one exhibit left");
-            } else {
-                next();
-                next();
-            }
-        }));
+        previousButton.setOnClickListener(view -> onPrevious());
+        nextButton.setOnClickListener(view -> onNext());
+        skipButton.setOnClickListener(view -> onSkip());
 
-        //hide last button for the second last one
-        if (current >= this.directions.size() - 2) {
-            FloatingActionButton b = findViewById(R.id.skip_btn);
-            b.setVisibility(View.GONE);
-        }
+        // update
 
-        // Next
-        findViewById(R.id.next_btn).setOnClickListener((view -> {
-            next();
-        }));
-
-        next();
+        updateUI();
     }
 
-    //next exhibit direction
-    @VisibleForTesting
-    public void next() {
-        current++;
-        adapter.setPaths(this.directions.get(current).getEdgeList(), this);
-        NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
-        this.destination.setText("Next: " + info.name);
-        // hide skipNextBtn for the last one
-        nextBtnView();
-        // hide pre_btn for the first one
-        if (current > 0) {
-            FloatingActionButton button = findViewById(R.id.pre_btn);
-            button.setVisibility(View.VISIBLE);
-        }
-    }
+    // hide the previous button for the first one
+    private boolean previousButtonAssertion() { return current > 0; }
 
-    //previous exhibit direction
-    public void previous() {
-        System.out.println(current);
+    // hide the next button for the last one
+    private boolean nextButtonAssertion() { return current < directions.size() - 1; }
+
+    // hide the skip button for the last two
+    private boolean skipButtonAssertion() { return current < directions.size() - 2; }
+
+    /**
+     * @apiNote precondition: current > 0
+     */
+    public void onPrevious() {
+        assert previousButtonAssertion();
         current--;
-        System.out.println(current);
+        updateUI();
+    }
+
+    /**
+     * @apiNote precondition: current < this.directions.size() - 1
+     */
+    @VisibleForTesting
+    public void onNext() {
+        assert nextButtonAssertion();
+        current++;
+        updateUI();
+    }
+
+    /**
+     * @apiNote precondition: current < this.directions.size() - 2
+     */
+    public void onSkip() {
+        assert skipButtonAssertion();
+        current += 2;
+        updateUI();
+    }
+
+    /**
+     * retrieves data, updates texts and button visibility
+     */
+    private void updateUI() {
         adapter.setPaths(this.directions.get(current).getEdgeList(), this);
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
-        this.destination.setText("Next: " + info.name);
-        // hide pre_btn for the first one
-        preBtnView();
+        this.destination.setText(getString(R.string.next_destination, info.name));
+        updateButtonsVisibility();
     }
 
-    public void nextBtnView(){
-        if (current == this.directions.size() - 1) {
-            FloatingActionButton button = findViewById(R.id.next_btn);
-            button.setVisibility(View.GONE);
-        } else {
-            FloatingActionButton button = findViewById(R.id.next_btn);
-            button.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void preBtnView(){
-        if (current > 0) {
-            FloatingActionButton button = findViewById(R.id.pre_btn);
-            button.setVisibility(View.VISIBLE);
-        } else {
-            FloatingActionButton button = findViewById(R.id.pre_btn);
-            button.setVisibility(View.GONE);
-        }
+    /**
+     * @apiNote postcondition: this method should assure the preconditions of
+     * `onNext`, `onPrevious`, and `onSkip`
+     */
+    private void updateButtonsVisibility() {
+        UIOperations.setVisibility(previousButton, previousButtonAssertion());
+        UIOperations.setVisibility(nextButton, nextButtonAssertion());
+        UIOperations.setVisibility(skipButton, skipButtonAssertion());
     }
 
 }
