@@ -42,6 +42,12 @@ public interface ZooDao {
     @Query("SELECT * FROM `NodeInfo` WHERE `id` = :id")
     NodeInfo getNode(String id);
 
+    @Query("SELECT * FROM `NodeInfo` WHERE `id` = :parentId")
+    NodeInfo getParentNode(String parentId);
+
+    @Query("SELECT * FROM `NodeInfo` WHERE `parentId` = :id")
+    List<NodeInfo> getChildNodes(String id);
+
     /**
      * Add a list of nodes to the zoo
      * @param nodes list of nodes to be added

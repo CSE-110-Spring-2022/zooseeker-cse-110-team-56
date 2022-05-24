@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.path.Graph;
+import edu.ucsd.cse110.team56.zooseeker.path.GraphVertex;
 
 /**
  * A container of static methods for managing the state of `NodeInfo` lists
@@ -74,20 +76,25 @@ public class ExhibitsManager {
         return getNames(getAddedList(allList));
     }
 
+    public GraphVertex getGraphVertex(NodeInfo node) {
+        NodeInfo parent = dao.getParentNode(node.parentId);
+        return parent != null ? new GraphVertex(parent, node) : new GraphVertex(node);
+    }
+
     /**
      * @param list the list to map to IDs
      * @return the IDs of all items in the list
      */
-    public List<String> getListId(List<NodeInfo> list){
+    public List<GraphVertex> getNavigationVertexIds(List<NodeInfo> list) {
         return list.stream()
-                .map(NodeInfo::getId)
+                .map(this::getGraphVertex)
                 .collect(Collectors.toList());
     }
 
     /**
      * @param list a list of `NodeInfo` objects to map from
      * @return a list of the name attributes of all `NodeInfo` objects
-     *  from the given list
+     * from the given list
      */
     public List<String> getNames(List<NodeInfo> list) {
         return list.stream()
@@ -97,6 +104,7 @@ public class ExhibitsManager {
 
     /**
      * retrieves EXHIBIT nodes from the database
+     *
      * @return the list of all nodes that are of kind EXHIBIT
      */
     public List<NodeInfo> getAllExhibits(Context context) {
