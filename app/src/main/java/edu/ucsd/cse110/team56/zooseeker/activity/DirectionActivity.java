@@ -31,6 +31,7 @@ public class DirectionActivity extends AppCompatActivity {
     private int current = 0;
     private TextView destination;
     private View nextButton, previousButton, skipButton;
+    private List<NodeInfo> addedNodes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,8 @@ public class DirectionActivity extends AppCompatActivity {
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        List<NodeInfo> addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNode), "entrance_exit_gate");
+        addedNodes = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), "entrance_exit_gate", "entrance_exit_gate");
 
         // setup buttons
 
@@ -98,7 +99,21 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onSkip() {
         assert skipButtonAssertion();
-        current += 2;
+
+        {
+            //find current node
+            NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex());
+            //remove all node before next exhibit (include next exhibit)
+            current += 2;
+            while(current > -1){
+                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex()));
+                current--;
+            }
+            // regenerate route for the rest of the exhibits
+            this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), currInfo.id, "entrance_exit_gate");
+            current = 0;
+        }
+
         updateUI();
     }
 
