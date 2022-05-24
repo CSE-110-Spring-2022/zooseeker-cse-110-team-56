@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -58,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Listen for location updates
-        setupLocationUpdatesListener();
-
         // Retrieve local data
         allNodes = ExhibitsManager.getAllExhibits(this);
 
@@ -86,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
+
+        setupLocationUpdatesListener();
 
         // Update count from database
         updateCount();
@@ -227,15 +228,13 @@ public class MainActivity extends AppCompatActivity {
     // -------- Handle location updates --------
 
     private void setupLocationUpdatesListener() {
-        var locationListener = new LocationListener() {
+        class DemoLocationObserver implements LocationObserver {
             @Override
-            public void onLocationChanged(@NonNull Location location) {
-                Log.d("CurrentLocation", "changed");
-                Log.d("CurrentLocation", String.format("Location changed: %s", location));
+            public void updateClosestNode(NodeInfo node, Location location) {
+                Log.d("CurrentLocation", String.format("location: %s, exhibit: %s", location, node));
             }
-        };
-
-        LocationUpdatesManager.setupListener(this, true, locationListener);
+        }
+        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
     }
 
 }

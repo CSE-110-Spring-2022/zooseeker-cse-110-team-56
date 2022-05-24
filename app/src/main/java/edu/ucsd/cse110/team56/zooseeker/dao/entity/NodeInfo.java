@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.team56.zooseeker.dao.entity;
 
+import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -59,6 +61,16 @@ public class NodeInfo {
 
     public String getName() {
         return name;
+    }
+
+    public Optional<Location> getLocation() {
+        if (this.longitude == 0 && this.latitude == 0) {
+            return Optional.empty();
+        }
+        Location location = new Location("");
+        location.setLongitude(this.longitude);
+        location.setLatitude(this.latitude);
+        return Optional.of(location);
     }
 
     public NodeInfo(@NonNull String id, String name, Kind kind, List<String> tags) {
