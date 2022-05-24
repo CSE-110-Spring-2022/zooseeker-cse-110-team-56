@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Retrieve local data
-        allNodes = ExhibitsManager.getAllExhibits(this);
+        allNodes = ExhibitsManager.getSingleton(this).getAllExhibits(this);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        final var addedNames = ExhibitsManager.getAddedListNames(allNodes);
+        final var addedNames = ExhibitsManager.getSingleton(this).getAddedListNames(allNodes);
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
@@ -128,16 +128,16 @@ public class MainActivity extends AppCompatActivity {
         final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        final var allNames = ExhibitsManager.getNames(allNodes);
+        final var allNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
-            ExhibitsManager.addItem(searchListView.getContext(), selectedItem);
+            ExhibitsManager.getSingleton(this).addItem(selectedItem);
         } else {
-            ExhibitsManager.removeItem(searchListView.getContext(), selectedItem);
+            ExhibitsManager.getSingleton(this).removeItem(selectedItem);
         }
 
         // update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
         updateCount();
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
 
         return false;
     }
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateCount() {
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getAddedCount(allNodes);
+                + ExhibitsManager.getSingleton(this).getAddedCount(allNodes);
         addedCountView.setText(displayCount);
     }
 
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onPlanBtnClicked(View view) {
-        if (ExhibitsManager.getAddedListNames(allNodes).size() == 0) {
+        if (ExhibitsManager.getSingleton(this).getAddedListNames(allNodes).size() == 0) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
             PlanButton.startPlanListActivity(this, addedListAdapter);
@@ -205,23 +205,23 @@ public class MainActivity extends AppCompatActivity {
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
         // empty case
-        if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
+        if (ExhibitsManager.getSingleton(this).getAddedListNames(allNodes).isEmpty()) {
             UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
 
         // Update Database
         for (NodeInfo node : allNodes) {
-            ExhibitsManager.removeItem(this, node);
+            ExhibitsManager.getSingleton(this).removeItem(node);
         }
 
         // Update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
 
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getAddedCount(allNodes);
+                + ExhibitsManager.getSingleton(this).getAddedCount(allNodes);
         addedCountView.setText(displayCount);
     }
 

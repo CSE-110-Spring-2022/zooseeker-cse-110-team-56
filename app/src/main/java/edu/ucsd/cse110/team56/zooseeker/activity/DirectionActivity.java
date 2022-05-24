@@ -48,8 +48,8 @@ public class DirectionActivity extends AppCompatActivity {
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        addedNodes = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), "entrance_exit_gate", "entrance_exit_gate");
+        addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getSingleton(this).getListId(addedNodes), "entrance_exit_gate", "entrance_exit_gate");
 
         // setup buttons
 
@@ -110,7 +110,7 @@ public class DirectionActivity extends AppCompatActivity {
                 current--;
             }
             // regenerate route for the rest of the exhibits
-            this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), currInfo.id, "entrance_exit_gate");
+            this.directions = Graph.load(this).generatePaths(ExhibitsManager.getSingleton(this).getListId(addedNodes), currInfo.id, "entrance_exit_gate");
             current = 0;
         }
 

@@ -34,8 +34,8 @@ public class PlanListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_list);
-        addedNode = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-        addedId = ExhibitsManager.getListId(addedNode);
+        addedNode = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        addedId = ExhibitsManager.getSingleton(this).getListId(addedNode);
         //List<String> toVisit = Arrays.asList("entrance_exit_gate", "lions", "gators", "entrance_exit_gate");
         this.directions = Graph.load(this).generatePaths(addedId, "entrance_exit_gate", "entrance_exit_gate");
 
