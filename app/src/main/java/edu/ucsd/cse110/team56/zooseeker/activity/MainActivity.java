@@ -2,22 +2,15 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,7 +21,6 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
@@ -36,6 +28,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
@@ -65,23 +58,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        /* Listen for Location Updates */
-        {
-            var provider = LocationManager.GPS_PROVIDER;
-            var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            Log.d("CurrentLocation", "requested");
-            var locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    Log.d("CurrentLocation", "changed");
-                    Log.d("CurrentLocation", String.format("Location changed: %s", location));
-                }
-            };
-            locationManager.requestLocationUpdates(provider, 0, 0f, locationListener);
-            var location = locationManager.getLastKnownLocation(provider);
-            Log.d("LastLocation", String.format("%s", location));
-        }
-
+        // Listen for location updates
+        setupLocationUpdatesListener();
 
         // Retrieve local data
         allNodes = ExhibitsManager.getAllExhibits(this);
@@ -246,7 +224,18 @@ public class MainActivity extends AppCompatActivity {
         addedCountView.setText(displayCount);
     }
 
+    // -------- Handle location updates --------
 
+    private void setupLocationUpdatesListener() {
+        var locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                Log.d("CurrentLocation", "changed");
+                Log.d("CurrentLocation", String.format("Location changed: %s", location));
+            }
+        };
 
+        LocationUpdatesManager.setupListener(this, true, locationListener);
+    }
 
 }
