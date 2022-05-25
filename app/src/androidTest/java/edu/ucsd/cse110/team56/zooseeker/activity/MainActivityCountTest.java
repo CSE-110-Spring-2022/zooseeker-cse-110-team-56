@@ -5,7 +5,6 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -24,9 +23,10 @@ import android.view.ViewParent;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -40,13 +40,20 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivityAddToListTest {
+public class MainActivityCountTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(
+                    "android.permission.ACCESS_FINE_LOCATION",
+                    "android.permission.ACCESS_COARSE_LOCATION");
 
     @Test
-    public void mainActivityAddToListTest() {
+    public void mainActivityCountTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -67,24 +74,13 @@ public class MainActivityAddToListTest {
                                                 1)),
                                 0),
                         isDisplayed()));
-        searchAutoComplete.perform(replaceText("mam"), closeSoftKeyboard());
-
-        ViewInteraction searchAutoComplete2 = onView(
-                allOf(withId(androidx.appcompat.R.id.search_src_text), withText("mam"),
-                        childAtPosition(
-                                allOf(withId(androidx.appcompat.R.id.search_plate),
-                                        childAtPosition(
-                                                withId(androidx.appcompat.R.id.search_edit_frame),
-                                                1)),
-                                0),
-                        isDisplayed()));
-        searchAutoComplete2.perform(pressImeActionButton());
+        searchAutoComplete.perform(replaceText("a"), closeSoftKeyboard());
 
         DataInteraction appCompatCheckedTextView = onData(anything())
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                1)))
+                                3)))
                 .atPosition(0);
         appCompatCheckedTextView.perform(click());
 
@@ -92,9 +88,41 @@ public class MainActivityAddToListTest {
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                1)))
-                .atPosition(1);
+                                3)))
+                .atPosition(2);
         appCompatCheckedTextView2.perform(click());
+
+        DataInteraction appCompatCheckedTextView3 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(2);
+        appCompatCheckedTextView3.perform(click());
+
+        DataInteraction appCompatCheckedTextView4 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(3);
+        appCompatCheckedTextView4.perform(click());
+
+        DataInteraction appCompatCheckedTextView5 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(4);
+        appCompatCheckedTextView5.perform(click());
+
+        DataInteraction appCompatCheckedTextView6 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                3)))
+                .atPosition(2);
+        appCompatCheckedTextView6.perform(click());
 
         ViewInteraction appCompatImageView2 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
@@ -119,18 +147,10 @@ public class MainActivityAddToListTest {
         appCompatImageView3.perform(click());
 
         ViewInteraction textView = onView(
-                allOf(withId(android.R.id.text1), withText("Arctic Foxes"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
+                allOf(withId(R.id.added_count), withText("Added Animals:4"),
+                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
                         isDisplayed()));
-        textView.check(matches(withText("Arctic Foxes")));
-
-        ViewInteraction textView2 = onView(
-                allOf(withId(android.R.id.text1), withText("Elephant Odyssey"),
-                        withParent(allOf(withId(R.id.added_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))),
-                        isDisplayed()));
-        textView2.check(matches(withText("Elephant Odyssey")));
+        textView.check(matches(withText("Added Animals:4")));
     }
 
     private static Matcher<View> childAtPosition(

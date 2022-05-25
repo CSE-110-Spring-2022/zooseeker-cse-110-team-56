@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,15 +20,16 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
+import java.util.Locale;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView addedCountView, noResultView;
 
     private List<NodeInfo> allNodes;
+    private List<String> allNodeNames;
 
     private Location lastVisitedLocation;
 
@@ -60,8 +61,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        // Listen for location updates
+        setupLocationUpdatesListener();
+
         // Retrieve local data
-        allNodes = ExhibitsManager.getSingleton(this).getAllExhibits(this);
+        allNodes = ExhibitsManager.getAllExhibits(this);
+        allNodeNames = ExhibitsManager.getNames(allNodes);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        final var addedNames = ExhibitsManager.getSingleton(this).getAddedListNames(allNodes);
+        final var addedNames = ExhibitsManager.getAddedListNames(allNodes);
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
@@ -85,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
-
-        setupLocationUpdatesListener();
 
         // Update count from database
         updateCount();
@@ -128,16 +131,16 @@ public class MainActivity extends AppCompatActivity {
         final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        final var allNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
+        final var allNames = ExhibitsManager.getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
-            ExhibitsManager.getSingleton(this).addItem(selectedItem);
+            ExhibitsManager.addItem(searchListView.getContext(), selectedItem);
         } else {
-            ExhibitsManager.getSingleton(this).removeItem(selectedItem);
+            ExhibitsManager.removeItem(searchListView.getContext(), selectedItem);
         }
 
         // update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
 
         updateCount();
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
 
         return false;
     }
@@ -154,9 +157,10 @@ public class MainActivity extends AppCompatActivity {
     private void updateCount() {
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount(allNodes);
+                + ExhibitsManager.getAddedCount(allNodes);
         addedCountView.setText(displayCount);
     }
+
 
     private SearchView.OnQueryTextListener makeQueryTextListener() {
         Activity activity = this;
@@ -176,9 +180,17 @@ public class MainActivity extends AppCompatActivity {
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
                     UIOperations.setVisibility(searchListView, !s.isEmpty());
-                    UIOperations.setVisibility(noResultView, s.isEmpty());
+                    //UIOperations.setVisibility(noResultView, s.isEmpty());
                 });
 
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (!inputIsValid(s)) {
+                            Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
+                            errorToast.show();
+                        }
+                    }
+                });
                 return true;
             }
         };
@@ -187,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onPlanBtnClicked(View view) {
-        if (ExhibitsManager.getSingleton(this).getAddedListNames(allNodes).size() == 0) {
+        if (ExhibitsManager.getAddedListNames(allNodes).size() == 0) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
             PlanButton.startPlanListActivity(this, addedListAdapter);
@@ -198,43 +210,54 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onGPSBtnClicked(View view) {
-//        Intent intent = new Intent(this, LocationActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, LocationActivity.class);
+        startActivity(intent);
     }
 
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
         // empty case
-        if (ExhibitsManager.getSingleton(this).getAddedListNames(allNodes).isEmpty()) {
+        if (ExhibitsManager.getAddedListNames(allNodes).isEmpty()) {
             UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
 
         // Update Database
         for (NodeInfo node : allNodes) {
-            ExhibitsManager.getSingleton(this).removeItem(node);
+            ExhibitsManager.removeItem(this, node);
         }
 
         // Update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getAddedListNames(allNodes));
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
 
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount(allNodes);
+                + ExhibitsManager.getAddedCount(allNodes);
         addedCountView.setText(displayCount);
     }
 
     // -------- Handle location updates --------
 
     private void setupLocationUpdatesListener() {
-        class DemoLocationObserver implements LocationObserver {
+        var locationListener = new LocationListener() {
             @Override
-            public void updateClosestNode(NodeInfo node, Location location) {
-                Log.d("CurrentLocation", String.format("location: %s, exhibit: %s", location, node));
+            public void onLocationChanged(@NonNull Location location) {
+                Log.d("CurrentLocation", "changed");
+                Log.d("CurrentLocation", String.format("Location changed: %s", location));
             }
+        };
+
+        LocationUpdatesManager.setupListener(this, true, locationListener);
+    }
+
+    private boolean inputIsValid(String s){
+        for(int i = 0; i < allNodeNames.size(); i++){
+           s.toLowerCase(Locale.ROOT);
+            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s))
+                return true;
         }
-        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
+        return false;
     }
 
 }

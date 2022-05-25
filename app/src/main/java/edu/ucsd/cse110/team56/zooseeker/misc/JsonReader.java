@@ -36,7 +36,7 @@ public class JsonReader {
             Log.d("JsonParser", results.toString());
             return results;
         } catch (IOException e) {
-            Log.e("JsonParser", file, e);
+            Log.d("JsonParser", file, e);
             return Collections.emptyList();
         }
     }
@@ -60,7 +60,6 @@ public class JsonReader {
             return Optional.of(result);
         } catch (IOException e) {
             Log.d("JsonParser", file, e);
-            System.err.println(e);
             return Optional.empty();
         }
     }

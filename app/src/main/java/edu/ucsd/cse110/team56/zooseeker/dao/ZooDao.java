@@ -28,11 +28,11 @@ public interface ZooDao {
     List<NodeInfo> getNodesWithKind(NodeInfo.Kind kind);
 
     /**
-     * Get all nodes with a specific status
+     * Get all nodes added to the list by user
      * @return a list of nodes
      */
-    @Query("SELECT * FROM `NodeInfo` WHERE status IN (:status) ORDER BY `id`")
-    List<NodeInfo> getNodesWithStatus(List<NodeInfo.Status> status);
+    @Query("SELECT * FROM `NodeInfo` WHERE added = 1 ORDER BY `id`")
+    List<NodeInfo> getNodesAdded();
 
     /**
      * Get a single node inside the zoo using its ID
@@ -41,12 +41,6 @@ public interface ZooDao {
      */
     @Query("SELECT * FROM `NodeInfo` WHERE `id` = :id")
     NodeInfo getNode(String id);
-
-    @Query("SELECT * FROM `NodeInfo` WHERE `id` = :parentId")
-    NodeInfo getParentNode(String parentId);
-
-    @Query("SELECT * FROM `NodeInfo` WHERE `parentId` = :id")
-    List<NodeInfo> getChildNodes(String id);
 
     /**
      * Add a list of nodes to the zoo

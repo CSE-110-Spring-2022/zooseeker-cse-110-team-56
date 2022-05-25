@@ -34,6 +34,10 @@
             android:value="AIzaSyAz1JFbWrZ_SwHP6u5OnKWkgMbi5T3UaVI" />
 
         <activity
+            android:name=".activity.LocationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_location" />
+        <activity
             android:name=".activity.DirectionActivity"
             android:exported="false" />
         <activity
