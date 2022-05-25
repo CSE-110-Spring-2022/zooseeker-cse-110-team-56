@@ -22,8 +22,8 @@ import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 public class JsonReaderTest {
     @Test
     public void testLoadJsonList() {
-        List<NodeInfo> nodes = JsonReader.parseJsonList(ApplicationProvider.getApplicationContext(), "gps/zoo_node_info.json", NodeInfo.class);
-        assertEquals(27, nodes.size());
+        List<NodeInfo> nodes = JsonReader.parseJsonList(ApplicationProvider.getApplicationContext(), "map/assets/old/sample_node_info.json", NodeInfo.class);
+        assertEquals(7, nodes.size());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class JsonReaderTest {
     @Test
     public void testLoadJson() {
         Context context = ApplicationProvider.getApplicationContext();
-        Optional<Graph> rawGraph = JsonReader.parseJson(context, "gps/zoo_graph.json", Graph.class);
+        Optional<Graph> rawGraph = JsonReader.parseJson(context, "map/assets/sample_zoo_graph.json", Graph.class);
         assertTrue(rawGraph.isPresent());
     }
 

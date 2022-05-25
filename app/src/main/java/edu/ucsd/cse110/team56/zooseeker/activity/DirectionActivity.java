@@ -23,12 +23,11 @@ import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
-import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 public class DirectionActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
     public DirectionListAdapter adapter = new DirectionListAdapter();
-    private ArrayList<Path> directions;
+    private ArrayList<GraphPath<String, GraphEdge>> directions;
     private int current = 0;
     private TextView destination;
     private View nextButton, previousButton, skipButton;
@@ -49,14 +48,8 @@ public class DirectionActivity extends AppCompatActivity {
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
-
-        NodeInfo gate = ZooDatabase.getSingleton(this).zooDao().getNode("entrance_exit_gate");
-
-        this.directions = Graph.load(this).generatePaths(
-                ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
-                ExhibitsManager.getSingleton(this).getGraphVertex(gate),
-                ExhibitsManager.getSingleton(this).getGraphVertex(gate));
+        addedNodes = ExhibitsManager.getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), "entrance_exit_gate", "entrance_exit_gate");
 
         // setup buttons
 
@@ -109,18 +102,15 @@ public class DirectionActivity extends AppCompatActivity {
 
         {
             //find current node
-            NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+            NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex());
             //remove all node before next exhibit (include next exhibit)
             current += 2;
             while(current > -1){
-                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
+                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getStartVertex()));
                 current--;
             }
             // regenerate route for the rest of the exhibits
-            this.directions = Graph.load(this).generatePaths(
-                    ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
-                    ExhibitsManager.getSingleton(this).getGraphVertex(currInfo),
-                    ExhibitsManager.getSingleton(this).getGraphVertex(ZooDatabase.getSingleton(this).zooDao().getNode("entrance_exit_gate")));
+            this.directions = Graph.load(this).generatePaths(ExhibitsManager.getListId(addedNodes), currInfo.id, "entrance_exit_gate");
             current = 0;
         }
 
@@ -131,8 +121,8 @@ public class DirectionActivity extends AppCompatActivity {
      * retrieves data, updates texts and button visibility
      */
     private void updateUI() {
-        adapter.setPaths(this.directions.get(current).path.getEdgeList(), this);
-        NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getEndVertex());
+        adapter.setPaths(this.directions.get(current).getEdgeList(), this);
+        NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).getEndVertex());
         this.destination.setText(getString(R.string.next_destination, info.name));
         updateButtonsVisibility();
     }

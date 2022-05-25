@@ -61,37 +61,32 @@ public class Graph {
      * @param toVisit exhibits to visit (doesn't include the gate)
      * @param start the start and the end point, probably the gate
      */
-    public ArrayList<Path> generatePaths(List<GraphVertex> toVisit, GraphVertex start, GraphVertex end) {
+    public ArrayList<GraphPath<String, GraphEdge>> generatePaths(List<String> toVisit, String start, String end) {
         org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
-        ArrayList<Path> paths = new ArrayList<>();
+        ArrayList<GraphPath<String, GraphEdge>> paths = new ArrayList<>();
 
-        Set<GraphVertex> locSet = new HashSet<>(toVisit);
+        Set<String> locSet = new HashSet<>(toVisit);
 
-        GraphVertex current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
+        String current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
 
         while(locSet.size() > 0) {
-            ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current.getNavigatableId());
-            GraphVertex nextDestination = locSet.iterator().next();
-            GraphPath<String, GraphEdge> shortest = results.getPath(nextDestination.getNavigatableId());
-
-            for(GraphVertex loc: locSet) {
-                GraphPath<String, GraphEdge> path = results.getPath(loc.getNavigatableId());
+            ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
+            GraphPath<String, GraphEdge> shortest = results.getPath(locSet.iterator().next());
+            for(String loc: locSet) {
+                GraphPath<String, GraphEdge> path = results.getPath(loc);
                 if (path.getLength() < shortest.getLength()) {
                     shortest = path;
-                    nextDestination = loc;
                 }
             }
-
-            paths.add(new Path(shortest, current, nextDestination));
-            locSet.remove(nextDestination);
-
-            current = nextDestination;
+            paths.add(shortest);
+            locSet.remove(shortest.getEndVertex());
+            current = shortest.getEndVertex();
         }
 
-        ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current.getNavigatableId());
-        GraphPath<String, GraphEdge> path = results.getPath(end.getNavigatableId());
-        paths.add(new Path(path, current, end));
+        ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current);
+        GraphPath<String, GraphEdge> path = results.getPath(end);
+        paths.add(path);
 
         Log.d("Paths", paths.toString());
         return paths;
@@ -103,7 +98,7 @@ public class Graph {
      * @return Graph instance
      */
     public static Graph load(Context context) {
-        Graph rawGraph = JsonReader.parseJson(context, "gps/zoo_graph.json", Graph.class).get();
+        Graph rawGraph = JsonReader.parseJson(context, "map/assets/old/sample_zoo_graph.json", Graph.class).get();
         return rawGraph;
     }
 }

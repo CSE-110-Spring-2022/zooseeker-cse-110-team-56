@@ -44,15 +44,15 @@ public class PlanListActivityTest {
         ZooDao dao = ZooDatabase.getSingleton(ApplicationProvider.getApplicationContext()).zooDao();
 
         NodeInfo node1 = dao.getNode("elephant_odyssey");
-        node1.setStatus(NodeInfo.Status.ADDED);
+        node1.added = true;
         dao.updateNode(node1);
 
         NodeInfo node2 = dao.getNode("gorillas");
-        node1.setStatus(NodeInfo.Status.ADDED);
+        node2.added = true;
         dao.updateNode(node2);
 
         NodeInfo node3 = dao.getNode("arctic_foxes");
-        node1.setStatus(NodeInfo.Status.ADDED);
+        node3.added = true;
         dao.updateNode(node3);
     }
 
