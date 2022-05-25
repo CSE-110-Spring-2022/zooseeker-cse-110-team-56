@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Retrieve local data
-        allNodes = ExhibitsManager.getAllExhibits(this);
-        allNodeNames = ExhibitsManager.getNames(allNodes);
+        allNodes = ExhibitsManager.getSingleton(this).getAllExhibits(this);
+        allNodeNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
       
         // Initialize views
         searchListView = findViewById(R.id.data_list);
