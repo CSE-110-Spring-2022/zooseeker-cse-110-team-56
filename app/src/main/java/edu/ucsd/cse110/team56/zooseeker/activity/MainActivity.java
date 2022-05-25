@@ -21,8 +21,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
+import java.util.Locale;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView addedCountView, noResultView;
 
     private List<NodeInfo> allNodes;
+    private List<String> allNodeNames;
 
     private Location lastVisitedLocation;
 
@@ -61,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Retrieve local data
-        allNodes = ExhibitsManager.getSingleton(this).getAllExhibits(this);
-
+        allNodes = ExhibitsManager.getAllExhibits(this);
+        allNodeNames = ExhibitsManager.getNames(allNodes);
+      
         // Initialize views
         searchListView = findViewById(R.id.data_list);
         addedExhibitsListView = findViewById(R.id.added_list);
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         addedCountView.setText(displayCount);
     }
 
+
     private SearchView.OnQueryTextListener makeQueryTextListener() {
         Activity activity = this;
         return new SearchView.OnQueryTextListener() {
@@ -176,9 +181,17 @@ public class MainActivity extends AppCompatActivity {
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
                     UIOperations.setVisibility(searchListView, !s.isEmpty());
-                    UIOperations.setVisibility(noResultView, s.isEmpty());
+                    //UIOperations.setVisibility(noResultView, s.isEmpty());
                 });
 
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (!inputIsValid(s)) {
+                            Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
+                            errorToast.show();
+                        }
+                    }
+                });
                 return true;
             }
         };
@@ -235,6 +248,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
+    }
+
+    private boolean inputIsValid(String s){
+        for(int i = 0; i < allNodeNames.size(); i++){
+           s.toLowerCase(Locale.ROOT);
+            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s))
+                return true;
+        }
+        return false;
     }
 
 }

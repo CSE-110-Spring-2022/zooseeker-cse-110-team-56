@@ -111,7 +111,7 @@ public class DirectionActivityTest {
             assertEquals(2, recyclerView.getAdapter().getItemCount());
 
             button.performClick();
-            assertEquals(View.GONE, button.getVisibility());
+            assertEquals(View.INVISIBLE, button.getVisibility());
             assertEquals(4, recyclerView.getAdapter().getItemCount());
         });
     }
