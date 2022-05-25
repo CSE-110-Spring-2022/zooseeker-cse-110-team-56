@@ -18,7 +18,7 @@ import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
-@Database(entities = {EdgeInfo.class, NodeInfo.class}, version = 1)
+@Database(entities = {EdgeInfo.class, NodeInfo.class}, version = 2)
 @TypeConverters({Converters.class})
 public abstract class ZooDatabase extends RoomDatabase {
     private static ZooDatabase singleton = null;
@@ -51,9 +51,9 @@ public abstract class ZooDatabase extends RoomDatabase {
 
         if (db.zooDao().getAllNodes().size() == 0) {
             Log.d("DB", "populate db with json files");
-            List<NodeInfo> nodes = JsonReader.parseJsonList(context, "map/assets/old/sample_node_info.json", NodeInfo.class);
+            List<NodeInfo> nodes = JsonReader.parseJsonList(context, "gps/zoo_node_info.json", NodeInfo.class);
             db.zooDao().addNodes(nodes);
-            List<EdgeInfo> edges = JsonReader.parseJsonList(context, "map/assets/old/sample_edge_info.json", EdgeInfo.class);
+            List<EdgeInfo> edges = JsonReader.parseJsonList(context, "gps/zoo_edge_info.json", EdgeInfo.class);
             db.zooDao().addEdges(edges);
         }
 
