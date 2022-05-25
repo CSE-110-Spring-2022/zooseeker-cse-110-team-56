@@ -26,6 +26,10 @@ public class UIOperations {
         views.forEach(UIOperations::hideView);
     }
 
+    public static void setVisibility(List<View> views, boolean isVisible) {
+        views.forEach(view -> UIOperations.setVisibility(view, isVisible));
+    }
+
     public static void showAlert(Context context, String message, String buttonText, DialogInterface.OnClickListener onClickListener) {
         final var builder = new AlertDialog.Builder(context);
         builder.setMessage(message)
