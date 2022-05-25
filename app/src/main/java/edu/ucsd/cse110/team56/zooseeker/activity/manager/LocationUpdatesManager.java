@@ -59,7 +59,10 @@ public class LocationUpdatesManager {
         locationManager.requestLocationUpdates(provider, 0, 0f, (this::notifyObservers));
 
         var location = locationManager.getLastKnownLocation(provider);
-        this.notifyObservers(location);
+
+        if (location != null) {
+            this.notifyObservers(location);
+        }
 
         Log.d("LastLocation", String.format("last location: %s", location));
     }
