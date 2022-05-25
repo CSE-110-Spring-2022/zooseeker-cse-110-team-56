@@ -34,7 +34,15 @@ public class LocationPermissionsManager {
                 .allMatch(status -> status == PackageManager.PERMISSION_DENIED);
     }
 
+    public static boolean hasLocationPermissionGranted(Context context) {
+        return Arrays.stream(requiredPermissions)
+                .map(perm -> ContextCompat.checkSelfPermission(context, perm))
+                .allMatch(status -> status == PackageManager.PERMISSION_GRANTED);
+    }
+
     public static void requestLocationPermission(AppCompatActivity activity) {
-        getRequestPermissionLauncher(activity).launch(requiredPermissions);
+        if (!hasLocationPermissionGranted(activity)) {
+            getRequestPermissionLauncher(activity).launch(requiredPermissions);
+        }
     }
 }
