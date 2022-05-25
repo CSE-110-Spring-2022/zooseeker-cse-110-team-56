@@ -36,13 +36,13 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 final var results = new FilterResults();
-                final var prefix = constraint.toString().toLowerCase();
+                final var searchString = constraint.toString().toLowerCase();
 
                 final List<NodeInfo> nodes = new ArrayList<>(list);
 
                 // empty case
 
-                if (prefix.length() == 0) {
+                if (searchString.length() == 0) {
                     results.values = list;
                     results.count = list.size();
                     return results;
@@ -55,14 +55,12 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
                 for(NodeInfo node : nodes) {
                     boolean shouldAddCurrentNode = false;
 
-                    // match name to prefix
-                    for (var currToken : node.name.toLowerCase().split(" ")) {
-                        shouldAddCurrentNode |= currToken.startsWith(prefix);
-                    }
+                    // match name to searchString
+                    shouldAddCurrentNode |= node.name.toLowerCase().contains(searchString);
 
-                    // match tags to prefix
+                    // match tags to searchString
                     for (String tag : node.tags) {
-                        shouldAddCurrentNode |= tag.toLowerCase().startsWith(prefix);
+                        shouldAddCurrentNode |= tag.toLowerCase().contains(searchString);
                     }
 
                     // add to resultList
