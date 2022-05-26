@@ -51,19 +51,27 @@ public class PlanListActivity extends AppCompatActivity {
          */
         {
             destinationsListView = findViewById(R.id.destination);
+
             // Calculate Distances
-            List<String> distance = new ArrayList<>();
-            for (Path eachPath : directions) {
-                distance.add(Double.toString(eachPath.path.getWeight()) + " ft");
+            double[] distance = new double[directions.size()];
+            for (int i = 0; i < directions.size(); i++) {
+                if (i == 0) {
+                    distance[i] = directions.get(i).path.getWeight();
+                }else {
+                    distance[i] = directions.get(i).path.getWeight() + distance[i-1];
+                }
             }
-            //Populate Lists View
+
+            // Populate Lists View
             List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
             for (int i = 0; i < destinations.size(); i++) { //titleArray.length
                 HashMap<String, String> exhibitItem = new HashMap<String, String>();
                 exhibitItem.put("Exhibit", destinations.get(i));
-                exhibitItem.put("Hint", distance.get(i));
+                exhibitItem.put("Hint", Double.toString(distance[i]) + " ft" );
                 data.add(exhibitItem);
             }
+
+            // Set View
             planAdapter = new SimpleAdapter(this, data,
                     android.R.layout.simple_list_item_activated_2,
                     new String[]{"Exhibit", "Hint"},
