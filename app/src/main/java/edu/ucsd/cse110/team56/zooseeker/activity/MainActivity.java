@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> addedListAdapter;
 
     private ListView searchListView, addedExhibitsListView;
-    private TextView addedCountView, noResultView;
+    private TextView addedCountView;
+
+    private List<View> addedListScreenViews, searchScreenViews;
 
     private List<NodeInfo> allNodes;
     private List<String> allNodeNames;
@@ -71,10 +73,13 @@ public class MainActivity extends AppCompatActivity {
         searchListView = findViewById(R.id.data_list);
         addedExhibitsListView = findViewById(R.id.added_list);
         addedCountView = findViewById(R.id.added_count);
-        noResultView = findViewById(R.id.no_result_view);
+
+        // Organize views into screens
+        addedListScreenViews = List.of(addedExhibitsListView, addedCountView, findViewById(R.id.clear_btn), findViewById(R.id.planBtn));
+        searchScreenViews = List.of(searchListView);
 
         // Initialize visibility state
-        UIOperations.hideViews(List.of(searchListView, noResultView));
+        UIOperations.hideViews(searchScreenViews);
 
         // Populate search suggestions list view
         searchFilterAdapter = new NodeInfoAdapter(this, android.R.layout.simple_list_item_multiple_choice, allNodes);
@@ -146,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean closeSearchHandler() {
-        UIOperations.hideViews(List.of(searchListView, noResultView));
-        UIOperations.showViews(List.of(addedExhibitsListView, addedCountView));
+        UIOperations.hideViews(searchScreenViews);
+        UIOperations.showViews(addedListScreenViews);
 
         updateCount();
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
@@ -168,20 +173,18 @@ public class MainActivity extends AppCompatActivity {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                UIOperations.hideView(addedExhibitsListView);
+                UIOperations.hideViews(addedListScreenViews);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                UIOperations.hideViews(List.of(
-                        addedExhibitsListView, searchListView, addedCountView
-                ));
+                UIOperations.hideViews(addedListScreenViews);
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-                    UIOperations.setVisibility(searchListView, !s.isEmpty());
-                    //UIOperations.setVisibility(noResultView, s.isEmpty());
+                    UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
+                    UIOperations.setVisibility(addedListScreenViews, s.isEmpty());
                 });
 
                 runOnUiThread(new Runnable() {
@@ -205,14 +208,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             PlanButton.startPlanListActivity(this, addedListAdapter);
         }
-    }
-
-    // -------- Temp GPS Button Clicked --------
-    // -------- Plan button handler --------
-
-    public void onGPSBtnClicked(View view) {
-//        Intent intent = new Intent(this, LocationActivity.class);
-//        startActivity(intent);
     }
 
     // --------- Clear Button Clicked --------
@@ -252,8 +247,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean inputIsValid(String s){
         for(int i = 0; i < allNodeNames.size(); i++){
-           s.toLowerCase(Locale.ROOT);
-            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s))
+
+            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s.toLowerCase(Locale.ROOT)))
                 return true;
         }
         return false;
