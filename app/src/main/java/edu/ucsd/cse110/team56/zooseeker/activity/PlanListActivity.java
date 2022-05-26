@@ -9,10 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import org.jgrapht.GraphPath;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
@@ -20,12 +20,11 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
-import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphVertex;
 import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 public class PlanListActivity extends AppCompatActivity {
-    private ArrayAdapter<String> addedAdapter;
+    private SimpleAdapter planAdapter;
     private ArrayList<Path> directions;
     private ListView destinationsListView = null;
     private List<NodeInfo> addedNode;
@@ -47,10 +46,30 @@ public class PlanListActivity extends AppCompatActivity {
             destinations.add(ZooDatabase.getSingleton(this).zooDao().getNode(path.path.getEndVertex()).getName());
         }
 
-        destinationsListView = findViewById(R.id.destination);
-        addedAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, destinations);
-        destinationsListView.setAdapter(addedAdapter);
-
+        /*
+            List of Plan Views with Distance Hints
+         */
+        {
+            destinationsListView = findViewById(R.id.destination);
+            // Calculate Distances
+            List<String> distance = new ArrayList<>();
+            for (Path eachPath : directions) {
+                distance.add(Double.toString(eachPath.path.getWeight()) + " ft");
+            }
+            //Populate Lists View
+            List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+            for (int i = 0; i < destinations.size(); i++) { //titleArray.length
+                HashMap<String, String> exhibitItem = new HashMap<String, String>();
+                exhibitItem.put("Exhibit", destinations.get(i));
+                exhibitItem.put("Hint", distance.get(i));
+                data.add(exhibitItem);
+            }
+            planAdapter = new SimpleAdapter(this, data,
+                    android.R.layout.simple_list_item_activated_2,
+                    new String[]{"Exhibit", "Hint"},
+                    new int[]{android.R.id.text1, android.R.id.text2});
+            destinationsListView.setAdapter(planAdapter);
+        }
     }
 
     public void onDirectionBtnClicked(View view) {
