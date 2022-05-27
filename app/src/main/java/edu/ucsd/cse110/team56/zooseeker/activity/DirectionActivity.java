@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import org.jgrapht.GraphPath;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +20,6 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
-import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 public class DirectionActivity extends AppCompatActivity {
@@ -131,7 +128,7 @@ public class DirectionActivity extends AppCompatActivity {
      * retrieves data, updates texts and button visibility
      */
     private void updateUI() {
-        adapter.setPaths(this.directions.get(current).path.getEdgeList(), this);
+        adapter.setPaths(this, this.directions.get(current).path.getEdgeList());
         NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getEndVertex());
         this.destination.setText(getString(R.string.next_destination, info.name));
         updateButtonsVisibility();
