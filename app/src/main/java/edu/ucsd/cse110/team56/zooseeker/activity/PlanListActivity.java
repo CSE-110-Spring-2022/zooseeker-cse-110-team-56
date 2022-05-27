@@ -54,20 +54,29 @@ public class PlanListActivity extends AppCompatActivity {
 
             // Calculate Distances
             double[] distance = new double[directions.size()];
+            double total = 0.0;
             for (int i = 0; i < directions.size(); i++) {
-                if (i == 0) {
-                    distance[i] = directions.get(i).path.getWeight();
-                }else {
-                    distance[i] = directions.get(i).path.getWeight() + distance[i-1];
-                }
+                total+=directions.get(i).path.getWeight();
+                distance[i]=total;
             }
+            total=0.0;
 
             // Populate Lists View
             List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+            String space="";
+            for(int j = 0; j < 20; j++)
+                space+="\t";
+            HashMap<String, String> exhibitItem = new HashMap<String, String>();
+            exhibitItem.put("Exhibit", "Destinations" + space + "Distance from you" );
+            data.add(exhibitItem);
+
+
             for (int i = 0; i < destinations.size(); i++) { //titleArray.length
-                HashMap<String, String> exhibitItem = new HashMap<String, String>();
-                exhibitItem.put("Exhibit", destinations.get(i));
-                exhibitItem.put("Hint", Double.toString(distance[i]) + " ft" );
+                space="";
+                for(int j = 0; j < 38-destinations.get(i).length(); j++)
+                    space+="\t";
+                exhibitItem = new HashMap<String, String>();
+                exhibitItem.put("Exhibit", destinations.get(i) + space + Double.toString(distance[i]) + "ft");
                 data.add(exhibitItem);
             }
 
