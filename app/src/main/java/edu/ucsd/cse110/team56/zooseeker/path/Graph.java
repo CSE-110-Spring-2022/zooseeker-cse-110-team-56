@@ -77,7 +77,7 @@ public class Graph {
 
             for(GraphVertex loc: locSet) {
                 GraphPath<String, GraphEdge> path = results.getPath(loc.getNavigatableId());
-                if (path.getLength() < shortest.getLength()) {
+                if (path.getWeight() < shortest.getWeight()) {
                     shortest = path;
                     nextDestination = loc;
                 }
