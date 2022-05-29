@@ -22,6 +22,10 @@ public class NodeInfoAdapter extends ArrayAdapter<NodeInfo> {
         this.list = new ArrayList<>(objects);
     }
 
+    public void update(@NonNull List<NodeInfo> objects) {
+        this.list = new ArrayList<>(objects);
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

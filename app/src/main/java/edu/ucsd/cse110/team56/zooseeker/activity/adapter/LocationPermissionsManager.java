@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat;
 
 import java.util.Arrays;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
+
 public class LocationPermissionsManager {
     public static final String[] requiredPermissions = new String[] {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -22,9 +24,14 @@ public class LocationPermissionsManager {
     private static ActivityResultLauncher<String[]> getRequestPermissionLauncher(AppCompatActivity activity) {
         return activity.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), perms -> {
             perms.forEach((perm, isGranted) -> Log.i("UserLocation", String.format("Permission %s granted: %s", perm, isGranted)));
-            Intent intent = activity.getIntent();
-            activity.finish();
-            activity.startActivity(intent);
+
+            if (hasLocationPermissionGranted(activity)) {
+                Intent intent = activity.getIntent();
+                activity.finish();
+                activity.startActivity(intent);
+            } else {
+                UIOperations.showDefaultAlert(activity, "Not enough location permissions.");
+            }
         });
     }
 

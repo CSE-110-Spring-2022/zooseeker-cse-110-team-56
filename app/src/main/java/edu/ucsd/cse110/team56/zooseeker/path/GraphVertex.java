@@ -10,6 +10,11 @@ public class GraphVertex {
         return current.id;
     }
 
+    public NodeInfo getActualExhibit() {
+        if (this.child != null) {return this.child;}
+        else {return this.current;}
+    }
+
     public GraphVertex(NodeInfo parent, NodeInfo node) {
         this.current = parent;
         this.child = node;
