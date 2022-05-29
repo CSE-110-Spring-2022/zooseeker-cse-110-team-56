@@ -3,7 +3,9 @@
     android:id="@+id/layout_plan_list_item"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
 
     <TextView

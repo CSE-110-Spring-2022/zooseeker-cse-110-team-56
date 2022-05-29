@@ -48,7 +48,7 @@ public class PlanListActivity extends AppCompatActivity {
         this.directions = Graph.load(this).generatePaths(addedId, gate, gate);
 
         for (Path path : this.directions) {
-            destinations.add(ZooDatabase.getSingleton(this).zooDao().getNode(path.path.getEndVertex()).getName());
+            destinations.add(path.endInfo.getActualExhibit().name);
         }
 
         /*
@@ -68,14 +68,11 @@ public class PlanListActivity extends AppCompatActivity {
 
             // Populate Lists View
             List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
-            String space="";
-            for(int j = 0; j < 20; j++)
-                space+=" ";
+
             HashMap<String, String> exhibitItem = new HashMap<String, String>();
             exhibitItem.put("Exhibit", "Destinations");
             exhibitItem.put("Hint", "Distance From You");
             data.add(exhibitItem);
-
 
             for (int i = 0; i < destinations.size(); i++) { //titleArray.length
                 exhibitItem = new HashMap<String, String>();
