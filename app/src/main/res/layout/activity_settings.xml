@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch3"
+            android:id="@+id/directions_style_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#2E2142"
