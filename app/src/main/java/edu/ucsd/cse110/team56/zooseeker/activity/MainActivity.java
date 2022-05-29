@@ -148,11 +148,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean closeSearchHandler() {
         UIOperations.hideViews(searchScreenViews);
-        UIOperations.showViews(addedListScreenViews);
-
         updateCount();
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames(allNodes));
 
+        UIOperations.showViews(addedListScreenViews);
         return false;
     }
 
@@ -180,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
                 searchFilterAdapter.getFilter().filter(s, i -> {
                     CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
                     UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
-                    UIOperations.setVisibility(addedListScreenViews, s.isEmpty());
                 });
 
                 runOnUiThread(new Runnable() {
@@ -192,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                updateCount();
                 return true;
             }
         };
