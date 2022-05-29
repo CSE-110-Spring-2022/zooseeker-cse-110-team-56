@@ -2,16 +2,12 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -206,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         if (ExhibitsManager.getSingleton(this).getAddedListNames(allNodes).size() == 0) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
-            PlanButton.startPlanListActivity(this, addedListAdapter);
+            PlanButton.startActivity(this, addedListAdapter);
         }
     }
 

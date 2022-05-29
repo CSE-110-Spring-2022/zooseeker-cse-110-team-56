@@ -16,7 +16,7 @@ public class PlanButton {
         UIOperations.showDefaultAlert(context, context.getString(R.string.no_exhibits_selected_msg));
     }
 
-    public static void startPlanListActivity(Context context, ArrayAdapter<?> addedListAdapter) {
+    public static void startActivity(Context context, ArrayAdapter<?> addedListAdapter) {
         final var intent = new Intent(context, PlanListActivity.class);
         addedListAdapter.notifyDataSetChanged();
         context.startActivity(intent);
