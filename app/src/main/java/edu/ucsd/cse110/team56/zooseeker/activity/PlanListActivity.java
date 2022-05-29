@@ -70,26 +70,25 @@ public class PlanListActivity extends AppCompatActivity {
             List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
             String space="";
             for(int j = 0; j < 20; j++)
-                space+="\t";
+                space+=" ";
             HashMap<String, String> exhibitItem = new HashMap<String, String>();
-            exhibitItem.put("Exhibit", "Destinations" + space + "Distance from you" );
+            exhibitItem.put("Exhibit", "Destinations");
+            exhibitItem.put("Hint", "Distance From You");
             data.add(exhibitItem);
 
 
             for (int i = 0; i < destinations.size(); i++) { //titleArray.length
-                space="";
-                for(int j = 0; j < 38-destinations.get(i).length(); j++)
-                    space+="\t";
                 exhibitItem = new HashMap<String, String>();
-                exhibitItem.put("Exhibit", destinations.get(i) + space + Double.toString(distance[i]) + "ft");
+                exhibitItem.put("Exhibit", destinations.get(i));
+                exhibitItem.put("Hint", Double.toString(distance[i]) + "ft");
                 data.add(exhibitItem);
             }
 
             // Set View
             planAdapter = new SimpleAdapter(this, data,
-                    android.R.layout.simple_list_item_activated_2,
+                    R.layout.plan_list_items,
                     new String[]{"Exhibit", "Hint"},
-                    new int[]{android.R.id.text1, android.R.id.text2});
+                    new int[]{R.id.exhibit_planed, R.id.distance});
             destinationsListView.setAdapter(planAdapter);
         }
     }
