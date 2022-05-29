@@ -18,7 +18,7 @@ import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
-@Database(entities = {EdgeInfo.class, NodeInfo.class}, version = 2)
+@Database(entities = {EdgeInfo.class, NodeInfo.class}, version = 3)
 @TypeConverters({Converters.class})
 public abstract class ZooDatabase extends RoomDatabase {
     private static ZooDatabase singleton = null;
