@@ -17,4 +17,9 @@
     <string name="skip_disabled_msg">Unable to skip.\nThere\'s less than one exhibit left</string>
     <string name="next_destination">Next: %s</string>
     <string name="replan_completed">Replan Complete</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="directions_style_switch_title">Show brief directions instead of detailed</string>
+    <string name="preference_file_key">edu.ucsd.cse110.team56.zooseeker.PREFERENCE_FILE_KEY</string>
+    <string name="directions_style_is_brief">DIRECTIONS_STYLE_IS_BRIEF</string>
 </resources>
