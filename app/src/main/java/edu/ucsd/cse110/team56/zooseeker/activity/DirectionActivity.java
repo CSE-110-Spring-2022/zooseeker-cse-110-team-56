@@ -33,6 +33,7 @@ public class DirectionActivity extends AppCompatActivity {
     private TextView destination;
     private View nextButton, previousButton, skipButton;
     private List<NodeInfo> addedNodes;
+    private List<NodeInfo> tempNodes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class DirectionActivity extends AppCompatActivity {
                 ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
                 ExhibitsManager.getSingleton(this).getGraphVertex(gate),
                 ExhibitsManager.getSingleton(this).getGraphVertex(gate));
+
 
         // setup buttons
 
@@ -87,7 +89,34 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onPrevious() {
         assert previousButtonAssertion();
-        current--;
+        {
+            //find current node
+            current++;
+            NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+            current--;
+            //find previous node
+            NodeInfo prevInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+
+            // regenerate route between current node and previous node
+            this.directions = Graph.load(this).generatePaths(
+                    ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
+                    ExhibitsManager.getSingleton(this).getGraphVertex(prevInfo),
+                    ExhibitsManager.getSingleton(this).getGraphVertex(currInfo));
+
+            // Route displayed but seems like it didn't reverse, I tried to store current exhibit and the previous exhibit into tempnode
+            //    and use the following code to regenerate route between them. But the app keeps quiting.
+
+            /*
+                tempNodes.add(currInfo);
+                tempNodes.add(prevInfo);
+                this.directions = Graph.load(this).generatePaths(
+                    ExhibitsManager.getSingleton(this).getNavigationVertexIds(temp),
+                    ExhibitsManager.getSingleton(this).getGraphVertex(prevInfo),
+                    ExhibitsManager.getSingleton(this).getGraphVertex(currInfo));
+                tempNodes.clear();
+            */
+
+        }
         updateUI();
     }
 
