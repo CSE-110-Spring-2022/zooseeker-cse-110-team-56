@@ -191,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+                updateCount();
                 return true;
             }
         };

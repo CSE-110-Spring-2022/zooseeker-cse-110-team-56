@@ -30,7 +30,7 @@ public class LocationPermissionsManager {
                 activity.finish();
                 activity.startActivity(intent);
             } else {
-                UIOperations.showDefaultAlert(activity, "No location permissions.");
+                UIOperations.showDefaultAlert(activity, "Not enough location permissions.");
             }
         });
     }
