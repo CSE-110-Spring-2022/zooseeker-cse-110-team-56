@@ -32,7 +32,7 @@ import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 public class DirectionActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
-    public DirectionListAdapter adapter = new DirectionListAdapter();
+    public DirectionListAdapter adapter;
     private ArrayList<Path> directions;
     private int current = 0;
     private TextView destination;
@@ -50,6 +50,7 @@ public class DirectionActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView = findViewById(R.id.directions);
         recyclerView.setLayoutManager(layoutManager);
+        adapter = new DirectionListAdapter(this);
         recyclerView.setAdapter(adapter);
         destination = findViewById(R.id.destination_text);
 

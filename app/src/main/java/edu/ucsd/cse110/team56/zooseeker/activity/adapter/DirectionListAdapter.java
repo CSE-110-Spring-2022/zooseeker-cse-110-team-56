@@ -15,12 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.CombinedGraphEdge;
-import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 
 class DirectionInfo {
@@ -33,17 +31,31 @@ class DirectionInfo {
     }
 }
 public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {
+
+    public DirectionListAdapter(Context context) {
+        super();
+        final var sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        sharedPref.registerOnSharedPreferenceChangeListener((pref, key)->{
+            if (key.equals(context.getString(R.string.directions_style_is_brief))) {
+                this.refreshPaths(context);
+            }
+        });
+
+    }
+    private List<GraphEdge> rawInfo = Collections.emptyList();
     private List<DirectionInfo> infos = Collections.emptyList();
-    private boolean shouldDisplayDetails = false;
 
-    public void setPaths(Context context, List<GraphEdge> paths) {
+    public void refreshPaths(Context context) {
+        final var sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        boolean shouldDisplayBriefDirections = sharedPref.getBoolean(context.getString(R.string.directions_style_is_brief), true);
+
         this.infos.clear();
-        this.infos = paths.stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
+        this.infos = this.rawInfo.stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
 
-        if (!shouldDisplayDetails) {
+        if (shouldDisplayBriefDirections) {
             List<DirectionInfo> infos = new ArrayList<>();
             for(DirectionInfo info: this.infos) {
-                if (infos.isEmpty() || infos.get(infos.size() - 1).info.street.equals(info.info.street)) {
+                if (infos.isEmpty() || !infos.get(infos.size() - 1).info.street.equals(info.info.street)) {
                     infos.add(new DirectionInfo(context, new CombinedGraphEdge(info.edge)));
                 } else {
                     ((CombinedGraphEdge)infos.get(infos.size() - 1).edge).addEdge(info.edge);
@@ -52,9 +64,13 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
             this.infos.clear();
             this.infos = infos;
         }
-
-
         notifyDataSetChanged();
+    }
+
+    public void setPaths(Context context, List<GraphEdge> paths) {
+        this.rawInfo.clear();
+        this.rawInfo = new ArrayList<>(paths);
+        this.refreshPaths(context);
     }
 
     @NonNull
