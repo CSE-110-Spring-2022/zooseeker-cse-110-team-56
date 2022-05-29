@@ -59,6 +59,10 @@ public class ExhibitsManager {
                 .count();
     }
 
+    public int getAddedCount() {
+        return getAddedList().size();
+    }
+
     /**
      * @param allList the list containing all items to filter from
      * @return a list of items where `isAdded` is true
@@ -69,12 +73,20 @@ public class ExhibitsManager {
                 .collect(Collectors.toList());
     }
 
+    public List<NodeInfo> getAddedList() {
+        return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED));
+    }
+
     /**
      * @param allList the list containing all items to filter from
      * @return a list of the names of items where `isAdded` is true
      */
     public List<String> getAddedListNames(List<NodeInfo> allList) {
         return getNames(getAddedList(allList));
+    }
+
+    public List<String> getAddedListNames() {
+        return getNames(getAddedList());
     }
 
     public GraphVertex getGraphVertex(NodeInfo node) {
@@ -103,14 +115,19 @@ public class ExhibitsManager {
                 .collect(Collectors.toList());
     }
 
+    public List<String> getNames() {
+        return getAllExhibits().stream()
+                .map(NodeInfo::getName)
+                .collect(Collectors.toList());
+    }
+
     /**
      * retrieves EXHIBIT nodes from the database
      *
      * @return the list of all nodes that are of kind EXHIBIT
      */
-    public List<NodeInfo> getAllExhibits(Context context) {
-        return ZooDatabase.getSingleton(context)
-                .zooDao()
+    public List<NodeInfo> getAllExhibits() {
+        return dao()
                 .getNodesWithKind(NodeInfo.Kind.EXHIBIT);
     }
 }

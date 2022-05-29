@@ -98,6 +98,5 @@ public class NodeInfo {
 
     @Override
     public String toString() {
-        return name + " " + tags.stream().collect(Collectors.joining(" "));
-    }
+        return name;    }
 }
