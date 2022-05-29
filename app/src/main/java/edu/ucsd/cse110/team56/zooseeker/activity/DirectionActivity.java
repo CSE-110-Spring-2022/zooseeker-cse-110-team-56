@@ -6,11 +6,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.directionActivityUIComponents.SettingsButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -33,7 +37,10 @@ public class DirectionActivity extends AppCompatActivity {
     private int current = 0;
     private TextView destination;
     private View nextButton, previousButton, skipButton;
+    private Button replanButton;
     private List<NodeInfo> addedNodes;
+
+    private LocationObserver currLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +67,12 @@ public class DirectionActivity extends AppCompatActivity {
                 ExhibitsManager.getSingleton(this).getGraphVertex(gate));
 
         // setup buttons
-
         previousButton = findViewById(R.id.pre_btn);
         nextButton = findViewById(R.id.next_btn);
         skipButton = findViewById(R.id.skip_btn);
+        replanButton = findViewById(R.id.replan_btn);
+
+
 
         previousButton.setOnClickListener(view -> onPrevious());
         nextButton.setOnClickListener(view -> onNext());
@@ -117,6 +126,7 @@ public class DirectionActivity extends AppCompatActivity {
                 addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
                 current--;
             }
+
             // regenerate route for the rest of the exhibits
             this.directions = Graph.load(this).generatePaths(
                     ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
@@ -148,6 +158,36 @@ public class DirectionActivity extends AppCompatActivity {
         UIOperations.setVisibility(skipButton, skipButtonAssertion());
     }
 
+    /**
+     * Replan when Replan Button is Clicked
+     */
+    public void onReplanBtnClicked(View view) {
+
+        //find current node
+        NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+
+        // Remove the previous nodes
+        NodeInfo currNode;
+        while(current > -1){
+            addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
+            current--;
+        }
+
+        for (NodeInfo node : addedNodes) {
+            System.out.println(node.name + " are left");
+        }
+
+        // regenerate route for the rest of the exhibits
+        this.directions = Graph.load(this).generatePaths(
+                ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
+                ExhibitsManager.getSingleton(this).getGraphVertex(currInfo),
+                ExhibitsManager.getSingleton(this).getGraphVertex(ZooDatabase.getSingleton(this).zooDao().getNode("entrance_exit_gate")));
+        current = 0;
+
+        UIOperations.showDefaultAlert(this, getString(R.string.replan_completed));
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.directions_top_bar, menu);
@@ -155,4 +195,5 @@ public class DirectionActivity extends AppCompatActivity {
     }
 
     public void onSettingsBtnClicked(MenuItem item) { SettingsButton.startActivity(this); }
+
 }
