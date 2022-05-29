@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,18 +19,41 @@ import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
+import edu.ucsd.cse110.team56.zooseeker.path.CombinedGraphEdge;
+import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
 
-public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {
-    private List<GraphEdge> paths = Collections.emptyList();
-    private List<EdgeInfo> infos = Collections.emptyList();
+class DirectionInfo {
+    GraphEdge edge;
+    EdgeInfo info;
 
-    public void setPaths(List<GraphEdge> paths, Context context) {
-        this.paths.clear();
-        this.paths = paths;
+    DirectionInfo(Context context, GraphEdge edge) {
+        this.edge = edge;
+        this.info = ZooDatabase.getSingleton(context).zooDao().getEdge(edge.getId());
+    }
+}
+public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {
+    private List<DirectionInfo> infos = Collections.emptyList();
+    private boolean shouldDisplayDetails = false;
+
+    public void setPaths(Context context, List<GraphEdge> paths) {
         this.infos.clear();
-        ZooDao dao = ZooDatabase.getSingleton(context).zooDao();
-        this.infos = this.paths.stream().map(e -> dao.getEdge(e.getId())).collect(Collectors.toList());
+        this.infos = paths.stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
+
+        if (!shouldDisplayDetails) {
+            List<DirectionInfo> infos = new ArrayList<>();
+            for(DirectionInfo info: this.infos) {
+                if (infos.isEmpty() || infos.get(infos.size() - 1).info.street.equals(info.info.street)) {
+                    infos.add(new DirectionInfo(context, new CombinedGraphEdge(info.edge)));
+                } else {
+                    ((CombinedGraphEdge)infos.get(infos.size() - 1).edge).addEdge(info.edge);
+                }
+            }
+            this.infos.clear();
+            this.infos = infos;
+        }
+
+
         notifyDataSetChanged();
     }
 
@@ -42,23 +66,23 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setEdge(paths.get(position), infos.get(position), position != 0 ? infos.get(position - 1).street : null,position + 1);
+        holder.setEdge(infos.get(position), position != 0 ? infos.get(position - 1).info.street : null,position + 1);
     }
 
     @Override
     public int getItemCount() {
-        return paths.size();
+        return infos.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return paths.get(position).hashCode();
+        return infos.get(position).hashCode();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private final TextView numView;
-        private GraphEdge edge;
+        private DirectionInfo info;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,16 +90,17 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
             this.numView = itemView.findViewById(R.id.direction_num_text);
         }
 
-        public GraphEdge getEdge() {
-            return edge;
+        public DirectionInfo getEdge() {
+            return info;
         }
 
-        public void setEdge(GraphEdge edge, EdgeInfo info, String previousStreet, int index) {
-            NodeInfo destination = ZooDatabase.getSingleton(textView.getContext()).zooDao().getNode(edge.getDestination());
-            if (info.street.equals(previousStreet)) {
-                this.textView.setText(String.format("Continue on %s %s ft towards %s", info.street, edge.getLength(), destination.name));
+        public void setEdge(DirectionInfo info, String previousStreet, int index) {
+            NodeInfo destination = ZooDatabase.getSingleton(textView.getContext()).zooDao().getNode(info.edge.getDestination());
+            this.info = info;
+            if (info.info.street.equals(previousStreet)) {
+                this.textView.setText(String.format("Continue on %s %s ft towards %s", info.info.street, info.edge.getLength(), destination.name));
             } else {
-                this.textView.setText(String.format("Proceed on %s %s ft towards %s", info.street, edge.getLength(), destination.name));
+                this.textView.setText(String.format("Proceed on %s %s ft towards %s", info.info.street, info.edge.getLength(), destination.name));
             }
             this.numView.setText(String.valueOf(index));
         }
