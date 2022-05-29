@@ -16,4 +16,5 @@
     <string name="clear_button_disabled_msg">Clear unnecessary.\nThere are no exhibits added.</string>
     <string name="skip_disabled_msg">Unable to skip.\nThere\'s less than one exhibit left</string>
     <string name="next_destination">Next: %s</string>
+    <string name="replan_completed">Replan Complete</string>
 </resources>

@@ -119,13 +119,9 @@ public class DirectionActivity extends AppCompatActivity {
             //remove all node before next exhibit (include next exhibit)
             current += 2;
             while(current > -1){
-                //addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
-                NodeInfo currNode = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
-                ExhibitsManager.getSingleton(this).removeItem(currNode);
+                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
                 current--;
             }
-
-           addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
 
             // regenerate route for the rest of the exhibits
             this.directions = Graph.load(this).generatePaths(
@@ -163,25 +159,29 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onReplanBtnClicked(View view) {
 
+        //find current node
+        NodeInfo currInfo = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+
         // Remove the previous nodes
         NodeInfo currNode;
         while(current > -1){
             addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
-            currNode = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
-            ExhibitsManager.getSingleton(this).removeItem(currNode);
             current--;
         }
 
-        addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         for (NodeInfo node : addedNodes) {
-            System.out.println(node.name + "are left");
+            System.out.println(node.name + " are left");
         }
 
-        PlanListActivity.planActivity.finish();
-        // Return to PlanActivity for the New Plan
-        Intent intent = new Intent(this, PlanListActivity.class);
-        startActivity(intent);
-        finish();
+        // regenerate route for the rest of the exhibits
+        this.directions = Graph.load(this).generatePaths(
+                ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
+                ExhibitsManager.getSingleton(this).getGraphVertex(currInfo),
+                ExhibitsManager.getSingleton(this).getGraphVertex(ZooDatabase.getSingleton(this).zooDao().getNode("entrance_exit_gate")));
+        current = 0;
+
+        UIOperations.showDefaultAlert(this, getString(R.string.replan_completed));
+
     }
 
 }
