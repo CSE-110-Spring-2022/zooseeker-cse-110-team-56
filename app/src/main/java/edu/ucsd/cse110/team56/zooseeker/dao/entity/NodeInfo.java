@@ -38,7 +38,7 @@ public class NodeInfo {
     public String name;
     public Kind kind;
     public Status status = Status.LOADED;
-    @SerializedName("parent_id")
+    @SerializedName("group_id")
     public String parentId;
     @SerializedName("lng")
     public double longitude;
