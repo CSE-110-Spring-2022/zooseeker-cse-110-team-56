@@ -4,6 +4,7 @@ import static java.lang.String.valueOf;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -30,10 +31,14 @@ public class PlanListActivity extends AppCompatActivity {
     private List<NodeInfo> addedNode;
     public List<String> destinations = new ArrayList<>();
     public List<GraphVertex> addedId;
+    public static Activity planActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        planActivity = this;
+
         setContentView(R.layout.activity_plan_list);
         addedNode = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
         addedId = ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNode);
@@ -98,6 +103,7 @@ public class PlanListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
 }
 
 

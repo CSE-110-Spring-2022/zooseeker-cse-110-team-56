@@ -6,9 +6,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
@@ -29,7 +33,10 @@ public class DirectionActivity extends AppCompatActivity {
     private int current = 0;
     private TextView destination;
     private View nextButton, previousButton, skipButton;
+    private Button replanButton;
     private List<NodeInfo> addedNodes;
+
+    private LocationObserver currLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +63,12 @@ public class DirectionActivity extends AppCompatActivity {
                 ExhibitsManager.getSingleton(this).getGraphVertex(gate));
 
         // setup buttons
-
         previousButton = findViewById(R.id.pre_btn);
         nextButton = findViewById(R.id.next_btn);
         skipButton = findViewById(R.id.skip_btn);
+        replanButton = findViewById(R.id.replan_btn);
+
+
 
         previousButton.setOnClickListener(view -> onPrevious());
         nextButton.setOnClickListener(view -> onNext());
@@ -110,9 +119,14 @@ public class DirectionActivity extends AppCompatActivity {
             //remove all node before next exhibit (include next exhibit)
             current += 2;
             while(current > -1){
-                addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
+                //addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
+                NodeInfo currNode = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+                ExhibitsManager.getSingleton(this).removeItem(currNode);
                 current--;
             }
+
+           addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+
             // regenerate route for the rest of the exhibits
             this.directions = Graph.load(this).generatePaths(
                     ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
@@ -142,6 +156,32 @@ public class DirectionActivity extends AppCompatActivity {
         UIOperations.setVisibility(previousButton, previousButtonAssertion());
         UIOperations.setVisibility(nextButton, nextButtonAssertion());
         UIOperations.setVisibility(skipButton, skipButtonAssertion());
+    }
+
+    /**
+     * Replan when Replan Button is Clicked
+     */
+    public void onReplanBtnClicked(View view) {
+
+        // Remove the previous nodes
+        NodeInfo currNode;
+        while(current > -1){
+            addedNodes.remove(ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex()));
+            currNode = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getStartVertex());
+            ExhibitsManager.getSingleton(this).removeItem(currNode);
+            current--;
+        }
+
+        addedNodes = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
+        for (NodeInfo node : addedNodes) {
+            System.out.println(node.name + "are left");
+        }
+
+        PlanListActivity.planActivity.finish();
+        // Return to PlanActivity for the New Plan
+        Intent intent = new Intent(this, PlanListActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 }
