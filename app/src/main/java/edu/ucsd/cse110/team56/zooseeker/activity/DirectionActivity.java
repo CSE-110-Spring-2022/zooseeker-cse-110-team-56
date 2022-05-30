@@ -167,6 +167,7 @@ public class DirectionActivity extends AppCompatActivity {
                             }
                             );
                 }
+                updateUI();
                 Log.d("DirectionActivity", String.format("location: %s, exhibit: %s", location, node));
             }
         }

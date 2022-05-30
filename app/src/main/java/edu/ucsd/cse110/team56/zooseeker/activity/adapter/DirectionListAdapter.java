@@ -128,15 +128,15 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
             this.info = info;
             String findText = "";
             if (childExhibit != null) {
-                findText = String.format("find %s", childExhibit.name);
+                findText = String.format("and find %s", childExhibit.name);
             }
 
             if (info.edge == null) {
-                this.textView.setText(String.format("In %s %s", info.destinationInfo.name, findText));
+                this.textView.setText(String.format("Stay at %s %s", info.destinationInfo.name, findText));
             } else if (info.edgeInfo.street.equals(previousStreet)) {
-                this.textView.setText(String.format("Continue on %s %s ft towards %s and %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
+                this.textView.setText(String.format("Continue on %s %s ft towards %s %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
             } else {
-                this.textView.setText(String.format("Proceed on %s %s ft towards %s and %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
+                this.textView.setText(String.format("Proceed on %s %s ft towards %s %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
             }
             this.numView.setText(String.valueOf(index));
         }
