@@ -9,6 +9,7 @@ public class GraphEdge extends DefaultWeightedEdge {
     public void setId(String id) { this.id = id; }
     public double getLength() {return super.getWeight();}
     public String getDestination() {return (String) super.getTarget();}
+    public String getOrigin() {return (String) super.getSource();}
 
     @Override
     public String toString() {

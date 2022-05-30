@@ -38,6 +38,15 @@ public class UIOperations {
         dialog.show();
     }
 
+    public static void showDialog(Context context, String message, String cancelText, String okText, DialogInterface.OnClickListener onClickListener) {
+        final var builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+                .setNegativeButton(cancelText, null)
+                .setPositiveButton(okText, onClickListener);
+        final var dialog = builder.create();
+        dialog.show();
+    }
+
     public static void showDefaultAlert(Context context, String message) {
         showAlert(context, message, context.getString(R.string.ok), (dialog, i) -> dialog.dismiss());
     }

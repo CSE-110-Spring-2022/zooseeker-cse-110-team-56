@@ -91,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
 
-        setupLocationUpdatesListener();
-
+        LocationUpdatesManager.getSingleton(this);
         // Update count from database
         updateCount();
     }
@@ -229,15 +228,6 @@ public class MainActivity extends AppCompatActivity {
 
     // -------- Handle location updates --------
 
-    private void setupLocationUpdatesListener() {
-        class DemoLocationObserver implements LocationObserver {
-            @Override
-            public void updateClosestNode(NodeInfo node, Location location) {
-                Log.d("CurrentLocation", String.format("location: %s, exhibit: %s", location, node));
-            }
-        }
-        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
-    }
 
     private boolean inputIsValid(String s){
         for(int i = 0; i < allNodeNames.size(); i++){
