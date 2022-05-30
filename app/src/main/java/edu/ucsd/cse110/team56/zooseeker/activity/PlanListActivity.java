@@ -95,6 +95,10 @@ public class PlanListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onMockBtnClicked(View view) {
+        
+    }
+
     public void onBackToMainClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
