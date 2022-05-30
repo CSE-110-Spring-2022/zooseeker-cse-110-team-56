@@ -40,25 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/mockbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="28dp"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="#9C6EDD"
-        android:onClick="onMockBtnClicked"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:text="@string/mockLocation"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintRight_toLeftOf="@id/planBtn"
-        app:layout_constraintTop_toTopOf="@+id/planBtn"
-        app:layout_constraintBottom_toBottomOf="@+id/planBtn" />
+
 
 
 

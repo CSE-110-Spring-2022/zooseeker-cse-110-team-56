@@ -17,6 +17,7 @@ public class LocationUpdatesManager {
     private List<LocationObserver> observerList = new ArrayList<>();
     private static LocationUpdatesManager singleton = null;
     private Context context;
+    private LocationManager locationManager;
 
     private LocationUpdatesManager(Context context) {
         this.context = context;
@@ -53,7 +54,7 @@ public class LocationUpdatesManager {
 
     private void setupListener() throws SecurityException {
         var provider = LocationManager.GPS_PROVIDER;
-        var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Log.d("LocationManager", "requested");
 
         locationManager.requestLocationUpdates(provider, 0, 0f, (this::notifyObservers));
@@ -70,16 +71,19 @@ public class LocationUpdatesManager {
     public void mockLocation(Location location) {
         if (location != null) {
             this.notifyObservers(location);
-            System.out.println(String.format("mocked location: %s", location));
+            stopLocationListener();
             Log.d("MockedLocation", String.format("mocked location: %s", location));
         }
     }
 
     private void stopLocationListener(){
-        var provider = LocationManager.GPS_PROVIDER;
-        var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        locationManager.removeUpdates(this::notifyObservers);
+        //locationManager.removeUpdates(this::mockLocation);
 
     }
 
 
+
 }
+

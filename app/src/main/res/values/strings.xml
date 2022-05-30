@@ -11,6 +11,7 @@
     <string name="next">NEXT</string>
     <string name="pre">PREVIOUS</string>
     <string name="mockLocation">Mock Location</string>
+    <string name="stopMocking">Stop Mocking</string>
     <string name="no_exhibits_selected_msg">No exhibits selected. Please select at least one.</string>
     <string name="search_animal_hint">Search for an animal here…</string>
     <string name="title_activity_location">LocationActivity</string>

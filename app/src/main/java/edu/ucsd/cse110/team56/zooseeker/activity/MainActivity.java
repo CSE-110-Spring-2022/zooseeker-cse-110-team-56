@@ -29,6 +29,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockLocationManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
@@ -246,6 +247,15 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Mock Location when the Mock Location Button is Clicked
+     */
+    public void onMockBtnClicked(View view) {
+        MockLocationManager mockLocationManager = new MockLocationManager();
+        Location mockedLocation = mockLocationManager.readLocations();
+        LocationUpdatesManager.getSingleton(this).mockLocation(mockedLocation);
     }
 
 }

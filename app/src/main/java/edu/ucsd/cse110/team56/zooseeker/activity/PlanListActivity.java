@@ -95,23 +95,9 @@ public class PlanListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * Mock Location when the Mock Location Button is Clicked
-     */
-    public void onMockBtnClicked(View view) {
-        MockLocationManager mockLocationManager = new MockLocationManager();
-        Location mockedLocation = mockLocationManager.readLocations();
-        LocationUpdatesManager.getSingleton(this).mockLocation(mockedLocation);
-    }
-
-
-
-    public void onBackToMainClicked(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
 
 }
+
 
 
 
