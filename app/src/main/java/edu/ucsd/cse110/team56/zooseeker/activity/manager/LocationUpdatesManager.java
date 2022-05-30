@@ -19,9 +19,12 @@ public class LocationUpdatesManager {
     private Context context;
     private LocationManager locationManager;
 
-    private LocationUpdatesManager(Context context) {
+    protected LocationUpdatesManager(Context context) {
         this.context = context;
         this.setupListener();
+    }
+
+    public LocationUpdatesManager() {
     }
 
     public synchronized static LocationUpdatesManager getSingleton(Context context) {
@@ -35,7 +38,7 @@ public class LocationUpdatesManager {
         this.observerList.add(observer);
     }
 
-    private void notifyObservers(Location location) {
+    protected void notifyObservers(Location location) {
         List<NodeInfo> nodes = ZooDatabase.getSingleton(context).zooDao().getAllNodes();
         float minDist = Float.MAX_VALUE;
         NodeInfo minNode = null;
@@ -52,7 +55,7 @@ public class LocationUpdatesManager {
         }
     }
 
-    private void setupListener() throws SecurityException {
+    protected void setupListener() throws SecurityException {
         var provider = LocationManager.GPS_PROVIDER;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Log.d("LocationManager", "requested");
@@ -68,22 +71,8 @@ public class LocationUpdatesManager {
         Log.d("LastLocation", String.format("last location: %s", location));
     }
 
-    public void mockLocation(Location location) {
-        if (location != null) {
-            this.notifyObservers(location);
-            stopLocationListener();
-            Log.d("MockedLocation", String.format("mocked location: %s", location));
-        }
-    }
-
-    private void stopLocationListener(){
-
-        locationManager.removeUpdates(this::notifyObservers);
-        //locationManager.removeUpdates(this::mockLocation);
-
-    }
-
-
-
 }
+
+
+
 
