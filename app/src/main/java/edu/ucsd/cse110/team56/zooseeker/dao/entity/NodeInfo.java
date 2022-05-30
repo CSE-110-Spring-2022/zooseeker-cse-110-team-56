@@ -30,7 +30,6 @@ public class NodeInfo {
         @SerializedName("loaded") LOADED, // default state when the exhibit is not selected
         @SerializedName("added") ADDED, // after the user has selected the exhibit
         @SerializedName("visited") VISITED, // after the user has visited the exhibit
-        @SerializedName("skipped") SKIPPED // after the user has skipped the exhibit
     }
 
     @PrimaryKey @NonNull
@@ -38,6 +37,7 @@ public class NodeInfo {
     public String name;
     public Kind kind;
     public Status status = Status.LOADED;
+    public Long order;
     @SerializedName("group_id")
     public String parentId;
     @SerializedName("lng")

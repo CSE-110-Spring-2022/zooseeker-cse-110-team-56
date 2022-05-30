@@ -11,7 +11,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -32,14 +31,14 @@ public class ListManagerTest {
     @Test
     public void addItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo);
         assert(nodeInfo.getStatus() == NodeInfo.Status.ADDED);
     }
 
     @Test
     public void removeItemTest() {
         NodeInfo nodeInfo = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).removeItem(nodeInfo);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).remove(nodeInfo);
         assert(nodeInfo.getStatus() == NodeInfo.Status.LOADED);
     }
 
@@ -56,8 +55,8 @@ public class ListManagerTest {
         nodes.add(nodeInfo2);
         nodes.add(nodeInfo3);
 
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo0);
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo2);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo0);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
 
         assertEquals(4, nodes.size());
         assertEquals(2, ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedList(nodes).size());
@@ -74,8 +73,8 @@ public class ListManagerTest {
         nodes.add(nodeInfo1);
         nodes.add(nodeInfo2);
 
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo1);
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo2);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
 
         List<String> addedNames = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedListNames(nodes);
         assert("name1".compareTo(addedNames.get(0)) == 0);
@@ -91,7 +90,7 @@ public class ListManagerTest {
         nodes.add(nodeInfo0);
         nodes.add(nodeInfo1);
 
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).addItem(nodeInfo1);
+        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
 
         List<String> names = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getNames(nodes);
         assert("name0".compareTo(names.get(0)) == 0);

@@ -136,9 +136,9 @@ public class MainActivity extends AppCompatActivity {
         final var allNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
-            ExhibitsManager.getSingleton(this).addItem(selectedItem);
+            ExhibitsManager.getSingleton(this).add(selectedItem);
         } else {
-            ExhibitsManager.getSingleton(this).removeItem(selectedItem);
+            ExhibitsManager.getSingleton(this).remove(selectedItem);
         }
 
         // update UI elements
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update Database
         for (NodeInfo node : allNodes) {
-            ExhibitsManager.getSingleton(this).removeItem(node);
+            ExhibitsManager.getSingleton(this).remove(node);
         }
 
         // Update UI elements

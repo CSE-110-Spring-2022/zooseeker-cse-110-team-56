@@ -66,6 +66,4 @@ public class LocationUpdatesManager {
 
         Log.d("LastLocation", String.format("last location: %s", location));
     }
-
-
 }
