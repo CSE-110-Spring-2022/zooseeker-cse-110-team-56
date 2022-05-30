@@ -11,12 +11,17 @@ import java.util.List;
 public class MockedLocationManager extends LocationUpdatesManager {
 
 
-
+    private List<LocationObserver> observerList = new ArrayList<>();
     private Context context;
     Location singleLocation;
 
     public MockedLocationManager(Context context) {
         this.context = context;
+    }
+
+    @Override
+    public void registerObserver(LocationObserver observer) {
+        this.observerList.add(observer);
     }
 
     @Override
@@ -31,10 +36,13 @@ public class MockedLocationManager extends LocationUpdatesManager {
     public void mockLocation(Location location) {
         this.singleLocation = location;
         setupListener();
-        /*if (singleLocation != null) {
-            super.notifyObservers(singleLocation);
-            Log.d("MockedLocation", String.format("mocked location: %s", singleLocation));
-        }*/
+        //removeListener(); // -> problem
+    }
+
+    protected void removeListener() {
+        super.removeListener();
+        /*LocationUpdatesManager locationUpdatesManager = LocationUpdatesManager.getSingleton(context);
+        LocationManager locationManager = new LocationManager();*/
     }
 
 }

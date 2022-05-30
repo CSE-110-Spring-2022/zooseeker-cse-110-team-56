@@ -71,6 +71,12 @@ public class LocationUpdatesManager {
         Log.d("LastLocation", String.format("last location: %s", location));
     }
 
+    protected void removeListener() {
+        //locationManager.removeUpdates(Object::notifyAll);
+        locationManager.removeUpdates((this::notifyObservers)); //(this::notifyObserveres) -> invoke nullobject
+    }
+
+
 }
 
 

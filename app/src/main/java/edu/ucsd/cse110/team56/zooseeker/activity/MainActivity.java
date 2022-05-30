@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     public void onMockBtnClicked(View view) {
         MockLocationManager mockLocationManager = new MockLocationManager(this);
         Location mockedLocation = mockLocationManager.readLocations();
-        MockedLocationManager mockManager = new MockedLocationManager(this);
+        MockedLocationManager mockManager = new MockedLocationManager(getApplicationContext());
         mockManager.mockLocation(mockedLocation);
 
     }
