@@ -143,8 +143,8 @@ public class DirectionActivity extends AppCompatActivity {
      * retrieves data, updates texts and button visibility
      */
     private void updateUI() {
-        adapter.setPaths(this, this.directions.get(current).path.getEdgeList());
-        NodeInfo info = ZooDatabase.getSingleton(this).zooDao().getNode(this.directions.get(current).path.getEndVertex());
+        adapter.setPaths(this, this.directions.get(current));
+        NodeInfo info = this.directions.get(current).endInfo.getActualExhibit();
         this.destination.setText(getString(R.string.next_destination, info.name));
         updateButtonsVisibility();
     }
