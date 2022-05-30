@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,6 +19,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockLocationManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
@@ -31,13 +34,10 @@ public class PlanListActivity extends AppCompatActivity {
     private List<NodeInfo> addedNode;
     public List<String> destinations = new ArrayList<>();
     public List<GraphVertex> addedId;
-    public static Activity planActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        planActivity = this;
 
         setContentView(R.layout.activity_plan_list);
         addedNode = ExhibitsManager.getSingleton(this).getAddedList(ZooDatabase.getSingleton(this).zooDao().getAllNodes());
@@ -95,9 +95,16 @@ public class PlanListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Mock Location when the Mock Location Button is Clicked
+     */
     public void onMockBtnClicked(View view) {
-        
+        MockLocationManager mockLocationManager = new MockLocationManager();
+        Location mockedLocation = mockLocationManager.readLocations();
+        LocationUpdatesManager.getSingleton(this).mockLocation(mockedLocation);
     }
+
+
 
     public void onBackToMainClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);

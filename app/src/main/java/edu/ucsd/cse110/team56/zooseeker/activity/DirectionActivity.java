@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,8 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockLocationManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.directionActivityUIComponents.SettingsButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -174,10 +177,6 @@ public class DirectionActivity extends AppCompatActivity {
             current--;
         }
 
-        for (NodeInfo node : addedNodes) {
-            System.out.println(node.name + " are left");
-        }
-
         // regenerate route for the rest of the exhibits
         this.directions = Graph.load(this).generatePaths(
                 ExhibitsManager.getSingleton(this).getNavigationVertexIds(addedNodes),
@@ -188,6 +187,7 @@ public class DirectionActivity extends AppCompatActivity {
         UIOperations.showDefaultAlert(this, getString(R.string.replan_completed));
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

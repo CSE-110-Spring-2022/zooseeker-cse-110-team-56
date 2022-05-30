@@ -67,5 +67,19 @@ public class LocationUpdatesManager {
         Log.d("LastLocation", String.format("last location: %s", location));
     }
 
+    public void mockLocation(Location location) {
+        if (location != null) {
+            this.notifyObservers(location);
+            System.out.println(String.format("mocked location: %s", location));
+            Log.d("MockedLocation", String.format("mocked location: %s", location));
+        }
+    }
+
+    private void stopLocationListener(){
+        var provider = LocationManager.GPS_PROVIDER;
+        var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+    }
+
 
 }
