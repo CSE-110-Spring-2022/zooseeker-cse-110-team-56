@@ -36,7 +36,11 @@ public class PlanListActivity extends AppCompatActivity {
         planActivity = this;
         setContentView(R.layout.activity_plan_list);
         destinationsListView = findViewById(R.id.destination);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         this.setUpData();
     }
 

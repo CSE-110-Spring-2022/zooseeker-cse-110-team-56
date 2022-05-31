@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private List<View> addedListScreenViews, searchScreenViews;
 
     private List<NodeInfo> allNodes;
-    private List<String> allNodeNames;
-
-    private Location lastVisitedLocation;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -62,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve local data
         allNodes = ExhibitsManager.getSingleton(this).getAllExhibits();
-        allNodeNames = ExhibitsManager.getNames(allNodes);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -93,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
         LocationUpdatesManager.getSingleton(this);
         // Update count from database
         updateCount();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        closeSearchHandler();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        final var allNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
+        final var allNames = ExhibitsManager.getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
             ExhibitsManager.getSingleton(this).add(selectedItem);
@@ -174,17 +176,14 @@ public class MainActivity extends AppCompatActivity {
                 UIOperations.hideViews(addedListScreenViews);
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
-                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-                    UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
-                });
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (!inputIsValid(s)) {
+                    if (searchListView.getCount() == 0) {
+                        runOnUiThread(() -> {
                             Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
                             errorToast.show();
-                        }
+                        });
                     }
+                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
+                    UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
                 });
 
                 return true;
@@ -220,18 +219,6 @@ public class MainActivity extends AppCompatActivity {
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
 
         updateCount();
-    }
-
-    // -------- Handle location updates --------
-
-
-    private boolean inputIsValid(String s){
-        for(int i = 0; i < allNodeNames.size(); i++){
-
-            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s.toLowerCase(Locale.ROOT)))
-                return true;
-        }
-        return false;
     }
 
 }

@@ -2,10 +2,12 @@ package edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUICom
 
 import android.app.Activity;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.MainActivity;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 

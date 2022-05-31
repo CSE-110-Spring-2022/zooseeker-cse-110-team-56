@@ -88,7 +88,6 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onPrevious() {
         assert previousButtonAssertion();
-        current = observer.getLastNode(); // restore to real location.
         ExhibitsManager.getSingleton(this).stepBack();
         updateUI();
     }
@@ -101,6 +100,7 @@ public class DirectionActivity extends AppCompatActivity {
         current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
         ExhibitsManager.getSingleton(this).next();
         updateUI();
+        current = observer.getLastNode(); // restore back
     }
 
     /**
@@ -108,7 +108,6 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onSkip() {
         assert skipButtonAssertion();
-        current = observer.getLastNode(); // restore to real location.
         ExhibitsManager.getSingleton(this).skip();
         updateUI();
     }

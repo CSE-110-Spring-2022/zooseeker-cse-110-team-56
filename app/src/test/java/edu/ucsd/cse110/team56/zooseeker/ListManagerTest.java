@@ -59,7 +59,7 @@ public class ListManagerTest {
         ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
 
         assertEquals(4, nodes.size());
-        assertEquals(2, ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedList(nodes).size());
+        assertEquals(2, ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedList().size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ListManagerTest {
         ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
         ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
 
-        List<String> addedNames = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedListNames(nodes);
+        List<String> addedNames = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedAndVisitedNames();
         assert("name1".compareTo(addedNames.get(0)) == 0);
         assert("name2".compareTo(addedNames.get(1)) == 0);
     }
