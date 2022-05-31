@@ -40,14 +40,14 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class NextButtonTest2 {
+public class NextButtonTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void nextButtonTest2() {
+    public void nextButtonTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -78,6 +78,14 @@ public class NextButtonTest2 {
                 .atPosition(0);
         appCompatCheckedTextView.perform(click());
 
+        DataInteraction appCompatCheckedTextView2 = onData(anything())
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                2)))
+                .atPosition(2);
+        appCompatCheckedTextView2.perform(click());
+
         ViewInteraction appCompatImageView2 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
                         childAtPosition(
@@ -88,17 +96,6 @@ public class NextButtonTest2 {
                                 1),
                         isDisplayed()));
         appCompatImageView2.perform(click());
-
-        ViewInteraction searchAutoComplete2 = onView(
-                allOf(withId(androidx.appcompat.R.id.search_src_text),
-                        childAtPosition(
-                                allOf(withId(androidx.appcompat.R.id.search_plate),
-                                        childAtPosition(
-                                                withId(androidx.appcompat.R.id.search_edit_frame),
-                                                1)),
-                                0),
-                        isDisplayed()));
-        searchAutoComplete2.perform(click());
 
         ViewInteraction appCompatImageView3 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
@@ -131,19 +128,29 @@ public class NextButtonTest2 {
                         isDisplayed()));
         extendedFloatingActionButton2.perform(click());
 
+        ViewInteraction extendedFloatingActionButton3 = onView(
+                allOf(withId(R.id.next_btn), withText("NEXT"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                0),
+                        isDisplayed()));
+        extendedFloatingActionButton3.perform(click());
+
         ViewInteraction textView = onView(
-                allOf(withId(R.id.destination_text), withText("Next: Capuchin Monkeys"),
+                allOf(withId(R.id.destination_text), withText("Next: Emerald Dove"),
                         withParent(allOf(withId(R.id.linearLayout),
                                 withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
-        textView.check(matches(withText("Next: Capuchin Monkeys")));
+        textView.check(matches(withText("Next: Emerald Dove")));
 
         ViewInteraction textView2 = onView(
-                allOf(withId(R.id.destination_text), withText("Next: Capuchin Monkeys"),
+                allOf(withId(R.id.destination_text), withText("Next: Emerald Dove"),
                         withParent(allOf(withId(R.id.linearLayout),
                                 withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
-        textView2.check(matches(withText("Next: Capuchin Monkeys")));
+        textView2.check(matches(withText("Next: Emerald Dove")));
 
         pressBack();
 
