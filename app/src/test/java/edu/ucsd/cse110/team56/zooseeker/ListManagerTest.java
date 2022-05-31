@@ -42,44 +42,38 @@ public class ListManagerTest {
         assert(nodeInfo.getStatus() == NodeInfo.Status.LOADED);
     }
 
-    @Test
-    public void getAddedListTest() {
-        NodeInfo nodeInfo0 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        NodeInfo nodeInfo1 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        NodeInfo nodeInfo2 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        NodeInfo nodeInfo3 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//    @Test
+//    public void getAddedListTest() {
+//        NodeInfo nodeInfo0 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//        NodeInfo nodeInfo1 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//        NodeInfo nodeInfo2 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//        NodeInfo nodeInfo3 = new NodeInfo("id", "name", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//
+//
+//        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo0);
+//        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
+//
+//        assertEquals(2, ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedList().size());
+//    }
 
-        ArrayList<NodeInfo> nodes = new ArrayList<NodeInfo>();
-        nodes.add(nodeInfo0);
-        nodes.add(nodeInfo1);
-        nodes.add(nodeInfo2);
-        nodes.add(nodeInfo3);
-
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo0);
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
-
-        assertEquals(4, nodes.size());
-        assertEquals(2, ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedList().size());
-    }
-
-    @Test
-    public void getAddedListNamesTest() {
-        NodeInfo nodeInfo0 = new NodeInfo("id", "name0", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        NodeInfo nodeInfo1 = new NodeInfo("id", "name1", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-        NodeInfo nodeInfo2 = new NodeInfo("id", "name2", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
-
-        ArrayList<NodeInfo> nodes = new ArrayList<NodeInfo>();
-        nodes.add(nodeInfo0);
-        nodes.add(nodeInfo1);
-        nodes.add(nodeInfo2);
-
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
-
-        List<String> addedNames = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedAndVisitedNames();
-        assert("name1".compareTo(addedNames.get(0)) == 0);
-        assert("name2".compareTo(addedNames.get(1)) == 0);
-    }
+//    @Test
+//    public void getAddedListNamesTest() {
+//        NodeInfo nodeInfo0 = new NodeInfo("id", "name0", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//        NodeInfo nodeInfo1 = new NodeInfo("id", "name1", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//        NodeInfo nodeInfo2 = new NodeInfo("id", "name2", NodeInfo.Kind.EXHIBIT, new ArrayList<>());
+//
+//        ArrayList<NodeInfo> nodes = new ArrayList<NodeInfo>();
+//        nodes.add(nodeInfo0);
+//        nodes.add(nodeInfo1);
+//        nodes.add(nodeInfo2);
+//
+//        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
+//        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo2);
+//
+//        List<String> addedNames = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getAddedAndVisitedNames();
+//        assert("name1".compareTo(addedNames.get(0)) == 0);
+//        assert("name2".compareTo(addedNames.get(1)) == 0);
+//    }
 
     @Test
     public void getNamesTest() {
@@ -90,10 +84,8 @@ public class ListManagerTest {
         nodes.add(nodeInfo0);
         nodes.add(nodeInfo1);
 
-        ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).add(nodeInfo1);
-
-        List<String> names = ExhibitsManager.getSingleton(ApplicationProvider.getApplicationContext()).getNames(nodes);
-        assert("name0".compareTo(names.get(0)) == 0);
-        assert("name1".compareTo(names.get(1)) == 0);
+        List<String> names = ExhibitsManager.getNames(nodes);
+        assert("name0".equals(names.get(0)));
+        assert("name1".equals(names.get(1)));
     }
 }
