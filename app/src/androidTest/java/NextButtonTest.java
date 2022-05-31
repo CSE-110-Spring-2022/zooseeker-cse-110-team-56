@@ -1,6 +1,3 @@
-package edu.ucsd.cse110.team56.zooseeker.activity;
-
-
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -37,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.MainActivity;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
