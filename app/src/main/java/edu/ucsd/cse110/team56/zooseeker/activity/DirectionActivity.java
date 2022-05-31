@@ -88,7 +88,7 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onPrevious() {
         assert previousButtonAssertion();
-        current = observer.getLastNode();
+        current = observer.getLastNode(); // restore to real location.
         ExhibitsManager.getSingleton(this).stepBack();
         updateUI();
     }
@@ -96,10 +96,9 @@ public class DirectionActivity extends AppCompatActivity {
     /**
      * @apiNote precondition: current < this.directions.size() - 1
      */
-    @VisibleForTesting
     public void onNext() {
         assert nextButtonAssertion();
-        current = ExhibitsManager.getSingleton(this).getNextNode();
+        current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
         ExhibitsManager.getSingleton(this).next();
         updateUI();
     }
@@ -109,7 +108,7 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onSkip() {
         assert skipButtonAssertion();
-        current = observer.getLastNode();
+        current = observer.getLastNode(); // restore to real location.
         ExhibitsManager.getSingleton(this).skip();
         updateUI();
     }
@@ -166,6 +165,8 @@ public class DirectionActivity extends AppCompatActivity {
             if (node.equals(current)) return;
 
             lastNode = node;
+            current = node;
+
             if (!pathNodes.contains(node.id)) {
                 UIOperations.showDialog(
                         DirectionActivity.this,
