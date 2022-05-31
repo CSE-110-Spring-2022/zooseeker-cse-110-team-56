@@ -100,9 +100,7 @@ public class DirectionActivity extends AppCompatActivity {
         current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
         ExhibitsManager.getSingleton(this).next();
         updateUI();
-        if (observer.getLastNode() != null) {
-            current = observer.getLastNode(); // restore back
-        }
+        current = observer.getLastNode(); // restore back
     }
 
     /**
