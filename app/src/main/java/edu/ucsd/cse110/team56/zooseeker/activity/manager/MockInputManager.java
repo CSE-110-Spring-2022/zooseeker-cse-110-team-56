@@ -64,31 +64,18 @@ public class MockInputManager {
         builder.setView(innerView)
                 .setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
                     final var json = (EditText) innerView.findViewById(R.id.list);
-                    final var interval = (EditText) innerView.findViewById(R.id.interval);
 
                     try {
-                        List<JsonLocation> locations = new Gson().fromJson(json.getText().toString(), new TypeToken<List<JsonLocation>>(){}.getType());
-                        Log.d("Mock", locations.toString());
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            for(JsonLocation loc: locations) {
+                        JsonLocation loc = new Gson().fromJson(json.getText().toString(), JsonLocation.class);
+                        Log.d("Mock", loc.toString());
 
-
-                                final var location = new Location("Mock");
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    location.setMock(true);
-                                }
-                                location.setLatitude(loc.lat);
-                                location.setLongitude(loc.lng);
-                                LocationUpdatesManager.getSingleton(activity).useMockLocation(location);
-
-                                try {
-                                    Thread.sleep(Long.parseLong(interval.getText().toString()));
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-
+                        final var location = new Location("Mock");
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            location.setMock(true);
+                        }
+                        location.setLatitude(loc.lat);
+                        location.setLongitude(loc.lng);
+                        LocationUpdatesManager.getSingleton(activity).useMockLocation(location);
 
                     } catch (Exception e) {
                         Log.e("Mock", "failed to mock", e);

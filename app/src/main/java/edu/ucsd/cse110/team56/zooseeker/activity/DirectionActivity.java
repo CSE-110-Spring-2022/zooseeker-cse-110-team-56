@@ -97,10 +97,10 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onNext() {
         assert nextButtonAssertion();
-        current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
+//        current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
         ExhibitsManager.getSingleton(this).next();
         updateUI();
-        current = observer.getLastNode(); // restore back
+//        current = observer.getLastNode(); // restore back
     }
 
     /**
@@ -174,23 +174,22 @@ public class DirectionActivity extends AppCompatActivity {
             lastNode = node;
             current = node;
 
-            runOnUiThread(() -> {
-                if (!pathNodes.contains(node.id)) {
-                    UIOperations.showDialog(
-                            DirectionActivity.this.getApplicationContext(),
-                            "It seems that you've gone offtrack. Do you want to re-plan?",
-                            "No",
-                            "Yes",
-                            (dialog, value) -> {
-                                ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
-                                updateUI();
-                            }
-                    );
-                }
-                updateUI();
-                Log.d("DirectionActivity", String.format("exhibit: %s", node));
-            });
-
+            //runOnUiThread(() -> {
+            if (!pathNodes.contains(node.id)) {
+                UIOperations.showDialog(
+                        DirectionActivity.this,
+                        "It seems that you've gone offtrack. Do you want to re-plan?",
+                        "No",
+                        "Yes",
+                        (dialog, value) -> {
+                            ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
+                            updateUI();
+                        }
+                );
+            }
+            updateUI();
+            Log.d("DirectionActivity", String.format("exhibit: %s", node));
+            //});
         }
     }
 
