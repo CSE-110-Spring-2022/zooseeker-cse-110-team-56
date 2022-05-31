@@ -27,7 +27,6 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
@@ -155,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateCount() {
         // Update added exhibits count
-        final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedAndVisitedList().size();
+        final var displayCount = String.format(getString(R.string.added_visited_count_msg_prefix),
+                ExhibitsManager.getSingleton(this).getAddedList().size(), ExhibitsManager.getSingleton(this).getVisitedList().size());
         addedCountView.setText(displayCount);
     }
 
