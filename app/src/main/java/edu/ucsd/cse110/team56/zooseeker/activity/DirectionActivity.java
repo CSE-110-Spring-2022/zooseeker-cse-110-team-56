@@ -78,7 +78,7 @@ public class DirectionActivity extends AppCompatActivity {
     private boolean previousButtonAssertion() { return ExhibitsManager.getSingleton(this).canStepBack(); }
 
     // hide the next button for the last one
-    private boolean nextButtonAssertion() { return ExhibitsManager.getSingleton(this).getNextNode().kind != NodeInfo.Kind.GATE; }
+    private boolean nextButtonAssertion() { return ExhibitsManager.getSingleton(this).getNextExhibit().kind != NodeInfo.Kind.GATE; }
 
     // hide the skip button for the last two
     private boolean skipButtonAssertion() { return ExhibitsManager.getSingleton(this).canSkip(); }
