@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,12 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
@@ -28,9 +24,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockInputManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.directionActivityUIComponents.SettingsButton;
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
-import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 public class DirectionActivity extends AppCompatActivity {
@@ -144,7 +138,11 @@ public class DirectionActivity extends AppCompatActivity {
     }
 
     public void onMockBtnClicked(MenuItem item) {
-        MockInputManager.promptMockInput(this);
+        MockInputManager.promptMockLocationInput(this);
+    }
+
+    public void onMockRouteBtnClicked(MenuItem item) {
+        MockInputManager.promptMockRouteInput(this);
     }
 
     private void setupLocationUpdatesListener() {
@@ -169,19 +167,21 @@ public class DirectionActivity extends AppCompatActivity {
             lastNode = node;
             current = node;
 
-            if (!pathNodes.contains(node.id)) {
-                UIOperations.showDialog(
-                        DirectionActivity.this,
-                        "It seems that you've gone offtrack. Do you want to re-plan?",
-                        "No",
-                        "Yes",
-                        (dialog, value) -> {
-                            ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
-                            updateUI();
-                        }
-                );
-            }
-            updateUI();
+            runOnUiThread(() -> {
+                if (!pathNodes.contains(node.id)) {
+                    UIOperations.showDialog(
+                            DirectionActivity.this,
+                            "It seems that you've gone offtrack. Do you want to re-plan?",
+                            "No",
+                            "Yes",
+                            (dialog, value) -> {
+                                ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
+                                updateUI();
+                            }
+                    );
+                }
+                updateUI();
+            });
             Log.d("DirectionActivity", String.format("exhibit: %s", node));
         }
     }

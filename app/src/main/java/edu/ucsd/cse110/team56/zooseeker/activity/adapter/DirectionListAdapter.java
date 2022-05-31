@@ -132,7 +132,7 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
             }
 
             if (info.edge == null) {
-                this.textView.setText(String.format("Stay at %s %s", info.destinationInfo.name, findText));
+                this.textView.setText(String.format("Arrive at %s %s", info.destinationInfo.name, findText));
             } else if (info.edgeInfo.street.equals(previousStreet)) {
                 this.textView.setText(String.format("Continue on %s %s ft towards %s %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
             } else {

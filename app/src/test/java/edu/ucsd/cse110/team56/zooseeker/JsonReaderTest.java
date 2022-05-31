@@ -22,7 +22,7 @@ import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 public class JsonReaderTest {
     @Test
     public void testLoadJsonList() {
-        List<NodeInfo> nodes = JsonReader.parseJsonList(ApplicationProvider.getApplicationContext(), "gps/zoo_node_info.json", NodeInfo.class);
+        List<NodeInfo> nodes = JsonReader.parseJsonList(ApplicationProvider.getApplicationContext(), "gps/exhibit_info.json", NodeInfo.class);
         assertEquals(27, nodes.size());
     }
 
