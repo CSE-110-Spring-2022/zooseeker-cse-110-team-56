@@ -3,7 +3,7 @@
     <string name="added_count_msg_prefix">Added Animals: </string>
     <string name="added_count_msg">Added Animals: 0</string>
     <string name="no_result_msg">Sorry, there’s no matching result.\nTry to search something else…</string>
-    <string name="direction">DIRECTION</string>
+    <string name="direction">GO</string>
     <string name="plan">PLAN</string>
     <string name="ok">OK</string>
     <string name="replan_btn">REPLAN</string>

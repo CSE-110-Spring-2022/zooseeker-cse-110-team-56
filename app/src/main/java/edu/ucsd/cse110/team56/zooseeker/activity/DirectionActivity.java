@@ -38,8 +38,9 @@ public class DirectionActivity extends AppCompatActivity {
     private Set<String> pathNodes = new HashSet<>();
     private TextView destination;
     private View nextButton, previousButton, skipButton;
-    private Button replanButton;
+//    private Button replanButton;
     private NodeInfo current;
+    private DemoLocationObserver observer = new DemoLocationObserver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class DirectionActivity extends AppCompatActivity {
         previousButton = findViewById(R.id.pre_btn);
         nextButton = findViewById(R.id.next_btn);
         skipButton = findViewById(R.id.skip_btn);
-        replanButton = findViewById(R.id.replan_btn);
+//        replanButton = findViewById(R.id.replan_btn);
 
         previousButton.setOnClickListener(view -> onPrevious());
         nextButton.setOnClickListener(view -> onNext());
@@ -87,6 +88,7 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onPrevious() {
         assert previousButtonAssertion();
+        current = observer.getLastNode();
         ExhibitsManager.getSingleton(this).stepBack();
         updateUI();
     }
@@ -97,6 +99,7 @@ public class DirectionActivity extends AppCompatActivity {
     @VisibleForTesting
     public void onNext() {
         assert nextButtonAssertion();
+        current = ExhibitsManager.getSingleton(this).getNextNode();
         ExhibitsManager.getSingleton(this).next();
         updateUI();
     }
@@ -106,6 +109,7 @@ public class DirectionActivity extends AppCompatActivity {
      */
     public void onSkip() {
         assert skipButtonAssertion();
+        current = observer.getLastNode();
         ExhibitsManager.getSingleton(this).skip();
         updateUI();
     }
@@ -132,14 +136,6 @@ public class DirectionActivity extends AppCompatActivity {
         UIOperations.setVisibility(skipButton, skipButtonAssertion());
     }
 
-    /**
-     * Replan when Replan Button is Clicked
-     */
-    public void onReplanBtnClicked(View view) {
-        ExhibitsManager.getSingleton(this).plan(null);
-        UIOperations.showDefaultAlert(this, getString(R.string.replan_completed));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.directions_top_bar, menu);
@@ -151,27 +147,40 @@ public class DirectionActivity extends AppCompatActivity {
     }
 
     private void setupLocationUpdatesListener() {
-        class DemoLocationObserver implements LocationObserver {
-            @Override
-            public void updateClosestNode(NodeInfo node, Location location) {
-                current = node;
-                if (!pathNodes.contains(node.id)) {
-                    UIOperations.showDialog(
-                            DirectionActivity.this,
-                            "It seems that you've gone offtrack. Do you want to re-plan?",
-                            "No, keep my current plan",
-                            "Yes, re-plan so I can save some walk",
-                            (dialog, value) -> {
-                                ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
-                                updateUI();
-                            }
-                            );
-                }
-                updateUI();
-                Log.d("DirectionActivity", String.format("location: %s, exhibit: %s", location, node));
-            }
+        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(observer);
+    }
+
+    class DemoLocationObserver implements LocationObserver {
+        private NodeInfo lastNode;
+        public NodeInfo getLastNode() {
+            return lastNode;
         }
-        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
+
+        @Override
+        public void updateLocation(Location location) {
+            Log.d("DirectionActivity", String.format("location: %s", location));
+        }
+
+        @Override
+        public void updateClosestNode(NodeInfo node) {
+            if (node.equals(current)) return;
+
+            lastNode = node;
+            if (!pathNodes.contains(node.id)) {
+                UIOperations.showDialog(
+                        DirectionActivity.this,
+                        "It seems that you've gone offtrack. Do you want to re-plan?",
+                        "No",
+                        "Yes",
+                        (dialog, value) -> {
+                            ExhibitsManager.getSingleton(DirectionActivity.this).plan(current);
+                            updateUI();
+                        }
+                );
+            }
+            updateUI();
+            Log.d("DirectionActivity", String.format("exhibit: %s", node));
+        }
     }
 
 }

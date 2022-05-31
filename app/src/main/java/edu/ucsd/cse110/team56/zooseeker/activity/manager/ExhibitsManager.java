@@ -1,10 +1,7 @@
 package edu.ucsd.cse110.team56.zooseeker.activity.manager;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
-
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +42,10 @@ public class ExhibitsManager {
      */
     public Path getPathToNextExhibit(NodeInfo current) {
         if (current == null) {
-            current = getLastVisitedNode();
+            NodeInfo lastNode = getLastVisitedNode();
+            NodeInfo gate = getGate();
+
+            current = lastNode == null ? gate : lastNode;
         }
         return Graph.load(context).findPath(getGraphVertex(current), getGraphVertex(getNextNode()));
     }
@@ -63,7 +63,7 @@ public class ExhibitsManager {
         }
 
         long idx = lastNode != null ? lastNode.order + 1 : 0;
-        ArrayList<Path> paths = Graph.load(context).findPaths(getGraphVertex(current), getNavigationVertexIds(toBeVisited), getGraphVertex(getGate()));
+        ArrayList<Path> paths = Graph.load(context).findPaths(getGraphVertex(current), getGraphVertices(toBeVisited), getGraphVertex(getGate()));
 
         for(Path path: paths) {
             NodeInfo info = path.endInfo.getActualExhibit();
@@ -101,7 +101,7 @@ public class ExhibitsManager {
     }
 
     public List<Pair<NodeInfo, Double>> getPlan() {
-        List<NodeInfo> list = dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED, NodeInfo.Status.VISITED));
+        List<NodeInfo> list = getAddedAndVisitedList();
         List<Pair<NodeInfo, Double>> plan = new ArrayList<>();
 
         Graph graph = Graph.load(context);
@@ -110,6 +110,7 @@ public class ExhibitsManager {
         for(NodeInfo node: list) {
             Path path = graph.findPath(current, getGraphVertex(node));
             plan.add(new Pair<>(node, path.path.getWeight()));
+            current = getGraphVertex(node);
         }
 
         Path path = graph.findPath(current, getGraphVertex(getGate()));
@@ -149,6 +150,10 @@ public class ExhibitsManager {
         return dao().getNodesWithStatus(List.of(NodeInfo.Status.VISITED));
     }
 
+    public List<NodeInfo> getAddedAndVisitedList() {
+        return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED, NodeInfo.Status.VISITED));
+    }
+
     public NodeInfo getNextNode() {
         List<NodeInfo> list = getAddedList();
         if (list.size() >= 1) {
@@ -158,8 +163,8 @@ public class ExhibitsManager {
         }
     }
 
-    public List<String> getAddedListNames() {
-        return getNames(getAddedList());
+    public List<String> getAddedAndVisitedNames() {
+        return getNames(getAddedAndVisitedList());
     }
 
     public GraphVertex getGraphVertex(NodeInfo node) {
@@ -171,7 +176,7 @@ public class ExhibitsManager {
      * @param list the list to map to IDs
      * @return the IDs of all items in the list
      */
-    public List<GraphVertex> getNavigationVertexIds(List<NodeInfo> list) {
+    public List<GraphVertex> getGraphVertices(List<NodeInfo> list) {
         return list.stream()
                 .map(this::getGraphVertex)
                 .collect(Collectors.toList());
@@ -182,7 +187,7 @@ public class ExhibitsManager {
      * @return a list of the name attributes of all `NodeInfo` objects
      * from the given list
      */
-    public List<String> getNames(List<NodeInfo> list) {
+    public static List<String> getNames(List<NodeInfo> list) {
         return list.stream()
                 .map(NodeInfo::getName)
                 .collect(Collectors.toList());
@@ -206,10 +211,12 @@ public class ExhibitsManager {
 
     public NodeInfo getLastVisitedNode() {
         List<NodeInfo> visited = getVisitedList();
-        return visited.get(visited.size() - 1);
+        if (visited.size() == 0) {
+            return null;
+        } else {
+            return visited.get(visited.size() - 1);
+        }
     }
-
-
 
     public NodeInfo getGate() {
         return dao().getNodesWithKind(NodeInfo.Kind.GATE).get(0);

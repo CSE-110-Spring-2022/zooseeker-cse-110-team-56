@@ -127,7 +127,7 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
         public void setEdge(DirectionInfo info, String previousStreet, int index, NodeInfo childExhibit) {
             this.info = info;
             String findText = "";
-            if (childExhibit != null) {
+            if (childExhibit != null && !childExhibit.name.equals(info.destinationInfo.name)) {
                 findText = String.format("and find %s", childExhibit.name);
             }
 

@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve local data
         allNodes = ExhibitsManager.getSingleton(this).getAllExhibits();
-        allNodeNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
+        allNodeNames = ExhibitsManager.getNames(allNodes);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        final var addedNames = ExhibitsManager.getSingleton(this).getAddedListNames();
+        final var addedNames = ExhibitsManager.getSingleton(this).getAddedAndVisitedNames();
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
@@ -141,14 +141,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames());
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
     }
 
     private boolean closeSearchHandler() {
         UIOperations.hideViews(searchScreenViews);
         updateCount();
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedList());
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedList());
         UIOperations.showViews(addedListScreenViews);
         return false;
     }
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateCount() {
         // Update added exhibits count
         final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount();
+                + ExhibitsManager.getSingleton(this).getAddedAndVisitedList().size();
         addedCountView.setText(displayCount);
     }
 
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onPlanBtnClicked(View view) {
-        if (ExhibitsManager.getSingleton(this).getAddedListNames().size() == 0) {
+        if (ExhibitsManager.getSingleton(this).getAddedAndVisitedList().isEmpty()) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
             PlanButton.startActivity(this, addedListAdapter);
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
         // empty case
-        if (ExhibitsManager.getSingleton(this).getAddedListNames().isEmpty()) {
+        if (ExhibitsManager.getSingleton(this).getAddedAndVisitedList().isEmpty()) {
             UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
@@ -217,13 +217,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames());
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
         CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
 
-        // Update added exhibits count
-        final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount();
-        addedCountView.setText(displayCount);
+        updateCount();
     }
 
     // -------- Handle location updates --------

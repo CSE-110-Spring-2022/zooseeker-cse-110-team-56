@@ -17,16 +17,9 @@ public class CheckboxHandler {
      *              you want to mark checkboxes as "checked"
      */
     public static void updateSearchedCheckBoxes(Activity activity, List<NodeInfo> nodes, ListView searchListView) {
-        final var mutex = new Semaphore(0);
         activity.runOnUiThread(() -> {
             updateSearchedCheckBoxesInternal(nodes, searchListView);
-            mutex.release();
         });
-        try {
-            mutex.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private static void updateSearchedCheckBoxesInternal(List<NodeInfo> nodes, ListView searchListView) {
@@ -35,13 +28,14 @@ public class CheckboxHandler {
             final var currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
 
             // the index of the current item within the `allNodes` list
-            final var currentItemIndex = ExhibitsManager.getSingleton(searchListView.getContext()).getNames(nodes).indexOf(currentItemName);
+            final var currentItemIndex = ExhibitsManager.getNames(nodes).indexOf(currentItemName);
 
             // retrieve the node
             final var currentItem = nodes.get(currentItemIndex);
 
             if (searchListView.isItemChecked(i) != (currentItem.getStatus() == NodeInfo.Status.ADDED)) {
                 searchListView.setItemChecked(i, (currentItem.getStatus() == NodeInfo.Status.ADDED));
+                searchListView.setItemsCanFocus(false);
             }
         }
     }

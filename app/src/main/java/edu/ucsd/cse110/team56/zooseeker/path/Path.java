@@ -24,6 +24,8 @@ public class Path {
             info.add(edge.getDestination());
             info.add(edge.getOrigin());
         }
+        info.add(startInfo.getNavigatableId());
+        info.add(endInfo.getNavigatableId());
         return info;
     }
 }

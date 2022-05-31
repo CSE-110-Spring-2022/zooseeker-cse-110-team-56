@@ -98,5 +98,6 @@ public class NodeInfo {
 
     @Override
     public String toString() {
-        return name;    }
+        return name;
+    }
 }
