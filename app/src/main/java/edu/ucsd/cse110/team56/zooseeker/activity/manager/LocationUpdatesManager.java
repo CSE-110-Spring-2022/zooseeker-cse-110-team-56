@@ -4,6 +4,8 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -80,6 +82,12 @@ public class LocationUpdatesManager {
             // do nothing
         }
 
-        notifyObservers(location);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                notifyObservers(location);
+            }
+        }, 1000);
     }
 }
