@@ -23,4 +23,6 @@
     <string name="preference_file_key">edu.ucsd.cse110.team56.zooseeker.PREFERENCE_FILE_KEY</string>
     <string name="directions_style_is_brief">DIRECTIONS_STYLE_IS_BRIEF</string>
     <string name="mock_location">Mock Location</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
 </resources>

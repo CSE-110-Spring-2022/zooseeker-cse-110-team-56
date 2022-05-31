@@ -25,6 +25,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockInputManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.directionActivityUIComponents.SettingsButton;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -143,7 +144,7 @@ public class DirectionActivity extends AppCompatActivity {
     }
 
     public void onMockBtnClicked(MenuItem item) {
-
+        MockInputManager.promptMockInput(this);
     }
 
     private void setupLocationUpdatesListener() {
