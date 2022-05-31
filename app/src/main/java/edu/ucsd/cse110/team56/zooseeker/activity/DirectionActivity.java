@@ -177,7 +177,7 @@ public class DirectionActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (!pathNodes.contains(node.id)) {
                     UIOperations.showDialog(
-                            DirectionActivity.this,
+                            DirectionActivity.this.getApplicationContext(),
                             "It seems that you've gone offtrack. Do you want to re-plan?",
                             "No",
                             "Yes",
@@ -188,8 +188,9 @@ public class DirectionActivity extends AppCompatActivity {
                     );
                 }
                 updateUI();
+                Log.d("DirectionActivity", String.format("exhibit: %s", node));
             });
-            Log.d("DirectionActivity", String.format("exhibit: %s", node));
+
         }
     }
 
