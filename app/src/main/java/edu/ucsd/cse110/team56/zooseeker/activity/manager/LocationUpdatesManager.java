@@ -19,6 +19,8 @@ public class LocationUpdatesManager {
     private Context context;
     private NodeInfo prevNode;
 
+    private LocationListener listener = this::notifyObservers;
+
     private LocationUpdatesManager(Context context) {
         this.context = context;
         this.setupListener();
@@ -60,7 +62,7 @@ public class LocationUpdatesManager {
         var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Log.d("LocationManager", "requested");
 
-        locationManager.requestLocationUpdates(provider, 0, 0f, (this::notifyObservers));
+        locationManager.requestLocationUpdates(provider, 0, 0f, listener);
 
         var location = locationManager.getLastKnownLocation(provider);
 
@@ -69,5 +71,16 @@ public class LocationUpdatesManager {
         }
 
         Log.d("LastLocation", String.format("last location: %s", location));
+    }
+
+    public void useMockLocation(Location location) {
+        try {
+            var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            locationManager.removeUpdates(listener);
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        notifyObservers(location);
     }
 }

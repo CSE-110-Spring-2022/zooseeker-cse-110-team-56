@@ -25,6 +25,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockInputManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.directionActivityUIComponents.SettingsButton;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
@@ -38,7 +39,6 @@ public class DirectionActivity extends AppCompatActivity {
     private Set<String> pathNodes = new HashSet<>();
     private TextView destination;
     private View nextButton, previousButton, skipButton;
-//    private Button replanButton;
     private NodeInfo current;
     private DemoLocationObserver observer = new DemoLocationObserver();
 
@@ -62,7 +62,6 @@ public class DirectionActivity extends AppCompatActivity {
         previousButton = findViewById(R.id.pre_btn);
         nextButton = findViewById(R.id.next_btn);
         skipButton = findViewById(R.id.skip_btn);
-//        replanButton = findViewById(R.id.replan_btn);
 
         previousButton.setOnClickListener(view -> onPrevious());
         nextButton.setOnClickListener(view -> onNext());
@@ -142,6 +141,10 @@ public class DirectionActivity extends AppCompatActivity {
 
     public void onSettingsBtnClicked(MenuItem item) {
         SettingsButton.startActivity(this);
+    }
+
+    public void onMockBtnClicked(MenuItem item) {
+        MockInputManager.promptMockInput(this);
     }
 
     private void setupLocationUpdatesListener() {
