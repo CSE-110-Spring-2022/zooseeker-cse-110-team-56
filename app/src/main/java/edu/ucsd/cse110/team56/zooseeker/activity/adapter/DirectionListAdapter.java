@@ -38,6 +38,13 @@ class DirectionInfo {
         this.edgeInfo = null;
         this.destinationInfo = ZooDatabase.getSingleton(context).zooDao().getNode(exhibit);
     }
+
+    public void refresh(Context context) {
+        if (this.edge != null) {
+            this.destinationInfo = ZooDatabase.getSingleton(context).zooDao().getNode(edge.getDestination());
+        }
+    }
+
 }
 public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {
 
@@ -56,7 +63,7 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
 
     public void refreshPaths(Context context) {
         final var sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        boolean shouldDisplayBriefDirections = sharedPref.getBoolean(context.getString(R.string.directions_style_is_brief), true);
+        boolean shouldDisplayBriefDirections = sharedPref.getBoolean(context.getString(R.string.directions_style_is_brief), false);
 
         this.infos.clear();
         this.infos = this.rawInfo.path.getEdgeList().stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
@@ -70,6 +77,7 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
                     infos.add(new DirectionInfo(context, new CombinedGraphEdge(info.edge)));
                 } else {
                     ((CombinedGraphEdge)infos.get(infos.size() - 1).edge).addEdge(info.edge);
+                    infos.get(infos.size() - 1).refresh(context);
                 }
             }
             this.infos.clear();

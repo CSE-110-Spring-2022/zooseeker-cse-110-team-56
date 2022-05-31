@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
 
         // Update count from database
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         // update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
     }
 
     private boolean closeSearchHandler() {
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                             errorToast.show();
                         });
                     }
-                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
+                    CheckboxHandler.updateSearchedCheckBoxes(activity, searchListView);
                     UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
                 });
 
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
 
         updateCount();
     }

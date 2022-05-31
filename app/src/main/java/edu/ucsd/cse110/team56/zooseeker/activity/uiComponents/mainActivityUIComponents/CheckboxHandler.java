@@ -18,9 +18,9 @@ public class CheckboxHandler {
      * @param nodes the list of nodes that contains the added nodes for which
      *              you want to mark checkboxes as "checked"
      */
-    public static void updateSearchedCheckBoxes(Activity activity, List<NodeInfo> nodes, ListView searchListView) {
+    public static void updateSearchedCheckBoxes(Activity activity, ListView searchListView) {
         activity.runOnUiThread(() -> {
-            updateSearchedCheckBoxesInternal(nodes, searchListView);
+            updateSearchedCheckBoxesInternal(ExhibitsManager.getSingleton(searchListView.getContext()).getAllExhibits(), searchListView);
         });
     }
 
