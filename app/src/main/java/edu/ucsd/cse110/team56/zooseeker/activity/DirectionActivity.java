@@ -20,6 +20,7 @@ import edu.ucsd.cse110.team56.zooseeker.activity.adapter.DirectionListAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.MockInputManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
@@ -61,9 +62,15 @@ public class DirectionActivity extends AppCompatActivity {
         nextButton.setOnClickListener(view -> onNext());
         skipButton.setOnClickListener(view -> onSkip());
 
-        setupLocationUpdatesListener();
-
         // update
+        updateUI();
+
+        if (LocationPermissionsManager.needsLocationPermission(this)) {
+            LocationPermissionsManager.requestLocationPermission(this);
+            return;
+        }
+        LocationUpdatesManager.getSingleton(this); // request location permission
+        setupLocationUpdatesListener();
         updateUI();
     }
 
@@ -93,7 +100,9 @@ public class DirectionActivity extends AppCompatActivity {
         current = ExhibitsManager.getSingleton(this).getNextNode(); // preview, assume already at the next exhibit
         ExhibitsManager.getSingleton(this).next();
         updateUI();
-        current = observer.getLastNode(); // restore back
+        if (observer.getLastNode() != null) {
+            current = observer.getLastNode(); // restore back
+        }
     }
 
     /**
@@ -146,7 +155,7 @@ public class DirectionActivity extends AppCompatActivity {
     }
 
     private void setupLocationUpdatesListener() {
-        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(observer);
+        LocationUpdatesManager.getSingleton(this).registerObserver(observer);
     }
 
     class DemoLocationObserver implements LocationObserver {

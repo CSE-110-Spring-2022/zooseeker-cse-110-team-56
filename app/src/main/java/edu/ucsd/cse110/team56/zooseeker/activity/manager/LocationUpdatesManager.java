@@ -9,7 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucsd.cse110.team56.zooseeker.dao.ZooDao;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 

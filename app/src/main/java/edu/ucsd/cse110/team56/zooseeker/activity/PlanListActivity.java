@@ -18,6 +18,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationPermissionsManager;
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;

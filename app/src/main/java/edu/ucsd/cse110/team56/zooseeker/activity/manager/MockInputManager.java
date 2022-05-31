@@ -8,6 +8,8 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,7 +19,12 @@ import java.util.concurrent.Executors;
 import edu.ucsd.cse110.team56.zooseeker.R;
 
 public class MockInputManager {
-    public static void promptMockLocationInput(Activity activity) {
+    public static void promptMockLocationInput(AppCompatActivity activity) {
+        if (LocationPermissionsManager.needsLocationPermission(activity)) {
+            UIOperations.showDefaultAlert(activity, "Not enough location permissions.");
+            return;
+        }
+
         final var builder = new AlertDialog.Builder(activity);
         final var inflater = activity.getLayoutInflater();
         final var innerView = inflater.inflate(R.layout.mock_dialog, null);
@@ -44,7 +51,12 @@ public class MockInputManager {
         dialog.show();
     }
 
-    public static void promptMockRouteInput(Activity activity) {
+    public static void promptMockRouteInput(AppCompatActivity activity) {
+        if (LocationPermissionsManager.needsLocationPermission(activity)) {
+            UIOperations.showDefaultAlert(activity, "Not enough location permissions.");
+            return;
+        }
+
         final var builder = new AlertDialog.Builder(activity);
         final var inflater = activity.getLayoutInflater();
         final var innerView = inflater.inflate(R.layout.mock_route_dialog, null);

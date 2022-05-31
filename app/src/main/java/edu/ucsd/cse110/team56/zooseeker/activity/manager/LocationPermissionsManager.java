@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker.activity.adapter;
+package edu.ucsd.cse110.team56.zooseeker.activity.manager;
 
 import android.Manifest;
 import android.content.Context;
