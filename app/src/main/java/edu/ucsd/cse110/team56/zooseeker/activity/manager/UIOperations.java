@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
 import android.content.Context;
+import android.view.WindowManager;
 
 import java.util.List;
 
@@ -34,6 +35,15 @@ public class UIOperations {
         final var builder = new AlertDialog.Builder(context);
         builder.setMessage(message)
                 .setPositiveButton(buttonText, onClickListener);
+        final var dialog = builder.create();
+        dialog.show();
+    }
+
+    public static void showDialog(Context context, String message, String cancelText, String okText, DialogInterface.OnClickListener onClickListener) {
+        final var builder = new AlertDialog.Builder(context);
+        builder.setMessage(message)
+                .setNegativeButton(cancelText, null)
+                .setPositiveButton(okText, onClickListener);
         final var dialog = builder.create();
         dialog.show();
     }

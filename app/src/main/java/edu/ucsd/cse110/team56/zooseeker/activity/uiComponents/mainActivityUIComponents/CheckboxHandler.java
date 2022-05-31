@@ -2,10 +2,12 @@ package edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUICom
 
 import android.app.Activity;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.MainActivity;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 
@@ -16,17 +18,10 @@ public class CheckboxHandler {
      * @param nodes the list of nodes that contains the added nodes for which
      *              you want to mark checkboxes as "checked"
      */
-    public static void updateSearchedCheckBoxes(Activity activity, List<NodeInfo> nodes, ListView searchListView) {
-        final var mutex = new Semaphore(0);
+    public static void updateSearchedCheckBoxes(Activity activity, ListView searchListView) {
         activity.runOnUiThread(() -> {
-            updateSearchedCheckBoxesInternal(nodes, searchListView);
-            mutex.release();
+            updateSearchedCheckBoxesInternal(ExhibitsManager.getSingleton(searchListView.getContext()).getAllExhibits(), searchListView);
         });
-        try {
-            mutex.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private static void updateSearchedCheckBoxesInternal(List<NodeInfo> nodes, ListView searchListView) {
@@ -35,13 +30,14 @@ public class CheckboxHandler {
             final var currentItemName = ((NodeInfo) searchListView.getItemAtPosition(i)).name;
 
             // the index of the current item within the `allNodes` list
-            final var currentItemIndex = ExhibitsManager.getSingleton(searchListView.getContext()).getNames(nodes).indexOf(currentItemName);
+            final var currentItemIndex = ExhibitsManager.getNames(nodes).indexOf(currentItemName);
 
             // retrieve the node
             final var currentItem = nodes.get(currentItemIndex);
 
             if (searchListView.isItemChecked(i) != (currentItem.getStatus() == NodeInfo.Status.ADDED)) {
                 searchListView.setItemChecked(i, (currentItem.getStatus() == NodeInfo.Status.ADDED));
+                searchListView.setItemsCanFocus(false);
             }
         }
     }

@@ -7,4 +7,15 @@
         android:onClick="onSettingsBtnClicked"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_mock"
+        android:title="@string/mock_location"
+        android:onClick="onMockBtnClicked"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_mock_route"
+        android:title="@string/mock_route"
+        android:onClick="onMockRouteBtnClicked"
+        app:showAsAction="never"/>
+
+
 </menu>

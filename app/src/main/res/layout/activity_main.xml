@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/added_count_msg"
+            android:text="@string/added_visited_count_msg"
             android:textAlignment="center"
             android:textColor="#9C6EDD"
             android:textSize="20sp" />

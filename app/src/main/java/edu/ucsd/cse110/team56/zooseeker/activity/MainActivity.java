@@ -7,7 +7,6 @@ import androidx.appcompat.widget.SearchView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,15 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-import java.util.Locale;
 
-import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationObserver;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
@@ -45,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private List<View> addedListScreenViews, searchScreenViews;
 
     private List<NodeInfo> allNodes;
-    private List<String> allNodeNames;
-
-    private Location lastVisitedLocation;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -55,15 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Request User Location Permission
-        if (LocationPermissionsManager.needsLocationPermission(this)) {
-            LocationPermissionsManager.requestLocationPermission(this);
-            return;
-        }
-
         // Retrieve local data
         allNodes = ExhibitsManager.getSingleton(this).getAllExhibits();
-        allNodeNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
 
         // Initialize views
         searchListView = findViewById(R.id.data_list);
@@ -82,19 +67,23 @@ public class MainActivity extends AppCompatActivity {
         searchListView.setAdapter(searchFilterAdapter);
 
         // Populate added exhibits list view
-        final var addedNames = ExhibitsManager.getSingleton(this).getAddedListNames();
+        final var addedNames = ExhibitsManager.getSingleton(this).getAddedAndVisitedNames();
         addedListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, addedNames);
         addedExhibitsListView.setAdapter(addedListAdapter);
 
         // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
-
-        setupLocationUpdatesListener();
 
         // Update count from database
         updateCount();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        closeSearchHandler();
     }
 
     @Override
@@ -133,31 +122,31 @@ public class MainActivity extends AppCompatActivity {
         final var selectedItemName = ((NodeInfo) searchListView.getItemAtPosition(position)).name;
 
         // add or remove the selected item based on `isChecked()` state
-        final var allNames = ExhibitsManager.getSingleton(this).getNames(allNodes);
+        final var allNames = ExhibitsManager.getNames(allNodes);
         final var selectedItem = allNodes.get(allNames.indexOf(selectedItemName));
         if (((CheckedTextView) view).isChecked()) {
-            ExhibitsManager.getSingleton(this).addItem(selectedItem);
+            ExhibitsManager.getSingleton(this).add(selectedItem);
         } else {
-            ExhibitsManager.getSingleton(this).removeItem(selectedItem);
+            ExhibitsManager.getSingleton(this).remove(selectedItem);
         }
 
         // update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
     }
 
     private boolean closeSearchHandler() {
         UIOperations.hideViews(searchScreenViews);
         updateCount();
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedList());
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedList());
         UIOperations.showViews(addedListScreenViews);
         return false;
     }
 
     private void updateCount() {
         // Update added exhibits count
-        final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount();
+        final var displayCount = String.format(getString(R.string.added_visited_count_msg_prefix),
+                ExhibitsManager.getSingleton(this).getAddedList().size(), ExhibitsManager.getSingleton(this).getVisitedList().size());
         addedCountView.setText(displayCount);
     }
 
@@ -176,17 +165,14 @@ public class MainActivity extends AppCompatActivity {
                 UIOperations.hideViews(addedListScreenViews);
 
                 searchFilterAdapter.getFilter().filter(s, i -> {
-                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
-                    UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
-                });
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (!inputIsValid(s)) {
+                    if (searchListView.getCount() == 0) {
+                        runOnUiThread(() -> {
                             Toast errorToast = Toast.makeText(MainActivity.this, "Sorry, there's no matching result. Try to search something else...", Toast.LENGTH_SHORT);
                             errorToast.show();
-                        }
+                        });
                     }
+                    CheckboxHandler.updateSearchedCheckBoxes(activity, searchListView);
+                    UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
                 });
 
                 return true;
@@ -197,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     // -------- Plan button handler --------
 
     public void onPlanBtnClicked(View view) {
-        if (ExhibitsManager.getSingleton(this).getAddedListNames().size() == 0) {
+        if (ExhibitsManager.getSingleton(this).getAddedAndVisitedList().isEmpty()) {
             PlanButton.displayNoExhibitsSelectedAlert(this);
         } else {
             PlanButton.startActivity(this, addedListAdapter);
@@ -207,45 +193,21 @@ public class MainActivity extends AppCompatActivity {
     // --------- Clear Button Clicked --------
     public void onClearBtnClicked(View view) {
         // empty case
-        if (ExhibitsManager.getSingleton(this).getAddedListNames().isEmpty()) {
+        if (ExhibitsManager.getSingleton(this).getAddedAndVisitedList().isEmpty()) {
             UIOperations.showDefaultAlert(this, getString(R.string.clear_button_disabled_msg));
             return;
         }
 
         // Update Database
         for (NodeInfo node : allNodes) {
-            ExhibitsManager.getSingleton(this).removeItem(node);
+            ExhibitsManager.getSingleton(this).remove(node);
         }
 
         // Update UI elements
-        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedListNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
 
-        // Update added exhibits count
-        final var displayCount = getString(R.string.added_count_msg_prefix)
-                + ExhibitsManager.getSingleton(this).getAddedCount();
-        addedCountView.setText(displayCount);
-    }
-
-    // -------- Handle location updates --------
-
-    private void setupLocationUpdatesListener() {
-        class DemoLocationObserver implements LocationObserver {
-            @Override
-            public void updateClosestNode(NodeInfo node, Location location) {
-                Log.d("CurrentLocation", String.format("location: %s, exhibit: %s", location, node));
-            }
-        }
-        LocationUpdatesManager.getSingleton(getApplicationContext()).registerObserver(new DemoLocationObserver());
-    }
-
-    private boolean inputIsValid(String s){
-        for(int i = 0; i < allNodeNames.size(); i++){
-
-            if(allNodeNames.get(i).toLowerCase(Locale.ROOT).contains(s.toLowerCase(Locale.ROOT)))
-                return true;
-        }
-        return false;
+        updateCount();
     }
 
 }

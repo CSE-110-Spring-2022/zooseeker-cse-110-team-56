@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.team56.zooseeker.activity.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,45 +21,65 @@ import edu.ucsd.cse110.team56.zooseeker.dao.entity.EdgeInfo;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.CombinedGraphEdge;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphEdge;
+import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 class DirectionInfo {
     GraphEdge edge;
-    EdgeInfo info;
+    EdgeInfo edgeInfo;
+    NodeInfo destinationInfo;
 
     DirectionInfo(Context context, GraphEdge edge) {
         this.edge = edge;
-        this.info = ZooDatabase.getSingleton(context).zooDao().getEdge(edge.getId());
+        this.edgeInfo = ZooDatabase.getSingleton(context).zooDao().getEdge(edge.getId());
+        this.destinationInfo = ZooDatabase.getSingleton(context).zooDao().getNode(edge.getDestination());
     }
+
+    DirectionInfo(Context context, String exhibit) {
+        this.edge = null;
+        this.edgeInfo = null;
+        this.destinationInfo = ZooDatabase.getSingleton(context).zooDao().getNode(exhibit);
+    }
+
+    public void refresh(Context context) {
+        if (this.edge != null) {
+            this.destinationInfo = ZooDatabase.getSingleton(context).zooDao().getNode(edge.getDestination());
+        }
+    }
+
 }
 public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdapter.ViewHolder> {
-
+    SharedPreferences.OnSharedPreferenceChangeListener listener;
     public DirectionListAdapter(Context context) {
         super();
         final var sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        sharedPref.registerOnSharedPreferenceChangeListener((pref, key)->{
-            if (key.equals(context.getString(R.string.directions_style_is_brief))) {
+        listener = (pref, key)->{
+            if (key.contains(context.getString(R.string.directions_style_is_brief))) {
                 this.refreshPaths(context);
             }
-        });
+        };
+        sharedPref.registerOnSharedPreferenceChangeListener(listener);
 
     }
-    private List<GraphEdge> rawInfo = Collections.emptyList();
+    private Path rawInfo = null;
     private List<DirectionInfo> infos = Collections.emptyList();
 
     public void refreshPaths(Context context) {
         final var sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        boolean shouldDisplayBriefDirections = sharedPref.getBoolean(context.getString(R.string.directions_style_is_brief), true);
+        boolean shouldDisplayBriefDirections = sharedPref.getBoolean(context.getString(R.string.directions_style_is_brief), false);
 
         this.infos.clear();
-        this.infos = this.rawInfo.stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
+        this.infos = this.rawInfo.path.getEdgeList().stream().map(e -> new DirectionInfo(context, e)).collect(Collectors.toList());
 
-        if (shouldDisplayBriefDirections) {
+        if (this.rawInfo.path.getEdgeList().size() == 0) {
+            this.infos.add(new DirectionInfo(context, this.rawInfo.endInfo.getNavigatableId()));
+        } else if (shouldDisplayBriefDirections) {
             List<DirectionInfo> infos = new ArrayList<>();
             for(DirectionInfo info: this.infos) {
-                if (infos.isEmpty() || !infos.get(infos.size() - 1).info.street.equals(info.info.street)) {
+                if (infos.isEmpty() || !infos.get(infos.size() - 1).edgeInfo.street.equals(info.edgeInfo.street)) {
                     infos.add(new DirectionInfo(context, new CombinedGraphEdge(info.edge)));
                 } else {
                     ((CombinedGraphEdge)infos.get(infos.size() - 1).edge).addEdge(info.edge);
+                    infos.get(infos.size() - 1).refresh(context);
                 }
             }
             this.infos.clear();
@@ -67,9 +88,8 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
         notifyDataSetChanged();
     }
 
-    public void setPaths(Context context, List<GraphEdge> paths) {
-        this.rawInfo.clear();
-        this.rawInfo = new ArrayList<>(paths);
+    public void setPaths(Context context, Path paths) {
+        this.rawInfo = paths;
         this.refreshPaths(context);
     }
 
@@ -82,7 +102,11 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setEdge(infos.get(position), position != 0 ? infos.get(position - 1).info.street : null,position + 1);
+        holder.setEdge(
+                infos.get(position),
+                position != 0 ? infos.get(position - 1).edgeInfo.street : null,
+                position + 1,
+                position != infos.size() - 1 ? null : this.rawInfo.endInfo.getActualExhibit());
     }
 
     @Override
@@ -110,13 +134,19 @@ public class DirectionListAdapter extends RecyclerView.Adapter<DirectionListAdap
             return info;
         }
 
-        public void setEdge(DirectionInfo info, String previousStreet, int index) {
-            NodeInfo destination = ZooDatabase.getSingleton(textView.getContext()).zooDao().getNode(info.edge.getDestination());
+        public void setEdge(DirectionInfo info, String previousStreet, int index, NodeInfo childExhibit) {
             this.info = info;
-            if (info.info.street.equals(previousStreet)) {
-                this.textView.setText(String.format("Continue on %s %s ft towards %s", info.info.street, info.edge.getLength(), destination.name));
+            String findText = "";
+            if (childExhibit != null && !childExhibit.name.equals(info.destinationInfo.name)) {
+                findText = String.format("and find %s", childExhibit.name);
+            }
+
+            if (info.edge == null) {
+                this.textView.setText(String.format("Arrive at %s %s", info.destinationInfo.name, findText));
+            } else if (info.edgeInfo.street.equals(previousStreet)) {
+                this.textView.setText(String.format("Continue on %s %s ft towards %s %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
             } else {
-                this.textView.setText(String.format("Proceed on %s %s ft towards %s", info.info.street, info.edge.getLength(), destination.name));
+                this.textView.setText(String.format("Proceed on %s %s ft towards %s %s", info.edgeInfo.street, info.edge.getLength(), info.destinationInfo.name, findText));
             }
             this.numView.setText(String.valueOf(index));
         }

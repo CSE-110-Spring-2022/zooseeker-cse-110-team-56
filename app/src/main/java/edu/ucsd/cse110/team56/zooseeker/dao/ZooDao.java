@@ -31,7 +31,7 @@ public interface ZooDao {
      * Get all nodes with a specific status
      * @return a list of nodes
      */
-    @Query("SELECT * FROM `NodeInfo` WHERE status IN (:status) ORDER BY `id`")
+    @Query("SELECT * FROM `NodeInfo` WHERE status IN (:status) ORDER BY `order` ASC")
     List<NodeInfo> getNodesWithStatus(List<NodeInfo.Status> status);
 
     /**
