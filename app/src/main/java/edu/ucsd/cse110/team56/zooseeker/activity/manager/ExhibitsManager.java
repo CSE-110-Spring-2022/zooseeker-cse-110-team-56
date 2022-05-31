@@ -47,7 +47,7 @@ public class ExhibitsManager {
 
             current = lastNode == null ? gate : lastNode;
         }
-        return Graph.load(context).findPath(getGraphVertex(current), getGraphVertex(getNextNode()));
+        return Graph.load(context).findPath(getGraphVertex(current), getGraphVertex(getNextExhibit()));
     }
 
     /**
@@ -74,32 +74,51 @@ public class ExhibitsManager {
         }
     }
 
+    /**
+     * Go to the next exhibit.
+     */
     public void next() {
-        NodeInfo node = getNextNode();
+        NodeInfo node = getNextExhibit();
         node.status = NodeInfo.Status.VISITED;
         dao().updateNode(node);
     }
 
+    /**
+     * Can skip the next exhibit.
+     */
     public boolean canSkip() {
         return getAddedList().size() >= 1;
     }
 
+    /**
+     * Skip the next exhibit.
+     */
     public void skip() {
-        NodeInfo node = getNextNode();
+        NodeInfo node = getNextExhibit();
         node.status = NodeInfo.Status.LOADED;
         dao().updateNode(node);
     }
 
+    /**
+     * Can go to previous exhibit.
+     */
     public boolean canStepBack() {
         return getLastVisitedNode() != null;
     }
 
+    /**
+     * Go back to previous exhibit.
+     */
     public void stepBack() {
         NodeInfo node = getLastVisitedNode();
         node.status = NodeInfo.Status.ADDED;
         dao().updateNode(node);
     }
 
+    /**
+     * Shuffle the planned exhibits to minimize the distance walked.
+     * @return a pair of the exhibit and the distance
+     */
     public List<Pair<NodeInfo, Double>> getPlan() {
         List<NodeInfo> list = getAddedAndVisitedList();
         List<Pair<NodeInfo, Double>> plan = new ArrayList<>();
@@ -138,23 +157,32 @@ public class ExhibitsManager {
         dao().updateNode(item);
     }
 
-    public int getAddedCount() {
-        return getAddedList().size();
-    }
-
+    /**
+     * Get the list of exhibit added by the user but not visited yet.
+     */
     public List<NodeInfo> getAddedList() {
         return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED));
     }
 
+    /**
+     * Get the list of exhibits visited by the user, ordered by sequence that the
+     * user visited the exhibit.
+     */
     public List<NodeInfo> getVisitedList() {
         return dao().getNodesWithStatus(List.of(NodeInfo.Status.VISITED));
     }
 
+    /**
+     * Get the combined list of exhibits added and visited by the user.
+     */
     public List<NodeInfo> getAddedAndVisitedList() {
         return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED, NodeInfo.Status.VISITED));
     }
 
-    public NodeInfo getNextNode() {
+    /**
+     * Get the next exhibit to be visited by the user.
+     */
+    public NodeInfo getNextExhibit() {
         List<NodeInfo> list = getAddedList();
         if (list.size() >= 1) {
             return list.get(0);
@@ -163,18 +191,23 @@ public class ExhibitsManager {
         }
     }
 
+    /**
+     * Get a list of names of the exhibits added and visited by the user.
+     */
     public List<String> getAddedAndVisitedNames() {
         return getNames(getAddedAndVisitedList());
     }
 
+    /**
+     * Convert the exhibit to a Graph Vertex.
+     */
     public GraphVertex getGraphVertex(NodeInfo node) {
         NodeInfo parent = dao().getParentNode(node.parentId);
         return parent != null ? new GraphVertex(parent, node) : new GraphVertex(node);
     }
 
     /**
-     * @param list the list to map to IDs
-     * @return the IDs of all items in the list
+     * Convert a list of exhibits to graph vertices.
      */
     public List<GraphVertex> getGraphVertices(List<NodeInfo> list) {
         return list.stream()
@@ -193,12 +226,6 @@ public class ExhibitsManager {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getNames() {
-        return getAllExhibits().stream()
-                .map(NodeInfo::getName)
-                .collect(Collectors.toList());
-    }
-
     /**
      * retrieves EXHIBIT nodes from the database
      *
@@ -209,6 +236,10 @@ public class ExhibitsManager {
                 .getNodesWithKind(NodeInfo.Kind.EXHIBIT);
     }
 
+    /**
+     * Get the last node visited by the user
+     * @return null if there's none.
+     */
     public NodeInfo getLastVisitedNode() {
         List<NodeInfo> visited = getVisitedList();
         if (visited.size() == 0) {
@@ -218,6 +249,9 @@ public class ExhibitsManager {
         }
     }
 
+    /**
+     * Get the gate of the zoo.
+     */
     public NodeInfo getGate() {
         return dao().getNodesWithKind(NodeInfo.Kind.GATE).get(0);
     }

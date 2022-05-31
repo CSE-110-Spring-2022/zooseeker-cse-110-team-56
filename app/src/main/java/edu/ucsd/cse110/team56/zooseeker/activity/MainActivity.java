@@ -7,7 +7,6 @@ import androidx.appcompat.widget.SearchView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,14 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-import java.util.Locale;
 
-import edu.ucsd.cse110.team56.zooseeker.activity.adapter.LocationPermissionsManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.NodeInfoAdapter;
 import edu.ucsd.cse110.team56.zooseeker.activity.adapter.ArrayAdapterHelper;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
 import edu.ucsd.cse110.team56.zooseeker.R;
-import edu.ucsd.cse110.team56.zooseeker.activity.manager.LocationUpdatesManager;
 import edu.ucsd.cse110.team56.zooseeker.activity.manager.UIOperations;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.PlanButton;
 import edu.ucsd.cse110.team56.zooseeker.activity.uiComponents.mainActivityUIComponents.CheckboxHandler;
@@ -50,12 +46,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Request User Location Permission
-        if (LocationPermissionsManager.needsLocationPermission(this)) {
-            LocationPermissionsManager.requestLocationPermission(this);
-            return;
-        }
 
         // Retrieve local data
         allNodes = ExhibitsManager.getSingleton(this).getAllExhibits();
@@ -83,10 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup checkmarks
         searchListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
         searchListView.setOnItemClickListener(this::handleCheckboxClick);
 
-        LocationUpdatesManager.getSingleton(this);
         // Update count from database
         updateCount();
     }
@@ -143,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         // update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
     }
 
     private boolean closeSearchHandler() {
@@ -182,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                             errorToast.show();
                         });
                     }
-                    CheckboxHandler.updateSearchedCheckBoxes(activity, allNodes, searchListView);
+                    CheckboxHandler.updateSearchedCheckBoxes(activity, searchListView);
                     UIOperations.setVisibility(searchScreenViews, !s.isEmpty());
                 });
 
@@ -216,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update UI elements
         ArrayAdapterHelper.updateAdapter(addedListAdapter, ExhibitsManager.getSingleton(this).getAddedAndVisitedNames());
-        CheckboxHandler.updateSearchedCheckBoxes(this, allNodes, searchListView);
+        CheckboxHandler.updateSearchedCheckBoxes(this, searchListView);
 
         updateCount();
     }
