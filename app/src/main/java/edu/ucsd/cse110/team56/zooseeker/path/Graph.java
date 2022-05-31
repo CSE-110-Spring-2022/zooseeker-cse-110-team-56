@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.ucsd.cse110.team56.zooseeker.activity.manager.ExhibitsManager;
+import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.misc.JsonReader;
 
 public class Graph {
@@ -54,21 +56,27 @@ public class Graph {
         return graph;
     }
 
+    /**
+     * Find a path between 2 specific exhibits.
+     */
+    public Path findPath(GraphVertex start, GraphVertex end) {
+        org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
+        DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
+        GraphPath<String, GraphEdge> result = searcher.getPath(start.getNavigatableId(), end.getNavigatableId());
+
+        return new Path(result, start, end);
+    }
+
 
     /**
-     * Create paths to visit all specified nodes in the graph
-     *
-     * @param toVisit exhibits to visit (doesn't include the gate)
-     * @param start the start and the end point, probably the gate
+     * Find paths to go over all exhibits
      */
-    public ArrayList<Path> generatePaths(List<GraphVertex> toVisit, GraphVertex start, GraphVertex end) {
+    public ArrayList<Path> findPaths(GraphVertex current, List<GraphVertex> list, GraphVertex end) {
         org.jgrapht.Graph<String, GraphEdge> graph = this.toJGraph();
         DijkstraShortestPath<String, GraphEdge> searcher = new DijkstraShortestPath<String, GraphEdge>(graph);
         ArrayList<Path> paths = new ArrayList<>();
 
-        Set<GraphVertex> locSet = new HashSet<>(toVisit);
-
-        GraphVertex current = start; // Use Dijkstra to find the nearest neighbor, and go to that.
+        Set<GraphVertex> locSet = new HashSet<>(list);
 
         while(locSet.size() > 0) {
             ShortestPathAlgorithm.SingleSourcePaths<String, GraphEdge> results = searcher.getPaths(current.getNavigatableId());

@@ -17,6 +17,7 @@ public class LocationUpdatesManager {
     private List<LocationObserver> observerList = new ArrayList<>();
     private static LocationUpdatesManager singleton = null;
     private Context context;
+    private NodeInfo prevNode;
 
     private LocationUpdatesManager(Context context) {
         this.context = context;
@@ -38,6 +39,9 @@ public class LocationUpdatesManager {
         List<NodeInfo> nodes = ZooDatabase.getSingleton(context).zooDao().getAllNodes();
         float minDist = Float.MAX_VALUE;
         NodeInfo minNode = null;
+        for(LocationObserver observer: observerList) {
+            observer.updateLocation(location);
+        }
 
         for(NodeInfo node: nodes) {
             if (node.getLocation().isPresent() && location.distanceTo(node.getLocation().get()) <= minDist) {
@@ -47,7 +51,7 @@ public class LocationUpdatesManager {
         }
 
         for(LocationObserver observer: observerList) {
-            observer.updateClosestNode(minNode, location);
+            observer.updateClosestNode(minNode);
         }
     }
 
@@ -66,6 +70,4 @@ public class LocationUpdatesManager {
 
         Log.d("LastLocation", String.format("last location: %s", location));
     }
-
-
 }

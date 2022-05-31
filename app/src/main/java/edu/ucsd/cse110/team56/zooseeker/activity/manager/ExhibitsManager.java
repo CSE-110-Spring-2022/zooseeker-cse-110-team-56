@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.team56.zooseeker.activity.manager;
 
 import android.content.Context;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import edu.ucsd.cse110.team56.zooseeker.dao.ZooDatabase;
 import edu.ucsd.cse110.team56.zooseeker.dao.entity.NodeInfo;
 import edu.ucsd.cse110.team56.zooseeker.path.Graph;
 import edu.ucsd.cse110.team56.zooseeker.path.GraphVertex;
+import edu.ucsd.cse110.team56.zooseeker.path.Path;
 
 /**
  * A container of static methods for managing the state of `NodeInfo` lists
@@ -33,60 +35,136 @@ public class ExhibitsManager {
         return singleton;
     }
 
+    // ------------- when user in en route -----------------
+
     /**
-     * sets `isAdded` to true
+     * Get the path to the next exhibit. It does not replan.
      */
-    public void addItem(NodeInfo item) {
+    public Path getPathToNextExhibit(NodeInfo current) {
+        if (current == null) {
+            NodeInfo lastNode = getLastVisitedNode();
+            NodeInfo gate = getGate();
+
+            current = lastNode == null ? gate : lastNode;
+        }
+        return Graph.load(context).findPath(getGraphVertex(current), getGraphVertex(getNextNode()));
+    }
+
+    /**
+     * Shuffle the exhibits that haven't been visited by the user to minimize the total distance.
+     */
+    public void plan(NodeInfo current) {
+        List<NodeInfo> toBeVisited = getAddedList();
+        NodeInfo lastNode = getLastVisitedNode();
+        NodeInfo gate = getGate();
+
+        if (current == null) {
+            current = lastNode == null ? gate : lastNode;
+        }
+
+        long idx = lastNode != null ? lastNode.order + 1 : 0;
+        ArrayList<Path> paths = Graph.load(context).findPaths(getGraphVertex(current), getGraphVertices(toBeVisited), getGraphVertex(getGate()));
+
+        for(Path path: paths) {
+            NodeInfo info = path.endInfo.getActualExhibit();
+            info.order = idx;
+            ++idx;
+
+            dao().updateNode(info);
+        }
+    }
+
+    public void next() {
+        NodeInfo node = getNextNode();
+        node.status = NodeInfo.Status.VISITED;
+        dao().updateNode(node);
+    }
+
+    public boolean canSkip() {
+        return getAddedList().size() >= 1;
+    }
+
+    public void skip() {
+        NodeInfo node = getNextNode();
+        node.status = NodeInfo.Status.LOADED;
+        dao().updateNode(node);
+    }
+
+    public boolean canStepBack() {
+        return getLastVisitedNode() != null;
+    }
+
+    public void stepBack() {
+        NodeInfo node = getLastVisitedNode();
+        node.status = NodeInfo.Status.ADDED;
+        dao().updateNode(node);
+    }
+
+    public List<Pair<NodeInfo, Double>> getPlan() {
+        List<NodeInfo> list = getAddedAndVisitedList();
+        List<Pair<NodeInfo, Double>> plan = new ArrayList<>();
+
+        Graph graph = Graph.load(context);
+        GraphVertex current = getGraphVertex(getGate());
+
+        for(NodeInfo node: list) {
+            Path path = graph.findPath(current, getGraphVertex(node));
+            plan.add(new Pair<>(node, path.path.getWeight()));
+            current = getGraphVertex(node);
+        }
+
+        Path path = graph.findPath(current, getGraphVertex(getGate()));
+        plan.add(new Pair<>(getGate(), path.path.getWeight()));
+
+        return plan;
+    }
+
+
+    // ---------------- when user is planning their visit -----------------
+
+    /**
+     * Add an exhibit to the list to be visited by the user.
+     */
+    public void add(NodeInfo item) {
         item.setStatus(NodeInfo.Status.ADDED);
         dao().updateNode(item);
     }
 
     /**
-     * sets `isAdded` to false
+     * Remove an exhibit from the list
      */
-    public void removeItem(NodeInfo item) {
+    public void remove(NodeInfo item) {
         item.setStatus(NodeInfo.Status.LOADED);
         dao().updateNode(item);
-    }
-
-    /**
-     * @param allList the list containing all items to count
-     * @return the number of items in `allList` where `isAdded` is true
-     */
-    public int getAddedCount(List<NodeInfo> allList) {
-        return (int) allList.stream()
-                .filter((nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.ADDED))
-                .count();
     }
 
     public int getAddedCount() {
         return getAddedList().size();
     }
 
-    /**
-     * @param allList the list containing all items to filter from
-     * @return a list of items where `isAdded` is true
-     */
-    public List<NodeInfo> getAddedList(List<NodeInfo> allList) {
-        return allList.stream()
-                .filter(nodeInfo -> nodeInfo.getStatus() == NodeInfo.Status.ADDED)
-                .collect(Collectors.toList());
-    }
-
     public List<NodeInfo> getAddedList() {
         return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED));
     }
 
-    /**
-     * @param allList the list containing all items to filter from
-     * @return a list of the names of items where `isAdded` is true
-     */
-    public List<String> getAddedListNames(List<NodeInfo> allList) {
-        return getNames(getAddedList(allList));
+    public List<NodeInfo> getVisitedList() {
+        return dao().getNodesWithStatus(List.of(NodeInfo.Status.VISITED));
     }
 
-    public List<String> getAddedListNames() {
-        return getNames(getAddedList());
+    public List<NodeInfo> getAddedAndVisitedList() {
+        return dao().getNodesWithStatus(List.of(NodeInfo.Status.ADDED, NodeInfo.Status.VISITED));
+    }
+
+    public NodeInfo getNextNode() {
+        List<NodeInfo> list = getAddedList();
+        if (list.size() >= 1) {
+            return list.get(0);
+        } else {
+            return getGate();
+        }
+    }
+
+    public List<String> getAddedAndVisitedNames() {
+        return getNames(getAddedAndVisitedList());
     }
 
     public GraphVertex getGraphVertex(NodeInfo node) {
@@ -98,7 +176,7 @@ public class ExhibitsManager {
      * @param list the list to map to IDs
      * @return the IDs of all items in the list
      */
-    public List<GraphVertex> getNavigationVertexIds(List<NodeInfo> list) {
+    public List<GraphVertex> getGraphVertices(List<NodeInfo> list) {
         return list.stream()
                 .map(this::getGraphVertex)
                 .collect(Collectors.toList());
@@ -109,7 +187,7 @@ public class ExhibitsManager {
      * @return a list of the name attributes of all `NodeInfo` objects
      * from the given list
      */
-    public List<String> getNames(List<NodeInfo> list) {
+    public static List<String> getNames(List<NodeInfo> list) {
         return list.stream()
                 .map(NodeInfo::getName)
                 .collect(Collectors.toList());
@@ -129,5 +207,18 @@ public class ExhibitsManager {
     public List<NodeInfo> getAllExhibits() {
         return dao()
                 .getNodesWithKind(NodeInfo.Kind.EXHIBIT);
+    }
+
+    public NodeInfo getLastVisitedNode() {
+        List<NodeInfo> visited = getVisitedList();
+        if (visited.size() == 0) {
+            return null;
+        } else {
+            return visited.get(visited.size() - 1);
+        }
+    }
+
+    public NodeInfo getGate() {
+        return dao().getNodesWithKind(NodeInfo.Kind.GATE).get(0);
     }
 }
