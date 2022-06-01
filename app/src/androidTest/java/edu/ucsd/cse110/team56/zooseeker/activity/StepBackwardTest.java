@@ -251,6 +251,8 @@ public class StepBackwardTest {
                                 3)));
         materialButton.perform(scrollTo(), click());
 
+        Thread.sleep(1000);
+
         ViewInteraction extendedFloatingActionButton3 = onView(
                 allOf(withId(R.id.next_btn), withText("NEXT"),
                         childAtPosition(
