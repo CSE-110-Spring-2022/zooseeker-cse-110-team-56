@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.team56.zooseeker.activity;
 
-
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -37,17 +36,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.MainActivity;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class Milestone2It1Test {
+public class NextButtonTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void milestone2It1Test() {
+    public void nextButtonTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -74,7 +74,7 @@ public class Milestone2It1Test {
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
+                                2)))
                 .atPosition(0);
         appCompatCheckedTextView.perform(click());
 
@@ -82,25 +82,9 @@ public class Milestone2It1Test {
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
+                                2)))
                 .atPosition(2);
         appCompatCheckedTextView2.perform(click());
-
-        DataInteraction appCompatCheckedTextView3 = onData(anything())
-                .inAdapterView(allOf(withId(R.id.data_list),
-                        childAtPosition(
-                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(3);
-        appCompatCheckedTextView3.perform(click());
-
-        DataInteraction appCompatCheckedTextView4 = onData(anything())
-                .inAdapterView(allOf(withId(R.id.data_list),
-                        childAtPosition(
-                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(4);
-        appCompatCheckedTextView4.perform(click());
 
         ViewInteraction appCompatImageView2 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
@@ -130,32 +114,22 @@ public class Milestone2It1Test {
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                4),
+                                3),
                         isDisplayed()));
         extendedFloatingActionButton.perform(click());
 
         ViewInteraction extendedFloatingActionButton2 = onView(
-                allOf(withId(R.id.planBtn), withText("DIRECTION"),
+                allOf(withId(R.id.planBtn), withText("GO"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                1),
+                                2),
                         isDisplayed()));
         extendedFloatingActionButton2.perform(click());
 
-        ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.next_btn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        floatingActionButton.perform(click());
-
         ViewInteraction extendedFloatingActionButton3 = onView(
-                allOf(withId(R.id.skip_btn), withText("SKIP NEXT"),
+                allOf(withId(R.id.next_btn), withText("NEXT"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -164,65 +138,33 @@ public class Milestone2It1Test {
                         isDisplayed()));
         extendedFloatingActionButton3.perform(click());
 
-        ViewInteraction imageButton = onView(
-                allOf(withId(R.id.next_btn),
-                        withParent(withParent(withId(android.R.id.content))),
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.destination_text), withText("Next: Emerald Dove"),
+                        withParent(allOf(withId(R.id.linearLayout),
+                                withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
-        imageButton.check(matches(isDisplayed()));
+        textView.check(matches(withText("Next: Emerald Dove")));
 
-        ViewInteraction imageButton2 = onView(
-                allOf(withId(R.id.next_btn),
-                        withParent(withParent(withId(android.R.id.content))),
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.destination_text), withText("Next: Emerald Dove"),
+                        withParent(allOf(withId(R.id.linearLayout),
+                                withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
-        imageButton2.check(matches(isDisplayed()));
-
-        ViewInteraction floatingActionButton2 = onView(
-                allOf(withId(R.id.next_btn),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                1),
-                        isDisplayed()));
-        floatingActionButton2.perform(click());
-
-        ViewInteraction imageButton3 = onView(
-                allOf(withId(R.id.pre_btn),
-                        withParent(withParent(withId(android.R.id.content))),
-                        isDisplayed()));
-        imageButton3.check(matches(isDisplayed()));
-
-        ViewInteraction imageButton4 = onView(
-                allOf(withId(R.id.pre_btn),
-                        withParent(withParent(withId(android.R.id.content))),
-                        isDisplayed()));
-        imageButton4.check(matches(isDisplayed()));
+        textView2.check(matches(withText("Next: Emerald Dove")));
 
         pressBack();
 
         pressBack();
 
         ViewInteraction materialButton = onView(
-                allOf(withId(R.id.clear_btn), withText("Clear Selected"),
+                allOf(withId(R.id.clear_btn), withText("Clear"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                2),
+                                1),
                         isDisplayed()));
         materialButton.perform(click());
-
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:0"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView.check(matches(withText("Added Animals:0")));
-
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:0"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView2.check(matches(withText("Added Animals:0")));
     }
 
     private static Matcher<View> childAtPosition(

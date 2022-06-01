@@ -18,9 +18,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -34,13 +34,14 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivitySearchTagTest {
+public class SearchAnimalTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void mainActivitySearchTagTest() {
+    public void searchAnimalTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -61,46 +62,50 @@ public class MainActivitySearchTagTest {
                                                 1)),
                                 0),
                         isDisplayed()));
-        searchAutoComplete.perform(click());
-
-        ViewInteraction searchAutoComplete2 = onView(
-                allOf(withId(androidx.appcompat.R.id.search_src_text),
-                        childAtPosition(
-                                allOf(withId(androidx.appcompat.R.id.search_plate),
-                                        childAtPosition(
-                                                withId(androidx.appcompat.R.id.search_edit_frame),
-                                                1)),
-                                0),
-                        isDisplayed()));
-        searchAutoComplete2.perform(replaceText("mam"), closeSoftKeyboard());
+        searchAutoComplete.perform(replaceText("a"), closeSoftKeyboard());
 
         ViewInteraction checkedTextView = onView(
-                allOf(withId(android.R.id.text1), withText("Arctic Foxes"),
+                allOf(withId(android.R.id.text1), withText("Capuchin Monkeys"),
                         withParent(allOf(withId(R.id.data_list),
                                 withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
         checkedTextView.check(matches(isDisplayed()));
 
         ViewInteraction checkedTextView2 = onView(
-                allOf(withId(android.R.id.text1), withText("Elephant Odyssey"),
+                allOf(withId(android.R.id.text1), withText("Koi Fish"),
                         withParent(allOf(withId(R.id.data_list),
                                 withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
         checkedTextView2.check(matches(isDisplayed()));
 
         ViewInteraction checkedTextView3 = onView(
-                allOf(withId(android.R.id.text1), withText("Gorillas"),
+                allOf(withId(android.R.id.text1), withText("Hippos"),
                         withParent(allOf(withId(R.id.data_list),
                                 withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
                         isDisplayed()));
         checkedTextView3.check(matches(isDisplayed()));
 
-        ViewInteraction checkedTextView4 = onView(
-                allOf(withId(android.R.id.text1), withText("Lions"),
-                        withParent(allOf(withId(R.id.data_list),
-                                withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
+        ViewInteraction appCompatImageView2 = onView(
+                allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_plate),
+                                        childAtPosition(
+                                                withId(androidx.appcompat.R.id.search_edit_frame),
+                                                1)),
+                                1),
                         isDisplayed()));
-        checkedTextView4.check(matches(isDisplayed()));
+        appCompatImageView2.perform(click());
+
+        ViewInteraction appCompatImageView3 = onView(
+                allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_plate),
+                                        childAtPosition(
+                                                withId(androidx.appcompat.R.id.search_edit_frame),
+                                                1)),
+                                1),
+                        isDisplayed()));
+        appCompatImageView3.perform(click());
     }
 
     private static Matcher<View> childAtPosition(

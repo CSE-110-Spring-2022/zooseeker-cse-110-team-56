@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker.activity;
+package edu.ucsd.cse110.team56.zooseeker.mock;
 
 
 import static androidx.test.espresso.Espresso.onData;
@@ -38,17 +38,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import edu.ucsd.cse110.team56.zooseeker.R;
+import edu.ucsd.cse110.team56.zooseeker.activity.MainActivity;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivityClearSelectionTest {
+public class OffTrackMockTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void mainActivityClearSelectionTest() {
+    public void offTrackMockTest() throws InterruptedException {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -75,7 +76,7 @@ public class MainActivityClearSelectionTest {
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
+                                2)))
                 .atPosition(0);
         appCompatCheckedTextView.perform(click());
 
@@ -83,8 +84,8 @@ public class MainActivityClearSelectionTest {
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(2);
+                                2)))
+                .atPosition(5);
         appCompatCheckedTextView2.perform(click());
 
         ViewInteraction appCompatImageView2 = onView(
@@ -109,70 +110,115 @@ public class MainActivityClearSelectionTest {
                         isDisplayed()));
         appCompatImageView3.perform(click());
 
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:2"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView.check(matches(withText("Added Animals:2")));
-
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:2"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView2.check(matches(withText("Added Animals:2")));
-
         ViewInteraction extendedFloatingActionButton = onView(
                 allOf(withId(R.id.planBtn), withText("PLAN"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
-                                4),
+                                3),
                         isDisplayed()));
         extendedFloatingActionButton.perform(click());
 
-        pressBack();
-
-        ViewInteraction materialButton = onView(
-                allOf(withId(R.id.clear_btn), withText("Clear Selected"),
+        ViewInteraction extendedFloatingActionButton2 = onView(
+                allOf(withId(R.id.planBtn), withText("GO"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
                                         0),
                                 2),
                         isDisplayed()));
-        materialButton.perform(click());
-
-        ViewInteraction textView3 = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:0"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView3.check(matches(withText("Added Animals:0")));
-
-        ViewInteraction textView4 = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:0"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-                        isDisplayed()));
-        textView4.check(matches(withText("Added Animals:0")));
-
-        ViewInteraction extendedFloatingActionButton2 = onView(
-                allOf(withId(R.id.planBtn), withText("PLAN"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                4),
-                        isDisplayed()));
         extendedFloatingActionButton2.perform(click());
 
-        ViewInteraction materialButton2 = onView(
+        ViewInteraction overflowMenuButton = onView(
+                allOf(withContentDescription("More options"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(androidx.appcompat.R.id.action_bar),
+                                        1),
+                                0),
+                        isDisplayed()));
+        overflowMenuButton.perform(click());
+
+        ViewInteraction materialTextView = onView(
+                allOf(withId(androidx.appcompat.R.id.title), withText("Mock Location"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(androidx.appcompat.R.id.content),
+                                        0),
+                                0),
+                        isDisplayed()));
+        materialTextView.perform(click());
+
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.latitude),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.custom),
+                                        0),
+                                0),
+                        isDisplayed()));
+        appCompatEditText.perform(replaceText("32.747"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.longitude),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.custom),
+                                        0),
+                                1),
+                        isDisplayed()));
+        appCompatEditText2.perform(replaceText("-117.799"), closeSoftKeyboard());
+
+        ViewInteraction materialButton = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("android.widget.ScrollView")),
                                         0),
                                 3)));
+        materialButton.perform(scrollTo(), click());
+
+
+        Thread.sleep(1500);
+
+        ViewInteraction materialButton2 = onView(
+                allOf(withId(android.R.id.button1), withText("Yes"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                3)));
         materialButton2.perform(scrollTo(), click());
+
+        Thread.sleep(500);
+
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.destination_text), withText("Next: Gorillas"),
+                        withParent(allOf(withId(R.id.linearLayout),
+                                withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
+                        isDisplayed()));
+        textView.check(matches(withText("Next: Gorillas")));
+
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.direction_text), withText("Proceed on Monkey Trail 1400.0 ft towards Gorillas "),
+                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
+                        isDisplayed()));
+        textView2.check(matches(withText("Proceed on Monkey Trail 1400.0 ft towards Gorillas ")));
+
+        pressBack();
+
+        pressBack();
+
+        ViewInteraction materialButton3 = onView(
+                allOf(withId(R.id.clear_btn), withText("Clear"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                1),
+                        isDisplayed()));
+        materialButton3.perform(click());
     }
 
     private static Matcher<View> childAtPosition(

@@ -3,6 +3,7 @@ package edu.ucsd.cse110.team56.zooseeker.activity;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -26,12 +27,10 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.GrantPermissionRule;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,20 +39,14 @@ import edu.ucsd.cse110.team56.zooseeker.R;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivityCountTest {
+public class RoutePlanTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
-    @Rule
-    public GrantPermissionRule mGrantPermissionRule =
-            GrantPermissionRule.grant(
-                    "android.permission.ACCESS_FINE_LOCATION",
-                    "android.permission.ACCESS_COARSE_LOCATION");
-
     @Test
-    public void mainActivityCountTest() {
+    public void routePlanTest() {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -74,55 +67,31 @@ public class MainActivityCountTest {
                                                 1)),
                                 0),
                         isDisplayed()));
-        searchAutoComplete.perform(replaceText("a"), closeSoftKeyboard());
+        searchAutoComplete.perform(replaceText("i"), closeSoftKeyboard());
 
         DataInteraction appCompatCheckedTextView = onData(anything())
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(0);
+                                2)))
+                .atPosition(8);
         appCompatCheckedTextView.perform(click());
 
         DataInteraction appCompatCheckedTextView2 = onData(anything())
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(2);
+                                2)))
+                .atPosition(7);
         appCompatCheckedTextView2.perform(click());
 
         DataInteraction appCompatCheckedTextView3 = onData(anything())
                 .inAdapterView(allOf(withId(R.id.data_list),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(2);
+                                2)))
+                .atPosition(1);
         appCompatCheckedTextView3.perform(click());
-
-        DataInteraction appCompatCheckedTextView4 = onData(anything())
-                .inAdapterView(allOf(withId(R.id.data_list),
-                        childAtPosition(
-                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(3);
-        appCompatCheckedTextView4.perform(click());
-
-        DataInteraction appCompatCheckedTextView5 = onData(anything())
-                .inAdapterView(allOf(withId(R.id.data_list),
-                        childAtPosition(
-                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(4);
-        appCompatCheckedTextView5.perform(click());
-
-        DataInteraction appCompatCheckedTextView6 = onData(anything())
-                .inAdapterView(allOf(withId(R.id.data_list),
-                        childAtPosition(
-                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                3)))
-                .atPosition(2);
-        appCompatCheckedTextView6.perform(click());
 
         ViewInteraction appCompatImageView2 = onView(
                 allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
@@ -146,11 +115,65 @@ public class MainActivityCountTest {
                         isDisplayed()));
         appCompatImageView3.perform(click());
 
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.added_count), withText("Added Animals:4"),
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
+        ViewInteraction extendedFloatingActionButton = onView(
+                allOf(withId(R.id.planBtn), withText("PLAN"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                3),
                         isDisplayed()));
-        textView.check(matches(withText("Added Animals:4")));
+        extendedFloatingActionButton.perform(click());
+
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.exhibit_planed), withText("Blue Capped Motmot"),
+                        withParent(allOf(withId(R.id.layout_plan_list_item),
+                                withParent(withId(R.id.destination)))),
+                        isDisplayed()));
+        textView.check(matches(withText("Blue Capped Motmot")));
+
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.exhibit_planed), withText("Bali Mynah"),
+                        withParent(allOf(withId(R.id.layout_plan_list_item),
+                                withParent(withId(R.id.destination)))),
+                        isDisplayed()));
+        textView2.check(matches(withText("Bali Mynah")));
+
+        ViewInteraction textView3 = onView(
+                allOf(withId(R.id.exhibit_planed), withText("Entrance and Exit Gate"),
+                        withParent(allOf(withId(R.id.layout_plan_list_item),
+                                withParent(withId(R.id.destination)))),
+                        isDisplayed()));
+        textView3.check(matches(withText("Entrance and Exit Gate")));
+
+        ViewInteraction textView4 = onView(
+                allOf(withId(R.id.exhibit_planed), withText("Crocodiles"),
+                        withParent(allOf(withId(R.id.layout_plan_list_item),
+                                withParent(withId(R.id.destination)))),
+                        isDisplayed()));
+        textView4.check(matches(withText("Crocodiles")));
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.clear_btn), withText("Reset"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                1),
+                        isDisplayed()));
+        materialButton.perform(click());
+
+        pressBack();
+
+        ViewInteraction materialButton2 = onView(
+                allOf(withId(R.id.clear_btn), withText("Clear"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                1),
+                        isDisplayed()));
+        materialButton2.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
