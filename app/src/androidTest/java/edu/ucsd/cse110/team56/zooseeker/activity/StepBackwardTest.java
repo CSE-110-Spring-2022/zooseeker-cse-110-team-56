@@ -251,7 +251,7 @@ public class StepBackwardTest {
                                 3)));
         materialButton.perform(scrollTo(), click());
 
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         ViewInteraction extendedFloatingActionButton3 = onView(
                 allOf(withId(R.id.next_btn), withText("NEXT"),
@@ -322,7 +322,7 @@ public class StepBackwardTest {
                                 3)));
         materialButton2.perform(scrollTo(), click());
 
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.pre_btn),
