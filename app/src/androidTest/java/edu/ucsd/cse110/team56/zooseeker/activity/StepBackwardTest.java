@@ -322,7 +322,7 @@ public class StepBackwardTest {
                                 3)));
         materialButton2.perform(scrollTo(), click());
 
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.pre_btn),
