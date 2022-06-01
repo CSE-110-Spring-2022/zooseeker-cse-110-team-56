@@ -49,110 +49,110 @@ public class ClearTest {
     @Test
     public void clearTest() {
         ViewInteraction appCompatImageView = onView(
-allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
-childAtPosition(
-allOf(withId(androidx.appcompat.R.id.search_bar),
-childAtPosition(
-withId(R.id.search_btn),
-0)),
-1),
-isDisplayed()));
+                allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_bar),
+                                        childAtPosition(
+                                                withId(R.id.search_btn),
+                                                0)),
+                                1),
+                        isDisplayed()));
         appCompatImageView.perform(click());
-        
+
         ViewInteraction searchAutoComplete = onView(
-allOf(withId(androidx.appcompat.R.id.search_src_text),
-childAtPosition(
-allOf(withId(androidx.appcompat.R.id.search_plate),
-childAtPosition(
-withId(androidx.appcompat.R.id.search_edit_frame),
-1)),
-0),
-isDisplayed()));
+                allOf(withId(androidx.appcompat.R.id.search_src_text),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_plate),
+                                        childAtPosition(
+                                                withId(androidx.appcompat.R.id.search_edit_frame),
+                                                1)),
+                                0),
+                        isDisplayed()));
         searchAutoComplete.perform(replaceText("e"), closeSoftKeyboard());
-        
+
         DataInteraction appCompatCheckedTextView = onData(anything())
-.inAdapterView(allOf(withId(R.id.data_list),
-childAtPosition(
-withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-2)))
-.atPosition(0);
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                2)))
+                .atPosition(0);
         appCompatCheckedTextView.perform(click());
-        
+
         DataInteraction appCompatCheckedTextView2 = onData(anything())
-.inAdapterView(allOf(withId(R.id.data_list),
-childAtPosition(
-withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-2)))
-.atPosition(3);
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                2)))
+                .atPosition(3);
         appCompatCheckedTextView2.perform(click());
-        
+
         DataInteraction appCompatCheckedTextView3 = onData(anything())
-.inAdapterView(allOf(withId(R.id.data_list),
-childAtPosition(
-withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-2)))
-.atPosition(7);
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                2)))
+                .atPosition(7);
         appCompatCheckedTextView3.perform(click());
-        
+
         DataInteraction appCompatCheckedTextView4 = onData(anything())
-.inAdapterView(allOf(withId(R.id.data_list),
-childAtPosition(
-withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-2)))
-.atPosition(8);
+                .inAdapterView(allOf(withId(R.id.data_list),
+                        childAtPosition(
+                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                2)))
+                .atPosition(8);
         appCompatCheckedTextView4.perform(click());
-        
+
         ViewInteraction appCompatImageView2 = onView(
-allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
-childAtPosition(
-allOf(withId(androidx.appcompat.R.id.search_plate),
-childAtPosition(
-withId(androidx.appcompat.R.id.search_edit_frame),
-1)),
-1),
-isDisplayed()));
+                allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_plate),
+                                        childAtPosition(
+                                                withId(androidx.appcompat.R.id.search_edit_frame),
+                                                1)),
+                                1),
+                        isDisplayed()));
         appCompatImageView2.perform(click());
-        
+
         ViewInteraction appCompatImageView3 = onView(
-allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
-childAtPosition(
-allOf(withId(androidx.appcompat.R.id.search_plate),
-childAtPosition(
-withId(androidx.appcompat.R.id.search_edit_frame),
-1)),
-1),
-isDisplayed()));
+                allOf(withId(androidx.appcompat.R.id.search_close_btn), withContentDescription("Clear query"),
+                        childAtPosition(
+                                allOf(withId(androidx.appcompat.R.id.search_plate),
+                                        childAtPosition(
+                                                withId(androidx.appcompat.R.id.search_edit_frame),
+                                                1)),
+                                1),
+                        isDisplayed()));
         appCompatImageView3.perform(click());
-        
+
         ViewInteraction extendedFloatingActionButton = onView(
-allOf(withId(R.id.planBtn), withText("PLAN"),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-3),
-isDisplayed()));
+                allOf(withId(R.id.planBtn), withText("PLAN"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                3),
+                        isDisplayed()));
         extendedFloatingActionButton.perform(click());
-        
+
         pressBack();
-        
+
         ViewInteraction materialButton = onView(
-allOf(withId(R.id.clear_btn), withText("Clear"),
-childAtPosition(
-childAtPosition(
-withId(android.R.id.content),
-0),
-1),
-isDisplayed()));
+                allOf(withId(R.id.clear_btn), withText("Clear"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                1),
+                        isDisplayed()));
         materialButton.perform(click());
-        
+
         ViewInteraction textView = onView(
-allOf(withId(R.id.added_count), withText("Added: 0 Visited: 0"),
-withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
-isDisplayed()));
+                allOf(withId(R.id.added_count), withText("Added: 0 Visited: 0"),
+                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
+                        isDisplayed()));
         textView.check(matches(withText("Added: 0 Visited: 0")));
-        }
-    
+    }
+
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
 
@@ -167,8 +167,8 @@ isDisplayed()));
             public boolean matchesSafely(View view) {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup)parent).getChildAt(position));
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
     }
-    }
+}
