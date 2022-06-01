@@ -1,7 +1,9 @@
 package edu.ucsd.cse110.team56.zooseeker.activity.manager;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.View;
 import android.content.Context;
 import android.view.WindowManager;
@@ -39,7 +41,11 @@ public class UIOperations {
         dialog.show();
     }
 
-    public static void showDialog(Context context, String message, String cancelText, String okText, DialogInterface.OnClickListener onClickListener) {
+    public static void showDialog(Activity context, String message, String cancelText, String okText, DialogInterface.OnClickListener onClickListener) {
+        if (context.isFinishing()) {
+            Log.e("UIOperation", "Activity finishing, skip.");
+            return;
+        }
         final var builder = new AlertDialog.Builder(context);
         builder.setMessage(message)
                 .setNegativeButton(cancelText, null)
