@@ -1,3 +1,5 @@
+package edu.ucsd.cse110.team56.zooseeker.activity;
+
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
