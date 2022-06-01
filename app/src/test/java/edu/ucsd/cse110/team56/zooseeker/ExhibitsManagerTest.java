@@ -143,20 +143,21 @@ public class ExhibitsManagerTest {
         final var manager = ExhibitsManager.getSingleton(context);
 
         // add
-        final var nodeInfo0 = manager.getAllExhibits().get(0);
+        var nodeInfo0 = manager.getAllExhibits().get(0);
+        nodeInfo0.order = 0L;
         manager.add(nodeInfo0);
-        final var nodeInfo1 = manager.getAllExhibits().get(1);
+        var nodeInfo1 = manager.getAllExhibits().get(1);
+        nodeInfo1.order = 1L;
         manager.add(nodeInfo1);
 
         // plan
-        manager.plan(nodeInfo0);
         manager.next();
         manager.next();
 
         // check
         assert(manager.getVisitedList().contains(nodeInfo0));
         assert(manager.getVisitedList().contains(nodeInfo1));
-        assert(manager.getLastVisitedNode() == nodeInfo1);
+        assert(manager.getLastVisitedNode().equals(nodeInfo1));
     }
 
     @Test
