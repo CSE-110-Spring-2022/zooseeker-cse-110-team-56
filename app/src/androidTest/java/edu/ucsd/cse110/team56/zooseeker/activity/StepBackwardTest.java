@@ -335,6 +335,20 @@ public class StepBackwardTest {
                         withParent(withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class))),
                         isDisplayed()));
         textView.check(matches(withText("Continue on Treetops Way 1400.0 ft towards Treetops Way / Fern Canyon Trail ")));
+
+        pressBack();
+
+        pressBack();
+
+        ViewInteraction materialButton3 = onView(
+                allOf(withId(R.id.clear_btn), withText("Clear"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                1),
+                        isDisplayed()));
+        materialButton3.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
