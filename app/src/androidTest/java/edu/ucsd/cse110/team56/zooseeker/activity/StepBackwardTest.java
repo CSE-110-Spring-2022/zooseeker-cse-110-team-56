@@ -55,7 +55,7 @@ public class StepBackwardTest {
                     "android.permission.ACCESS_COARSE_LOCATION");
 
     @Test
-    public void stepBackwardTest() {
+    public void stepBackwardTest() throws InterruptedException {
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(androidx.appcompat.R.id.search_button), withContentDescription("Search"),
                         childAtPosition(
@@ -319,6 +319,8 @@ public class StepBackwardTest {
                                         0),
                                 3)));
         materialButton2.perform(scrollTo(), click());
+
+        Thread.sleep(500);
 
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.pre_btn),
