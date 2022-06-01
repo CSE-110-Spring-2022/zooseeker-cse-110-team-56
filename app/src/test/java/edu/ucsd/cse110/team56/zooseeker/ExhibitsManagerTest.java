@@ -115,8 +115,7 @@ public class ExhibitsManagerTest {
     }
 
     @Test
-    public void nextTest() {
-
+    public void nextAndGetVisitedListTest() {
         final var context = ApplicationProvider.getApplicationContext();
         final var manager = ExhibitsManager.getSingleton(context);
 
@@ -136,5 +135,35 @@ public class ExhibitsManagerTest {
         // check
         assert(manager.getVisitedList().contains(nodeInfo0));
         assert(!manager.getVisitedList().contains(nodeInfo1));
+    }
+
+    @Test
+    public void nextAndGetLastVisitedNodeTest() {
+        final var context = ApplicationProvider.getApplicationContext();
+        final var manager = ExhibitsManager.getSingleton(context);
+
+        // add
+        final var nodeInfo0 = manager.getAllExhibits().get(0);
+        manager.add(nodeInfo0);
+        final var nodeInfo1 = manager.getAllExhibits().get(1);
+        manager.add(nodeInfo1);
+
+        // plan
+        manager.plan(nodeInfo0);
+        manager.next();
+        manager.next();
+
+        // check
+        assert(manager.getVisitedList().contains(nodeInfo0));
+        assert(manager.getVisitedList().contains(nodeInfo1));
+        assert(manager.getLastVisitedNode() == nodeInfo1);
+    }
+
+    @Test
+    public void getGateTest() {
+        final var context = ApplicationProvider.getApplicationContext();
+        final var manager = ExhibitsManager.getSingleton(context);
+
+        assert(manager.getGate().kind == NodeInfo.Kind.GATE);
     }
 }
