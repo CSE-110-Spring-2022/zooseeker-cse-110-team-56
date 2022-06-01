@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.pathTest;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 

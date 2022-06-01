@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.team56.zooseeker;
+package edu.ucsd.cse110.team56.zooseeker.pathTest;
 
 import static org.junit.Assert.assertEquals;
 
